@@ -1,4 +1,4 @@
-<!-- Main page. -->
+<!-- Main web page. -->
 
 {% extends "base/base.html" %}
 
@@ -10,6 +10,20 @@
 {% endblock title %}
 
 {% block content %}
-<h1>Welcome to ROXcomposer!</h1>
+<h1>Welcome!</h1>
+{% if names %}
+<form action="/" method="post">
+    {% csrf_token %}
+    <select name="services">
+        {% for name in names %}
+        <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit">
+</form>
+{% else %}
+<p>No services available.</p>
+{% endif %}
+
 <script src="{% static 'web/js/web.js'%}"></script>
 {% endblock content %}
