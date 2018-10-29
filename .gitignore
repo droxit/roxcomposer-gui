@@ -13,4 +13,5 @@ tvarchive/static_root/**
 # IDE
 **/.idea/**
 
-user_settings.py
+# Local settings.
+roxgui/user_settings.py

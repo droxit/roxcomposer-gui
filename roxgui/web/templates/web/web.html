@@ -11,15 +11,15 @@
 
 {% block content %}
 <h1>Welcome!</h1>
-{% if names %}
-<form action="/" method="post">
+{% if service_names %}
+<form action="start_service/" method="post">
     {% csrf_token %}
     <select name="services">
-        {% for name in names %}
+        {% for name in service_names %}
         <option value="{{ name }}">{{ name }}</option>
         {% endfor %}
     </select>
-    <input type="submit">
+    <input type="submit" value="Start">
 </form>
 {% else %}
 <p>No services available.</p>

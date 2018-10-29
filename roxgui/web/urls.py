@@ -3,5 +3,6 @@ from django.urls import path
 from web import views
 
 urlpatterns = [
-    path('', views.web_main, name="web_main"),
+    path('', views.main, name="main"),
+    path('start_service/', views.start_service, name="start_service"),
 ]

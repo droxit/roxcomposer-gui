@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 #
 # commands.py
 #
@@ -9,53 +9,57 @@
 
 import json
 import os
+
 import requests
 from user_settings import ROX_DIR, SERVICES_DIR, ROX_URL
 
-#get path to composer folder, url, services directory
+# get path to composer folder, url, services directory
 services_dir = SERVICES_DIR
 roxconnector = ROX_URL
 rox_dir = ROX_DIR
 
 
-#get a list of all available services in the services directory
-# key: unique service name, value: json of that service
+# get a list of all available services in the services directory
+# key: unique service name, value: its JSON data
 def get_service_list():
     available_services = {}
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
-            service_file = open(os.path.join(services_dir, f.name))
+            service_file = open(os.path.join(services_dir, f.name), 'r')
             service_args = json.load(service_file)
             available_services[f.name[:-5]] = service_args
             service_file.close()
-
     return available_services
 
-#get only the names of available services
+
+# get the names of available services
 def get_service_names():
     available_services = []
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
             available_services.append(f.name[:-5])
-
     return available_services
 
-def get_service_json(service):
+
+# convert service name to corresponding JSON data
+def get_service_json(service_name):
     try:
-        service_file = open( services_dir+"/{}.json".format(service))
+        service_name = service_name + ".json"
+        service_file = open(os.path.join(services_dir, service_name))
         service_json = json.load(service_file)
     except Exception as e:
-        return 'ERROR unable to load service {} - {}'.format(service, e)
-
+        return 'ERROR unable to load service {} - {}'.format(service_name, e)
+    finally:
+        service_file.close()
     return service_json
 
 
-#post message to pipeline
+# post data to pipeline
 def post_to_pipeline(*args):
     pass
 
 
-#start a new service
+# start service defined by given JSON data
 def start_service(service_json):
     headers = {'Content-Type': 'application/json'}
 
@@ -68,7 +72,8 @@ def start_service(service_json):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
-#get all registered services
+
+# get all registered services
 def get_services():
     try:
         r = requests.get('http://{}/services'.format(roxconnector))
@@ -80,7 +85,8 @@ def get_services():
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
-#create a new pipeline
+
+# create a new pipeline
 def set_pipeline(pipename, services):
     if len(args) < 2:
         return 'ERROR: a pipeline name and at least one service must be specified'
@@ -97,11 +103,11 @@ def set_pipeline(pipename, services):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
-#get registered pipelines
+
+# get registered pipelines
 def get_pipelines(*args):
     r = requests.get('http://{}/pipelines'.format(roxconnector))
     if r.status_code == 200:
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
-
