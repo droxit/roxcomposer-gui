@@ -1,0 +1,15 @@
+<!-- Main page. -->
+
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block title %}
+<title>ROXcomposer</title>
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/web.css' %}">
+{% endblock title %}
+
+{% block content %}
+<h1>Welcome to ROXcomposer!</h1>
+<script src="{% static 'web/js/web.js'%}"></script>
+{% endblock content %}

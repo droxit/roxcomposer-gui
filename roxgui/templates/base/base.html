@@ -1,0 +1,41 @@
+<!-- Base template for HTML pages. -->
+
+{% load static %}
+
+<!doctype html>
+<html lang="de">
+
+<head>
+    <!-- Basic meta data. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Include custom header defined in sub-template. -->
+    {% block title %} {% endblock title %}
+
+    <!-- Basic CSS stylesheets. -->
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
+</head>
+
+<body>
+<!-- Header. -->
+<header>
+    <p>Header</p>
+</header>
+
+<!-- Main content. -->
+<main>
+    <!-- Include custom body defined in sub-template. -->
+    {% block content %} {% endblock content %}
+</main>
+
+<!-- Footer. -->
+<footer>
+    <p>Footer</p>
+</footer>
+
+<!-- Basic JavaScript. -->
+<script src="{% static 'base/js/base.js'%}"></script>
+</body>
+
+</html>

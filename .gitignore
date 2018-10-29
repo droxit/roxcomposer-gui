@@ -1,0 +1,15 @@
+# Compiled Python code.
+*.pyc
+
+# Testing database.
+*.sqlite3
+
+# Migrations.
+**/migrations/**
+
+# Static root folder.
+tvarchive/static_root/**
+
+# IDE
+**/.idea/**
+
