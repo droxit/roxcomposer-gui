@@ -13,3 +13,4 @@ tvarchive/static_root/**
 # IDE
 **/.idea/**
 
+user_settings.py

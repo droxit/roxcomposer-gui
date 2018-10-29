@@ -19,6 +19,7 @@ rox_dir = ROX_DIR
 
 
 #get a list of all available services in the services directory
+# key: unique service name, value: json of that service
 def get_service_list():
     available_services = {}
     for f in os.scandir(services_dir):
@@ -29,6 +30,25 @@ def get_service_list():
             service_file.close()
 
     return available_services
+
+#get only the names of available services
+def get_service_names():
+    available_services = []
+    for f in os.scandir(services_dir):
+        if f.is_file() and f.name.endswith('.json'):
+            available_services.append(f.name[:-5])
+
+    return available_services
+
+def get_service_json(service):
+    try:
+        service_file = open( services_dir+"/{}.json".format(service))
+        service_json = json.load(service_file)
+    except Exception as e:
+        return 'ERROR unable to load service {} - {}'.format(service, e)
+
+    return service_json
+
 
 #post message to pipeline
 def post_to_pipeline(*args):
