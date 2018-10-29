@@ -25,6 +25,7 @@ def get_service_list():
             service_file = open(os.path.join(services_dir, f.name))
             service_args = json.load(service_file)
             available_services[f.name] = service_args
+            service_file.close()
 
     return available_services
 
