@@ -22,9 +22,10 @@ def get_service_list():
     available_services = {}
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
-            service_file = open('./services/{}'.format(f.name))
+            service_file = open(os.path.join(services_dir, f.name))
             service_args = json.load(service_file)
             available_services[f.name] = service_args
+
     return available_services
 
 #post message to pipeline
