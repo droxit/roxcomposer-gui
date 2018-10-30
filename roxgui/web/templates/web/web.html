@@ -11,15 +11,32 @@
 
 {% block content %}
 <h1>Welcome!</h1>
-{% if service_names %}
+{% if messages %}
+<div class="alert alert-warning">
+    <strong>Error concerning:</strong>
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+{% if available_service_names %}
 <form action="start_service" method="post">
     {% csrf_token %}
-    <select name="service_names" multiple>
-        {% for name in service_names %}
+    <select name="available_service_names" multiple>
+        {% for name in available_service_names %}
         <option value="{{ name }}">{{ name }}</option>
         {% endfor %}
     </select>
     <input type="submit" value="Start">
+</form>
+<form action="stop_service" method="post">
+    {% csrf_token %}
+    <select name="running_service_names" multiple>
+        {% for name in running_service_names %}
+        <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Stop">
 </form>
 {% else %}
 <p>No services available.</p>

@@ -16,7 +16,6 @@ import requests
 
 from user_settings import ROX_DIR, ROX_URL
 
-#Log settings
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
@@ -40,10 +39,11 @@ MSG_CONNECTION_ERROR = "No connection to server."
 
 
 # post data to pipeline
-def post_to_pipeline(*args): #TODO
+def post_to_pipeline(*args):  # TODO
     pass
 
-def get_msg_history(): #TODO
+
+def get_msg_history():  # TODO
     pass
 
 
@@ -75,32 +75,32 @@ def start_services(service_json_list: list) -> list:
     """
     Start all services defined by given list of JSON dictionaries.
     :param service_json_list: List of JSON dictionaries defining multiple services.
-    :return: List of JSON dictionaries representing all services which could be started.
+    :return: List of JSON dictionaries representing all services which could not be started.
     """
-    started_services_json_list = []
+    error_json_list = []
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
-        return started_services_json_list
+        return error_json_list
 
     for service_json in service_json_list:
         result = start_service(service_json)
-        if result:
-            started_services_json_list.append(service_json)
-    return started_services_json_list
+        if not result:
+            error_json_list.append(service_json)
+    return error_json_list
 
 
-def shutdown_service(service_json: dict) -> bool:
+def shutdown_service(service_name: dict) -> bool:
     """
-    Stop service defined by given JSON dictionary.
-    :param service_json: JSON dictionary defining service.
+    Stop service defined by given name.
+    :param service_name: Service name.
     :return: True if service could be stopped and False otherwise.
     """
-    if not service_json:
-        # JSON data is empty and therefore invalid.
+    if not service_name:
+        # Service name is empty and therefore invalid.
         return False
 
     url = "http://{}/shutdown_service".format(rox_connector_url)
-    data = {'name': service_json}
+    data = {'name': service_name}
 
     try:
         r = requests.post(url, json=data, headers=JSON_HEADER)
@@ -114,22 +114,22 @@ def shutdown_service(service_json: dict) -> bool:
         return True
 
 
-def shutdown_services(service_json_list: list) -> list:
+def shutdown_services(service_name_list: list) -> list:
     """
-    Stop all services defined by given list of JSON dictionaries.
-    :param service_json_list: List of JSON dictionaries defining multiple services.
-    :return: List of JSON dictionaries representing all services which could be stopped.
+    Stop all services defined by given list of service names.
+    :param service_name_list: List of service names.
+    :return: List of service names which could not be stopped.
     """
-    stopped_services_json_list = []
-    if len(service_json_list) < 1:
+    error_name_list = []
+    if len(service_name_list) < 1:
         # Service list is empty and therefore invalid.
-        return stopped_services_json_list
+        return error_name_list
 
-    for service_json in service_json_list:
-        result = shutdown_service(service_json)
-        if result:
-            stopped_services_json_list.append(service_json)
-    return stopped_services_json_list
+    for service_name in service_name_list:
+        result = shutdown_service(service_name)
+        if not result:
+            error_name_list.append(service_name)
+    return error_name_list
 
 
 def get_running_services() -> list:
@@ -147,7 +147,7 @@ def get_running_services() -> list:
         logging.error("ERROR: {}".format(e))
 
     if r.status_code == 200:
-        services =  list(r.json().keys())
+        services = list(r.json().keys())
         logging.info('currently running services: ' + str(services))
         return services
     else:
@@ -155,7 +155,7 @@ def get_running_services() -> list:
         return []
 
 
-def set_pipeline(pipename : str, services : list) -> bool:
+def set_pipeline(pipename: str, services: list) -> bool:
     """
     create a new pipeline with the specified services, where the order is important
     :param pipename: Name of the Pipeline
@@ -177,8 +177,10 @@ def set_pipeline(pipename : str, services : list) -> bool:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return False
 
-def remove_pipeline(): #TODO
+
+def remove_pipeline():  # TODO
     pass
+
 
 def get_pipelines() -> list:
     """
@@ -193,35 +195,44 @@ def get_pipelines() -> list:
 
     if r.status_code == 200:
         pipelines = list(r.json().keys())
-        logging.info("Currently registered pipelines: "+ str(pipelines))
+        logging.info("Currently registered pipelines: " + str(pipelines))
         return pipelines
     else:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return []
 
-def dump_everything(): #TODO
+
+def dump_everything():  # TODO
     pass
 
-def watch_services(): #TODO
+
+def watch_services():  # TODO
     pass
 
-def unwatch_services(): #TODO
+
+def unwatch_services():  # TODO
     pass
 
-def watch_pipelines(): #TODO
+
+def watch_pipelines():  # TODO
     pass
 
-def unwatch_pipelines(): #TODO
+
+def unwatch_pipelines():  # TODO
     pass
 
-def watch_all(): #TODO
+
+def watch_all():  # TODO
     pass
 
-def reset_watchers(): #TODO
+
+def reset_watchers():  # TODO
     pass
 
-def get_service_logs(): #TODO
+
+def get_service_logs():  # TODO
     pass
 
-def load_and_start_pipeline(): #TODO
+
+def load_and_start_pipeline():  # TODO
     pass

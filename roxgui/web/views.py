@@ -2,28 +2,33 @@
 
 import logging
 
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 import databaseIO
 import filesystemIO
 import rox_requests
+from web import views
 
 logger = logging.getLogger(__name__)
+
+# Error message for connection error.
+MSG_CONNECTION_ERROR = "No connection to server."
 
 
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
-    running_services = rox_requests.get_running_services()
-    rox_requests.set_pipeline("test", running_services)
-    rox_requests.get_pipelines()
-
+    # Update database concerning available services.
     databaseIO.update_service_db()
-    all_service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
-    running_service_name_list =
-    context = {"service_names": all_service_name_list}
+    # Get names of all available services.
+    available_service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
+    # Get names of all running services.
+    running_service_name_list = rox_requests.get_running_services()
+    # Send both lists to view.
+    context = {"available_service_names": available_service_name_list,
+               "running_service_names": running_service_name_list}
     return render(request, "web/web.html", context)
 
 
@@ -31,25 +36,49 @@ def main(request):
 def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of specified service names.
-    service_name_list = request.POST.getlist("service_names")
+    service_name_list = request.POST.getlist("available_service_names")
     # Get list of corresponding JSON dictionaries.
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
-    # Start services and get list of JSON dictionaries
-    # corresponding to all services which could be started.
-    started_services_json_list = rox_requests.start_services(service_json_list)
-    if started_services_json_list:
-        # At least one service could be started.
-        started_service_name_list = []
-        for started_service in started_services_json_list:
-            started_service_name_list.append(started_service["params"]["name"])
-            logger.warning(started_service)
-        started_services_name_string = ', '.join(started_service_name_list)
-        return HttpResponse("Start services: {}".format(started_services_name_string))
+    # Start specified services and get list of JSON dictionaries
+    # corresponding to all services which could not be started.
+    error_json_list = rox_requests.start_services(service_json_list)
+    if not error_json_list:
+        # All services could be started.
+
+        return redirect(views.main)
     else:
-        # No services could be started.
-        return HttpResponse("Services could not be started.")
+        # At least one service could not be started.
+
+        # Convert JSON dictionaries to corresponding service name.
+        error_name_list = []
+        for error_json in error_json_list:
+            error_name_list.append(error_json["params"]["name"])
+        # Redirect to main page specifying all
+        # service names which could not be started.
+        error_name_string = ", ".join(error_name_list)
+        messages.add_message(request, messages.WARNING, error_name_string)
+        return redirect(views.main)
 
 
 @require_http_methods(["POST"])
 def stop_service(request):
-    pass
+    """Stop services specified in POST request's metadata."""
+    # Get list of specified service names.
+    service_name_list = request.POST.getlist("running_service_names")
+    # Stop specified services and get list of names
+    # corresponding to all services which could not be stopped.
+    error_name_list = rox_requests.shutdown_services(service_name_list)
+    if not error_name_list:
+        # All services could be stopped.
+
+        # Redirect to main page specifying all service
+        # names which could not be stopped in metadata.
+        return redirect(views.main)
+    else:
+        # At least one service could not be stopped.
+
+        # Redirect to main page specifying all
+        # service names which could not be stopped.
+        error_name_string = ", ".join(error_name_list)
+        messages.add_message(request, messages.WARNING, error_name_string)
+        return redirect(views.main)
