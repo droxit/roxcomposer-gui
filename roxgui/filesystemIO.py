@@ -12,10 +12,10 @@
 import json
 import logging
 import os
+
 from user_settings import SERVICES_DIR
 
-
-services_dir = SERVICES_DIR #get path to services directory
+services_dir = SERVICES_DIR  # get path to services directory
 
 
 def get_service_list():

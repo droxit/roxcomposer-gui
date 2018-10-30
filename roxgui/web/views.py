@@ -17,8 +17,9 @@ logger = logging.getLogger(__name__)
 def main(request):
     """Main page."""
     databaseIO.update_service_db()
-    service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
-    context = {"service_names": service_name_list}
+    all_service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
+    running_service_name_list =
+    context = {"service_names": all_service_name_list}
     return render(request, "web/web.html", context)
 
 
@@ -43,3 +44,8 @@ def start_service(request):
     else:
         # No services could be started.
         return HttpResponse("Services could not be started.")
+
+
+@require_http_methods(["POST"])
+def stop_service(request):
+    pass
