@@ -38,16 +38,12 @@ def update_service_db():
 def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of specified service names.
-    service_name = request.POST["service_names"]
-    logger.error(type(request))
-    logger.error(str(request))
-    logger.error(repr(request))
-    # return HttpResponse(request)
+    service_name_list = request.POST.getlist("service_names")
     # Get list of corresponding JSON dictionaries.
-    service_json = rox_requests.get_service_json(service_name)
+    service_json_list = rox_requests.get_service_jsons(service_name_list)
     # service_json = json.load(Service.objects.get(name=service_name).service.service_json)
     # Start services.
-    result = rox_requests.start_service(service_json)
+    result = rox_requests.start_services(service_json_list)
     if result:
         return HttpResponse("Service started.")
     else:
