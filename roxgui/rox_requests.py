@@ -43,8 +43,8 @@ def start_service(service_json: dict) -> bool:
 
     try:
         r = requests.post(url, json=service_json, headers=header)
-    except requests.exceptions.ConnectionError as e:
-        logging.error("No connection to server.\n{}".format(e))
+    except requests.exceptions.ConnectionError as err:
+        logging.error("No connection to server.\n{}".format(err))
         return False
     if r.status_code != 200:
         logging.error("Service could not be started: Error code {}.\n{}".format(r.status_code, r.text))
