@@ -1,15 +1,12 @@
 """Configuration of web views."""
 
-import json
 import logging
 
-import rox_requests
 import databaseIO
+import rox_requests
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-
-from .models import Service
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +20,6 @@ def main(request):
     return render(request, "web/web.html", context)
 
 
-
 @require_http_methods(["POST"])
 def start_service(request):
     """Start services specified in POST request's metadata."""
@@ -31,10 +27,12 @@ def start_service(request):
     service_name_list = request.POST.getlist("service_names")
     # Get list of corresponding JSON dictionaries.
     service_json_list = rox_requests.get_service_jsons(service_name_list)
-    #service_json = json.load(Service.objects.get(name=service_name).service.service_json)
+    # service_json = json.load(Service.objects.get(name=service_name).service.service_json)
     # Start services.
-    result = rox_requests.start_services(service_json_list)
-    if result:
-        return HttpResponse("Service started.")
-    else:
+    started_services_json_list = rox_requests.start_services(service_json_list)
+    if started_services_json_list:
+
         return HttpResponse("Service could not be started.")
+    else:
+        # No services could be started.
+        return HttpResponse("Services could not be started.")

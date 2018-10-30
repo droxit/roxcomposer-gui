@@ -6,15 +6,15 @@
 #
 # Copyright (c) 2018 droxIT GmbH
 #
-# Communication with the Database, such as storing running and available services,
-# and registered or saved pipelines
+# Communication with database, such as storing running and
+# available services, and registered or saved pipelines.
 #
 
 import json
 import logging
+
 import serviceIO
 from models import Service
-
 
 
 def update_service_db():
@@ -27,4 +27,4 @@ def update_service_db():
             service_json = json.dumps(serviceIO.get_service_json(service))
             s = Service(name=service, service_json=service_json)
             s.save()
-            logging.info("service saved: "+ str(service))
+            logging.info("service saved: " + str(service))

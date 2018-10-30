@@ -54,22 +54,22 @@ def start_service(service_json: dict) -> bool:
         return True
 
 
-def start_services(service_json_list: list) -> bool:
+def start_services(service_json_list: list) -> list:
     """
     Start all services defined by given list of JSON dictionaries.
     :param service_json_list: List of JSON dictionaries defining multiple services.
-    :return: True if all services could be started and False otherwise.
+    :return: List of JSON dictionaries representing all services which could be started.
     """
+    started_services_json_list = []
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
-        return False
+        return started_services_json_list
 
-    all_started = True
     for service_json in service_json_list:
         result = start_service(service_json)
-        if all_started and not result:
-            all_started = False
-    return all_started
+        if result:
+            started_services_json_list.append(service_json)
+    return started_services_json_list
 
 
 def shutdown_service(*args):
@@ -90,12 +90,16 @@ def shutdown_service(*args):
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
+def shutdown_services(*args):
+    pass
+
+
 def get_running_services():
     """get all registered services (as strings)"""
     try:
         r = requests.get('http://{}/services'.format(roxconnector))
     except requests.exceptions.ConnectionError as e:
-        logging.error("ERROR: no connection to server - {}".format(e) )
+        logging.error("ERROR: no connection to server - {}".format(e))
         return ""
 
     if r.status_code == 200:
@@ -105,7 +109,7 @@ def get_running_services():
         return ""
 
 
-#TODO
+# TODO
 def set_pipeline(pipename, services):
     """create a new pipeline with the specified services, where the order is important"""
 
@@ -125,7 +129,7 @@ def set_pipeline(pipename, services):
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
-#TODO
+# TODO
 # get registered pipelines
 def get_pipelines(*args):
     r = requests.get('http://{}/pipelines'.format(roxconnector))
