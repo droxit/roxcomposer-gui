@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
-    rox_requests.get_running_services()
+    running_services = rox_requests.get_running_services()
+    rox_requests.set_pipeline("test", running_services)
 
     databaseIO.update_service_db()
     service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB

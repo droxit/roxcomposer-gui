@@ -114,24 +114,26 @@ def get_running_services():
         return []
 
 
-# TODO
-def set_pipeline(pipename, services):
-    """create a new pipeline with the specified services, where the order is important"""
+def set_pipeline(pipename : str, services : list) -> bool:
+    """
+    create a new pipeline with the specified services, where the order is important
+    :param pipename: Name of the Pipeline
+    :return: True if pipeline was sent
+    """
 
-    if len(args) < 2:
-        return 'ERROR: a pipeline name and at least one service must be specified'
-    pipename = args[0]
-    services = args[1:]
     d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
     try:
         r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
     except requests.exceptions.ConnectionError as e:
-        return "ERROR: no connection to server - {}".format(e)
+        logging.error("ERROR: no connection to server - {}".format(e))
+        return False
     if r.status_code == 200:
-        return r.text
+        logging.info("Pipeline sent, Response: " + r.text)
+        return True
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+        return False
 
 
 # TODO
