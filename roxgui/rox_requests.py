@@ -17,6 +17,7 @@ import requests
 from user_settings import ROX_DIR, ROX_URL
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
 # Connection details for ROXconnector.
 # ====================================
@@ -128,18 +129,23 @@ def shutdown_services(service_json_list: list) -> list:
 
 
 def get_running_services():
-    """get all registered services (as strings)"""
+    """get a list of all registered services (as strings)"""
     try:
         r = requests.get('http://{}/services'.format(rox_connector_url))
     except requests.exceptions.ConnectionError as e:
         logging.error("ERROR: no connection to server - {}".format(e))
-        return ""
+        return []
+    except Exception as e:
+        logging.error("ERROR: {}".format(e))
 
     if r.status_code == 200:
-        return r.text
+        #logging.info('currently running services: ' + r.text + '\n')
+        services =  list(r.json().keys())
+        logging.info('currently running services: ' + str(services))
+        return services
     else:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
-        return ""
+        return []
 
 
 # TODO
