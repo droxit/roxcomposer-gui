@@ -43,39 +43,40 @@ def get_service_names():
             available_services.append(f.name[:-5])
     return available_services
 
-# convert service name to corresponding JSON data
-def get_service_json(service_name):
-    try:
-        service_name = service_name + ".json"
-        service_file = open(os.path.join(services_dir, service_name))
-        service_json = json.load(service_file)
-    except Exception as e:
-        return 'ERROR unable to load service {} - {}'.format(service_name, e)
-    finally:
-        service_file.close()
-    return service_json
 
-
-def get_service_jsons(service_names: list) -> list:
+def get_service_json(service_name: str) -> dict:
     """
-    Convert service names to corresponding JSON data.
-    :param service_name: List of service names.
-    :return: Corresponding list of JSON data which may be empty when no JSON strings could be received.
+    Convert service name to corresponding JSON dictionary.
+    :param service_name: Service name as string.
+    :return: Corresponding JSON dictionary which may be None in case of an error.
+    """
+    json_data = None
+    name_with_ext = service_name + ".json"
+    service_file = None
+    try:
+        service_file = open(os.path.join(services_dir, name_with_ext))
+        json_data = json.load(service_file)
+    except OSError:
+        logging.error("Could not open JSON file for service {}.".format(service_name))
+    except json.JSONDecodeError:
+        logging.error("JSON data for service {} is broken.".format(service_name))
+    finally:
+        if service_file is not None:
+            service_file.close()
+    return json_data
+
+
+def get_service_jsons(service_name_list: list) -> list:
+    """
+    Convert service name list to corresponding list of JSON dictionaries.
+    :param service_name_list: List of service names.
+    :return: Corresponding list of JSON dictionaries which may be empty in case of an error.
     """
     service_jsons = []
-    for name in service_names:
-        name_with_ext = name + ".json"
-        try:
-            service_file = open(os.path.join(services_dir, name_with_ext))
-            json_data = json.load(service_file)
+    for name in service_name_list:
+        json_data = get_service_json(name)
+        if json_data is not None:
             service_jsons.append(json_data)
-        except OSError:
-            logging.error("Could not open JSON file for service {}.".format(name))
-        except json.JSONDecodeError:
-            logging.error("JSON data for service {} is broken.".format(name))
-
-        finally:
-            service_file.close()
     return service_jsons
 
 
@@ -84,27 +85,47 @@ def post_to_pipeline(*args):
     pass
 
 
-def start_service(*args: str) -> bool:
+def start_service(service_json: dict) -> bool:
     """
-    Start services defined by given JSON strings.
-    :param args: JSON strings.
+    Start service defined by given JSON dictionary.
+    :param service_json: JSON dictionary defining service.
     :return: True if service could be started and False otherwise.
     """
-    if len(args) < 1:
+    if not service_json:
+        # JSON data is empty and therefore invalid.
         return False
 
     header = {"Content-Type": "application/json"}
     url = "http://{}/start_service".format(roxconnector)
 
-    for service_json in args:
-        try:
-            r = requests.post(url, json=service_json, headers=header)
-        except requests.exceptions.ConnectionError as e:
-            logging.error("No connection to server.\n{}".format(e))
-            return False
-        if r.status_code != 200:
-            logging.error("Service could not be started: Error code {}.\n{}".format(r.status_code, r.text))
-    return True
+    try:
+        r = requests.post(url, json=service_json, headers=header)
+    except requests.exceptions.ConnectionError as e:
+        logging.error("No connection to server.\n{}".format(e))
+        return False
+    if r.status_code != 200:
+        logging.error("Service could not be started: Error code {}.\n{}".format(r.status_code, r.text))
+        return False
+    else:
+        return True
+
+
+def start_services(service_json_list: list) -> bool:
+    """
+    Start all services defined by given list of JSON dictionaries.
+    :param service_json_list: List of JSON dictionaries defining multiple services.
+    :return: True if all services could be started and False otherwise.
+    """
+    if len(service_json_list) < 1:
+        # Service list is empty and therefore invalid.
+        return False
+
+    all_started = True
+    for service_json in service_json_list:
+        result = start_service(service_json)
+        if all_started and not result:
+            all_started = False
+    return all_started
 
 
 def shutdown_service(*args):
