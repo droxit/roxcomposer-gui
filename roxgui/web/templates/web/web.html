@@ -12,9 +12,9 @@
 {% block content %}
 <h1>Welcome!</h1>
 {% if service_names %}
-<form action="start_service/" method="post">
+<form action="start_service" method="post">
     {% csrf_token %}
-    <select name="services">
+    <select name="service_names" multiple>
         {% for name in service_names %}
         <option value="{{ name }}">{{ name }}</option>
         {% endfor %}

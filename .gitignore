@@ -8,7 +8,7 @@
 **/migrations/**
 
 # Static root folder.
-tvarchive/static_root/**
+roxgui/static_root/**
 
 # IDE
 **/.idea/**

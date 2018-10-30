@@ -1,6 +1,7 @@
 """Configuration of web views."""
 
 import rox_requests
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from .models import Service
