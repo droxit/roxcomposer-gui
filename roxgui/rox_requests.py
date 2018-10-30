@@ -6,6 +6,8 @@
 #
 # Copyright (c) 2018 droxIT GmbH
 #
+# Communication with the ROXconnector
+#
 
 import json
 import logging
@@ -22,9 +24,11 @@ roxconnector = ROX_URL
 rox_dir = ROX_DIR
 
 
-# get a list of all available services in the services directory
-# key: unique service name, value: its JSON data
 def get_service_list():
+    """
+    get a list of all available services in the services directory
+    key: unique service name, value: its JSON data
+    """
     available_services = {}
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
@@ -35,16 +39,19 @@ def get_service_list():
     return available_services
 
 
-# get the names of available services
 def get_service_names():
+    """get the names of available services in a list (names are unique)"""
+
     available_services = []
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
             available_services.append(f.name[:-5])
     return available_services
 
-# convert service name to corresponding JSON data
+
 def get_service_json(service_name):
+    """reads the json file of the specified service (out of the SERCIVE DIR)"""
+
     try:
         service_name = service_name + ".json"
         service_file = open(os.path.join(services_dir, service_name))
@@ -138,8 +145,9 @@ def get_services():
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
-# create a new pipeline
 def set_pipeline(pipename, services):
+    """create a new pipeline with the specified services, where the order is important"""
+
     if len(args) < 2:
         return 'ERROR: a pipeline name and at least one service must be specified'
     pipename = args[0]
