@@ -11,9 +11,9 @@
 
 import json
 import logging
-import databaseIO
 
 import requests
+
 from user_settings import ROX_DIR, ROX_URL
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 # get path to composer folder, url
 roxconnector = ROX_URL
 rox_dir = ROX_DIR
-
 
 
 # post data to pipeline
