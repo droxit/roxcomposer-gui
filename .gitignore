@@ -15,3 +15,4 @@ roxgui/static_root/**
 
 # Local settings.
 roxgui/user_settings.py
+/roxgui/user_settings.py
