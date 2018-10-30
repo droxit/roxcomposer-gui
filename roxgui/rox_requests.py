@@ -105,7 +105,6 @@ def get_running_services():
         logging.error("ERROR: {}".format(e))
 
     if r.status_code == 200:
-        #logging.info('currently running services: ' + r.text + '\n')
         services =  list(r.json().keys())
         logging.info('currently running services: ' + str(services))
         return services
@@ -118,7 +117,8 @@ def set_pipeline(pipename : str, services : list) -> bool:
     """
     create a new pipeline with the specified services, where the order is important
     :param pipename: Name of the Pipeline
-    :return: True if pipeline was sent
+    :param services: a list of service names (string) that should be added to the pipeline
+    :returns: True if pipeline was sent
     """
 
     d = {'name': pipename, 'services': services}
@@ -136,11 +136,21 @@ def set_pipeline(pipename : str, services : list) -> bool:
         return False
 
 
-# TODO
-# get registered pipelines
-def get_pipelines(*args):
-    r = requests.get('http://{}/pipelines'.format(roxconnector))
+def get_pipelines():
+    """
+    get the names of all registered pipelines
+    :returns: list of pipeline names
+    """
+    try:
+        r = requests.get('http://{}/pipelines'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        logging.error("ERROR: no connection to server - {}".format(e))
+        return []
+
     if r.status_code == 200:
-        return r.text
+        pipelines = list(r.json().keys())
+        logging.info("Currently registered pipelines: "+ str(pipelines))
+        return pipelines
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+        return []

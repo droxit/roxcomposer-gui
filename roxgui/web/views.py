@@ -18,6 +18,7 @@ def main(request):
     """Main page."""
     running_services = rox_requests.get_running_services()
     rox_requests.set_pipeline("test", running_services)
+    rox_requests.get_pipelines()
 
     databaseIO.update_service_db()
     service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
