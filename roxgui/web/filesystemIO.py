@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# serviceIO.py
+# filesystemIO.py
 #
 # devs@droxit.de - droxIT GmbH
 #
@@ -43,7 +43,7 @@ def get_service_names():
     return available_services
 
 
-def get_service_json(service_name: str) -> dict:
+def get_service_json_from_filesystem(service_name: str) -> dict:
     """
     Convert service name to corresponding JSON dictionary.
     :param service_name: Service name as string.
@@ -65,7 +65,7 @@ def get_service_json(service_name: str) -> dict:
     return json_data
 
 
-def get_service_jsons(service_name_list: list) -> list:
+def get_service_jsons_from_filesystem(service_name_list: list) -> list:
     """
     Convert service name list to corresponding list of JSON dictionaries.
     :param service_name_list: List of service names.
@@ -73,7 +73,7 @@ def get_service_jsons(service_name_list: list) -> list:
     """
     service_jsons = []
     for name in service_name_list:
-        json_data = get_service_json(name)
+        json_data = get_service_json_from_filesystem(name)
         if json_data is not None:
             service_jsons.append(json_data)
     return service_jsons

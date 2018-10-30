@@ -4,12 +4,11 @@ import json
 import logging
 
 import rox_requests
-import databaseIO
+from web import databaseIO
+from web import filesystemIO
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-
-from .models import Service
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 def main(request):
     """Main page."""
     databaseIO.update_service_db()
-    service_name_list = rox_requests.get_service_list()
+    service_name_list = filesystemIO.get_service_list() #TODO: pull from DB
     context = {"service_names": service_name_list}
     return render(request, "web/web.html", context)
 
@@ -30,7 +29,7 @@ def start_service(request):
     # Get list of specified service names.
     service_name_list = request.POST.getlist("service_names")
     # Get list of corresponding JSON dictionaries.
-    service_json_list = rox_requests.get_service_jsons(service_name_list)
+    service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list) #TODO: pull from DB
     #service_json = json.load(Service.objects.get(name=service_name).service.service_json)
     # Start services.
     result = rox_requests.start_services(service_json_list)
