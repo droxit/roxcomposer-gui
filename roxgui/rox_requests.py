@@ -16,6 +16,7 @@ import requests
 
 from user_settings import ROX_DIR, ROX_URL
 
+#Log settings
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
@@ -39,7 +40,10 @@ MSG_CONNECTION_ERROR = "No connection to server."
 
 
 # post data to pipeline
-def post_to_pipeline(*args):
+def post_to_pipeline(*args): #TODO
+    pass
+
+def get_msg_history(): #TODO
     pass
 
 
@@ -128,8 +132,12 @@ def shutdown_services(service_json_list: list) -> list:
     return stopped_services_json_list
 
 
-def get_running_services():
-    """get a list of all registered services (as strings)"""
+def get_running_services() -> list:
+    """
+    get a list of all registered services (as strings)
+    :returns: list of running services
+    """
+
     try:
         r = requests.get('http://{}/services'.format(rox_connector_url))
     except requests.exceptions.ConnectionError as e:
@@ -139,7 +147,6 @@ def get_running_services():
         logging.error("ERROR: {}".format(e))
 
     if r.status_code == 200:
-        #logging.info('currently running services: ' + r.text + '\n')
         services =  list(r.json().keys())
         logging.info('currently running services: ' + str(services))
         return services
@@ -148,31 +155,73 @@ def get_running_services():
         return []
 
 
-# TODO
-def set_pipeline(pipename, services):
-    """create a new pipeline with the specified services, where the order is important"""
+def set_pipeline(pipename : str, services : list) -> bool:
+    """
+    create a new pipeline with the specified services, where the order is important
+    :param pipename: Name of the Pipeline
+    :param services: a list of service names (string) that should be added to the pipeline
+    :returns: True if pipeline was sent
+    """
 
-    if len(args) < 2:
-        return 'ERROR: a pipeline name and at least one service must be specified'
-    pipename = args[0]
-    services = args[1:]
     d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
     try:
         r = requests.post('http://{}/set_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=headers)
     except requests.exceptions.ConnectionError as e:
-        return "ERROR: no connection to server - {}".format(e)
+        logging.error("ERROR: no connection to server - {}".format(e))
+        return False
     if r.status_code == 200:
-        return r.text
+        logging.info("Pipeline sent, Response: " + r.text)
+        return True
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+        return False
 
+def remove_pipeline(): #TODO
+    pass
 
-# TODO
-# get registered pipelines
-def get_pipelines(*args):
-    r = requests.get('http://{}/pipelines'.format(rox_connector_url))
+def get_pipelines() -> list:
+    """
+    get the names of all registered pipelines
+    :returns: list of pipeline names
+    """
+    try:
+        r = requests.get('http://{}/pipelines'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        logging.error("ERROR: no connection to server - {}".format(e))
+        return []
+
     if r.status_code == 200:
-        return r.text
+        pipelines = list(r.json().keys())
+        logging.info("Currently registered pipelines: "+ str(pipelines))
+        return pipelines
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+        return []
+
+def dump_everything(): #TODO
+    pass
+
+def watch_services(): #TODO
+    pass
+
+def unwatch_services(): #TODO
+    pass
+
+def watch_pipelines(): #TODO
+    pass
+
+def unwatch_pipelines(): #TODO
+    pass
+
+def watch_all(): #TODO
+    pass
+
+def reset_watchers(): #TODO
+    pass
+
+def get_service_logs(): #TODO
+    pass
+
+def load_and_start_pipeline(): #TODO
+    pass
