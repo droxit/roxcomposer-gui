@@ -30,7 +30,7 @@ def update_service_db():
             logging.info("service saved: " + str(service))
 
 
-def get_service_jsonf(service_name):
+def get_service_json(service_name):
     """get a service json by name out of db"""
     try:
         s = Service.objects.get(name=service_name).service_json
@@ -39,3 +39,16 @@ def get_service_jsonf(service_name):
         logging.error("Service name is not unique: " + service_name)
     except Service.DoesNotExist:
         logging.error("Service does not exist: " + service_name)
+
+def get_service_jsons(service_names : list) -> list:
+    """
+    Get the jsons of specified services out of the database
+    :param service_names: list of service names (strings)
+    :return: list of jsons for each service
+    """
+    service_jsons = []
+    for service in service_names:
+        service_json = get_service_json(service)
+        service_jsons.append(service_json)
+
+    return service_jsons

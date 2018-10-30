@@ -21,7 +21,7 @@ def main(request):
     rox_requests.get_pipelines()
 
     databaseIO.update_service_db()
-    service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
+    service_name_list = filesystemIO.get_service_list()
     context = {"service_names": service_name_list}
     return render(request, "web/web.html", context)
 
@@ -32,7 +32,7 @@ def start_service(request):
     # Get list of specified service names.
     service_name_list = request.POST.getlist("service_names")
     # Get list of corresponding JSON dictionaries.
-    service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
+    service_json_list = databaseIO.get_service_jsons(service_name_list)
     # Start services and get list of JSON dictionaries
     # corresponding to all services which could be started.
     started_services_json_list = rox_requests.start_services(service_json_list)
