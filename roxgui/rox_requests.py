@@ -16,6 +16,7 @@ import requests
 
 from user_settings import ROX_DIR, ROX_URL
 
+#Log settings
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
@@ -25,7 +26,10 @@ rox_dir = ROX_DIR
 
 
 # post data to pipeline
-def post_to_pipeline(*args):
+def post_to_pipeline(*args): #TODO
+    pass
+
+def get_msg_history(): #TODO
     pass
 
 
@@ -94,8 +98,12 @@ def shutdown_services(*args):
     pass
 
 
-def get_running_services():
-    """get a list of all registered services (as strings)"""
+def get_running_services() -> list:
+    """
+    get a list of all registered services (as strings)
+    :returns: list of running services
+    """
+
     try:
         r = requests.get('http://{}/services'.format(roxconnector))
     except requests.exceptions.ConnectionError as e:
@@ -135,8 +143,10 @@ def set_pipeline(pipename : str, services : list) -> bool:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return False
 
+def remove_pipeline(): #TODO
+    pass
 
-def get_pipelines():
+def get_pipelines() -> list:
     """
     get the names of all registered pipelines
     :returns: list of pipeline names
@@ -154,3 +164,30 @@ def get_pipelines():
     else:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return []
+
+def dump_everything(): #TODO
+    pass
+
+def watch_services(): #TODO
+    pass
+
+def unwatch_services(): #TODO
+    pass
+
+def watch_pipelines(): #TODO
+    pass
+
+def unwatch_pipelines(): #TODO
+    pass
+
+def watch_all(): #TODO
+    pass
+
+def reset_watchers(): #TODO
+    pass
+
+def get_service_logs(): #TODO
+    pass
+
+def load_and_start_pipeline(): #TODO
+    pass
