@@ -12,7 +12,7 @@
 
 import json
 import logging
-import rox_requests
+import serviceIO
 from models import Service
 
 
@@ -24,7 +24,7 @@ def update_service_db():
         try:
             Service.objects.get(name=service)
         except Service.DoesNotExist:
-            service_json = json.dumps(rox_requests.get_service_json(service))
+            service_json = json.dumps(serviceIO.get_service_json(service))
             s = Service(name=service, service_json=service_json)
             s.save()
             logging.info("service saved: "+ str(service))
