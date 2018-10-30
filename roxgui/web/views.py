@@ -19,9 +19,11 @@ def update_service_db():
     """checks the SERVICE_DIR for new services and adds them to the DB"""
     services = rox_requests.get_service_list()
     for service in services:
-        if Service.objects.filter(name = service).count() == 0:
+        try:
+            Service.objects.get(name = service)
+        except Service.DoesNotExist:
             service_json = json.dumps(rox_requests.get_service_json(service))
-            s = Service(name = service, service_json = service_json)
+            s = Service(name=service, service_json=service_json)
             s.save()
 
 
@@ -31,5 +33,5 @@ def update_service_db():
 def start_service(request):
     """Start services with post request."""
     service_name = request.POST["services"]
-    service_json = rox_requests.get_service_json(service_name)
+    service_json = json.load(Service.objects.get(name = service_name).service.service_json)
     rox_requests.start_service(service_json)
