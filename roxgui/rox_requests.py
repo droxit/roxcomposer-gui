@@ -37,7 +37,7 @@ JSON_HEADER = {"Content-Type": "application/json"}
 MSG_CONNECTION_ERROR = "No connection to server."
 
 
-def post_to_pipeline(pipeline, message):  # TODO
+def post_to_pipeline(pipeline, message):
     """
     Post a message to the pipeline
     :param pipeline: the pipeline name that the message is to be sent to
@@ -50,12 +50,14 @@ def post_to_pipeline(pipeline, message):  # TODO
                           headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
         logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False
+        return False, "{}\n{}".format(MSG_CONNECTION_ERROR, err)
 
     if r.status_code == 200:
-        return True
+        logging.info("Posted message: {}".format(message))
+        return True,"Message posted"
     else:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+        return False, 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
 def get_msg_history():  # TODO
@@ -78,12 +80,12 @@ def start_service(service_json: dict) -> bool:
         r = requests.post(url, json=service_json, headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
         logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False
+        return False, "{}\n{}".format(MSG_CONNECTION_ERROR, err)
     if r.status_code != 200:
         logging.error("Service could not be started. Error code {}.\n{}".format(r.status_code, r.text))
-        return False
+        return False, "Service could not be started. Error code {}.\n{}".format(r.status_code, r.text)
     else:
-        return True
+        return True, ""
 
 
 def start_services(service_json_list: list) -> list:
@@ -93,15 +95,17 @@ def start_services(service_json_list: list) -> list:
     :return: List of JSON dictionaries representing all services which could not be started.
     """
     error_json_list = []
+    delivered = True
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
         return error_json_list
 
     for service_json in service_json_list:
-        result = start_service(service_json)
-        if not result:
-            error_json_list.append(service_json)
-    return error_json_list
+        delivered, result = start_service(service_json)
+        if not delivered:
+            error_json_list.append("Service could not be started: {} \n Error: {}".format(service_json, result))
+            delivered = False
+    return delivered, error_json_list
 
 
 def shutdown_service(service_name: dict) -> bool:
@@ -172,7 +176,6 @@ def get_running_services() -> list:
         return []
 
 
-#TODO: check if services are running
 def set_pipeline(pipename: str, services: list) -> bool:
     """
     create a new pipeline with the specified services, where the order is important

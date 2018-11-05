@@ -15,4 +15,5 @@ urlpatterns = [
     path('', views.main, name="web_main"),
     path("start_service", views.start_service, name="web_start_service"),
     path("stop_service", views.stop_service, name="web_stop_service"),
+    path("post_to_pipeline", views.post_to_pipeline, name="web_post_to_pipeline")
 ]

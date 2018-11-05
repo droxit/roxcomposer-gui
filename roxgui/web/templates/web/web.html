@@ -15,16 +15,8 @@
     <h1>Welcome!</h1>
 </div>
 
-{% if messages %}
-<div class="row">
-    <div class="alert alert-warning">
-        <strong>Error concerning:</strong>
-        {% for message in messages %}
-        {{ message }}
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
+
+
 
 <div class="row">
     {% if available_service_names %}
@@ -62,23 +54,29 @@
         {% for data in pipeline_data %}
         <li class="list-group-item">
             <div class="row">
-                <div class="col-lg-2">
-                    <p>{{ data.0 }}</p>
-                </div>
-                <div class="col-lg-6">
-                    <select multiple>
-                        {% for name in data.1 %}
-                        <option value="{{ name }}">{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-lg-2">
-                    {% if data.2 %}
-                    <p>Active</p>
-                    {% else %}
-                    <p>Inactive</p>
-                    {% endif %}
-                </div>
+                <form action="post_to_pipeline" method="post">
+                    <div class="col-lg-2">
+                        <p>{{ data.0 }}</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <select multiple>
+                            {% for name in data.1 %}
+                            <option value="{{ name }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        {% if data.2 %}
+                        <p>Active</p>
+                        {% else %}
+                        <p>Inactive</p>
+                        {% endif %}
+                    </div>
+                    {% csrf_token %}
+                    <input type="hidden" name="pipeline_name" value={{data.0}}>
+                    <input type="text" name="pipe_message">
+                    <input type="submit" value="Send">
+                </form>
             </div>
         </li>
         {% endfor %}

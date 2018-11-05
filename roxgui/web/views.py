@@ -59,8 +59,8 @@ def start_service(request):
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
-    error_json_list = rox_requests.start_services(service_json_list)
-    if not error_json_list:
+    delivered, msg_list = rox_requests.start_services(service_json_list)
+    if delivered:
         # All services could be started.
 
         return redirect(views.main)
@@ -68,13 +68,9 @@ def start_service(request):
         # At least one service could not be started.
 
         # Convert JSON dictionaries to corresponding service name.
-        error_name_list = []
-        for error_json in error_json_list:
-            error_name_list.append(error_json["params"]["name"])
-        # Redirect to main page specifying all
-        # service names which could not be started.
-        error_name_string = ", ".join(error_name_list)
-        messages.add_message(request, messages.WARNING, error_name_string)
+        for error_service in msg_list:
+            messages.add_message(request, messages.WARNING, error_service)
+
         return redirect(views.main)
 
 
@@ -99,4 +95,23 @@ def stop_service(request):
         # service names which could not be stopped.
         error_name_string = ", ".join(error_name_list)
         messages.add_message(request, messages.WARNING, error_name_string)
+        return redirect(views.main)
+
+@require_http_methods(["POST"])
+def post_to_pipeline(request):
+    """Check if pipeline is active then send a message to specified pipeline"""
+    # Get the pipeline name.
+    pipeline_name = request.POST["pipeline_name"]
+    # Get the message
+    message = request.POST["pipe_message"]
+    delivered, msg = rox_requests.post_to_pipeline(pipeline_name, message)
+    if delivered:
+        #message was sent
+        logging.error("HERE!")
+        messages.success(request, "Message sent")
+        #messages.add_message(request, messages.SUCCESS, msg)
+        return redirect(views.main)
+    else:
+        #error while sending message
+        messages.add_message(request, messages.WARNING, msg)
         return redirect(views.main)
