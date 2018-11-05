@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 import databaseIO
 import filesystemIO
 import rox_requests
+import json
 from web import views
 
 logger = logging.getLogger(__name__)
@@ -26,9 +27,18 @@ def main(request):
     available_service_name_list = filesystemIO.get_service_list()
     # Get names of all running services.
     running_service_name_list = rox_requests.get_running_services()
+    #Get names of all available pipelines
+    pipelines = rox_requests.get_pipelines()
+    pipeline_names = list(pipelines.keys())
+    logging.error(pipelines)
+    #logging.error([pipe["active"] for pipe in pipelines])
+    #pipeline_active = [bool(pipe["active"]) for pipe in pipelines]
+
     # Send both lists to view.
     context = {"available_service_names": available_service_name_list,
-               "running_service_names": running_service_name_list}
+               "running_service_names": running_service_name_list,
+               "pipeline_names": pipeline_names,
+               "pipelines": pipelines}
     return render(request, "web/web.html", context)
 
 
@@ -82,3 +92,5 @@ def stop_service(request):
         error_name_string = ", ".join(error_name_list)
         messages.add_message(request, messages.WARNING, error_name_string)
         return redirect(views.main)
+
+

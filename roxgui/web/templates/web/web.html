@@ -3,6 +3,7 @@
 {% extends "base/base.html" %}
 
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
 <title>ROXcomposer</title>
@@ -19,28 +20,50 @@
     {% endfor %}
 </div>
 {% endif %}
-{% if available_service_names %}
-<form action="start_service" method="post">
-    {% csrf_token %}
-    <select name="available_service_names" multiple>
-        {% for name in available_service_names %}
-        <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Start">
-</form>
-<form action="stop_service" method="post">
-    {% csrf_token %}
-    <select name="running_service_names" multiple>
-        {% for name in running_service_names %}
-        <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Stop">
-</form>
-{% else %}
-<p>No services available.</p>
-{% endif %}
-
+<div class="pipes_and_services">
+    {% if available_service_names %}
+    <form action="start_service" method="post">
+        {% csrf_token %}
+        <select name="available_service_names" multiple>
+            {% for name in available_service_names %}
+            <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Start">
+    </form>
+    <form action="stop_service" method="post">
+        {% csrf_token %}
+        <select name="running_service_names" multiple>
+            {% for name in running_service_names %}
+            <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Stop">
+    </form>
+    {% else %}
+    <p>No services available.</p>
+    {% endif %}
+</div>
+<div class="pipes_and_services">
+    {% if pipeline_names %}
+        <ul>
+            {% for pipe in pipeline_names %}
+                {% if True %}
+                    <li>{{pipe}}
+                        {% with p=pipelines|get_item:pipe%}
+                        {{p|get_type}}
+                        {{p}}
+                        {{p|get_item:p.active}}
+                        {% endwith%}
+                    </li>
+                {% else %}
+                    <li>{{pipe}} Inactive</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pipelines set</p>
+    {% endif %}
+</div>
 <script src="{% static 'web/js/web.js'%}"></script>
 {% endblock content %}

@@ -204,7 +204,7 @@ def get_pipelines():
     :returns: list of pipeline names
     """
     try:
-        r = requests.get('http://{}/pipelines'.format(roxconnector))
+        r = requests.get('http://{}/pipelines'.format(rox_connector_url))
     except requests.exceptions.ConnectionError as e:
         logging.error("ERROR: no connection to server - {}".format(e))
         return r.json()
@@ -253,7 +253,7 @@ def get_service_logs():  # TODO
 def load_and_start_pipeline(pipe_path): #TODO
     d = {'pipe_path': pipe_path}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
         return r.text
     else:
