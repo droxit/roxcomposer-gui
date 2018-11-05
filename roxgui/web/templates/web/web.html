@@ -10,49 +10,82 @@
 {% endblock title %}
 
 {% block content %}
-<h1>Welcome!</h1>
+<div class="row">
+    <h1>Welcome!</h1>
+</div>
 
 {% if messages %}
-<div class="alert alert-warning">
-    <strong>Error concerning:</strong>
-    {% for message in messages %}
-    {{ message }}
-    {% endfor %}
+<div class="row">
+    <div class="alert alert-warning">
+        <strong>Error concerning:</strong>
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
 </div>
 {% endif %}
 
-{% if available_service_names %}
-<form action="start_service" method="post">
-    {% csrf_token %}
-    <select name="available_service_names" multiple>
-        {% for name in available_service_names %}
-        <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Start">
-</form>
-<form action="stop_service" method="post">
-    {% csrf_token %}
-    <select name="running_service_names" multiple>
-        {% for name in running_service_names %}
-        <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Stop">
-</form>
-{% else %}
-<p>No services available.</p>
-{% endif %}
+<div class="row">
+    {% if available_service_names %}
+    <div class="col-lg-1">
+        <form action="start_service" method="post">
+            {% csrf_token %}
+            <select name="available_service_names" multiple>
+                {% for name in available_service_names %}
+                <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Start">
+        </form>
+    </div>
+    <div class="col-lg-1">
+        <form action="stop_service" method="post">
+            {% csrf_token %}
+            <select name="running_service_names" multiple>
+                {% for name in running_service_names %}
+                <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Stop">
+        </form>
+    </div>
+    {% else %}
+    <p>No services available.</p>
+    {% endif %}
+</div>
 
-{% if pipeline_data %}
-<ul>
-    {% for data in pipeline_data %}
-    <li>{{ data.0 }}</li>
-    <li>{{ data.1 }}</li>
-    <li>{{ data.2 }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+
+<div class="row">
+    {% if pipeline_data %}
+    <ul class="list-group">
+        {% for data in pipeline_data %}
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ data.0 }}
+                </div>
+                <div class="col-lg-2">
+                    <select multiple>
+                        {% for name in data.1 %}
+                        <option value="{{ name }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    {% if data.2 %}
+                    <p>Active</p>
+                    {% else %}
+                    <p>Inactive</p>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No pipelines available.</p>
+    {% endif %}
+</div>
 
 <script src="{% static 'web/js/web.js'%}"></script>
 {% endblock content %}
