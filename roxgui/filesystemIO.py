@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
+# encoding: utf-8
 #
-# filesystemIO.py
+# Communication with local filesystem to retrieve stored services.
 #
-# devs@droxit.de - droxIT GmbH
+# devs@droxit.de
 #
 # Copyright (c) 2018 droxIT GmbH
-#
-# Communication with the ROXconnector
 #
 
 import json

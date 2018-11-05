@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-#
-# rox_requests.py
-#
-# devs@droxit.de - droxIT GmbH
-#
-# Copyright (c) 2018 droxIT GmbH
+# encoding: utf-8
 #
 # Communication with ROXconnector.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
 #
 
 import json
@@ -16,7 +14,7 @@ import requests
 
 from user_settings import ROX_DIR, ROX_URL
 
-#Log settings
+# Log settings.
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
@@ -39,7 +37,7 @@ JSON_HEADER = {"Content-Type": "application/json"}
 MSG_CONNECTION_ERROR = "No connection to server."
 
 
-def post_to_pipeline(pipeline, message): #TODO
+def post_to_pipeline(pipeline, message):  # TODO
     """
     Post a message to the pipeline
     :param pipeline: the pipeline name that the message is to be sent to
@@ -48,7 +46,8 @@ def post_to_pipeline(pipeline, message): #TODO
     """
     d = {'name': pipeline, 'data': message}
     try:
-        r = requests.post('http://{}/post_to_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
+        r = requests.post('http://{}/post_to_pipeline'.format(rox_connector_url), data=json.dumps(d),
+                          headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
         logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
         return False
@@ -59,7 +58,7 @@ def post_to_pipeline(pipeline, message): #TODO
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
 
 
-def get_msg_history(): #TODO
+def get_msg_history():  # TODO
     pass
 
 
@@ -154,8 +153,10 @@ def get_running_services() -> list:
     :returns: list of running services
     """
 
+    url = "http://{}/services".format(rox_connector_url)
+
     try:
-        r = requests.get('http://{}/services'.format(rox_connector_url))
+        r = requests.get(url)
     except requests.exceptions.ConnectionError as e:
         logging.error("ERROR: no connection to server - {}".format(e))
         return []
@@ -171,7 +172,6 @@ def get_running_services() -> list:
         return []
 
 
-#TODO: check if services are running
 def set_pipeline(pipename: str, services: list) -> bool:
     """
     create a new pipeline with the specified services, where the order is important
@@ -187,6 +187,7 @@ def set_pipeline(pipename: str, services: list) -> bool:
     except requests.exceptions.ConnectionError as e:
         logging.error("ERROR: no connection to server - {}".format(e))
         return False
+
     if r.status_code == 200:
         logging.info("Pipeline sent, Response: " + r.text)
         return True
@@ -198,23 +199,25 @@ def set_pipeline(pipename: str, services: list) -> bool:
 def remove_pipeline():  # TODO
     pass
 
-def get_pipelines():
-    """
-    get the names of all registered pipelines
-    :returns: list of pipeline names
-    """
-    try:
-        r = requests.get('http://{}/pipelines'.format(roxconnector))
-    except requests.exceptions.ConnectionError as e:
-        logging.error("ERROR: no connection to server - {}".format(e))
-        return r.json()
 
-    if r.status_code == 200:
-        pipelines = list(r.json().keys())
-        logging.info("Currently registered pipelines: " + str(pipelines))
-        return r.json()
+def get_pipelines() -> dict:
+    """
+    Get metadata of each available pipeline, i.e. pipeline name, involved services and current status.
+    :returns: Pipeline metadata as JSON dictionary. May be empty in case of an error.
+    """
+
+    url = "http://{}/pipelines".format(rox_connector_url)
+
+    try:
+        r = requests.get(url)
+    except requests.exceptions.ConnectionError as err:
+        logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
+        return {}
+
+    if r.status_code != 200:
+        logging.error("Pipelines could not be received. Error code {}.\n{}".format(r.status_code, r.text))
+        return {}
     else:
-        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return r.json()
 
 
@@ -250,7 +253,7 @@ def get_service_logs():  # TODO
     pass
 
 
-def load_and_start_pipeline(pipe_path): #TODO
+def load_and_start_pipeline(pipe_path):  # TODO
     d = {'pipe_path': pipe_path}
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)

@@ -1,4 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
+#
+# encoding: utf-8
+#
+# Define URL patterns.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
 import os
 import sys
 

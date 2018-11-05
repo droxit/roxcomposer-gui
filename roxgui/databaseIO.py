@@ -1,13 +1,10 @@
-#!/usr/bin/env python3
+# encoding: utf-8
 #
-# databaseIO.py
+# Communication with database to store and retrieve services and pipelines.
 #
-# devs@droxit.de - droxIT GmbH
+# devs@droxit.de
 #
 # Copyright (c) 2018 droxIT GmbH
-#
-# Communication with database, such as storing running and
-# available services, and registered or saved pipelines.
 #
 
 import json
@@ -40,7 +37,8 @@ def get_service_json(service_name):
     except Service.DoesNotExist:
         logging.error("Service does not exist: " + service_name)
 
-def get_service_jsons(service_names : list) -> list:
+
+def get_service_jsons(service_names: list) -> list:
     """
     Get the jsons of specified services out of the database
     :param service_names: list of service names (strings)

@@ -11,6 +11,7 @@
 
 {% block content %}
 <h1>Welcome!</h1>
+
 {% if messages %}
 <div class="alert alert-warning">
     <strong>Error concerning:</strong>
@@ -19,6 +20,7 @@
     {% endfor %}
 </div>
 {% endif %}
+
 {% if available_service_names %}
 <form action="start_service" method="post">
     {% csrf_token %}
@@ -40,6 +42,16 @@
 </form>
 {% else %}
 <p>No services available.</p>
+{% endif %}
+
+{% if pipeline_data %}
+<ul>
+    {% for data in pipeline_data %}
+    <li>{{ data.0 }}</li>
+    <li>{{ data.1 }}</li>
+    <li>{{ data.2 }}</li>
+    {% endfor %}
+</ul>
 {% endif %}
 
 <script src="{% static 'web/js/web.js'%}"></script>

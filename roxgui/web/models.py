@@ -1,15 +1,13 @@
-#!/usr/bin/env python3
+# encoding: utf-8
 #
-# rox_requests.py
+# Define database models.
 #
-# devs@droxit.de - droxIT GmbH
+# devs@droxit.de
 #
 # Copyright (c) 2018 droxIT GmbH
 #
 
 from django.db import models
-
-
 
 
 class Service(models.Model):

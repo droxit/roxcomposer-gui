@@ -1,4 +1,11 @@
-"""Configuration of web views."""
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
 
 import logging
 
@@ -26,9 +33,17 @@ def main(request):
     available_service_name_list = filesystemIO.get_service_list()
     # Get names of all running services.
     running_service_name_list = rox_requests.get_running_services()
-    # Send both lists to view.
+    # Get metadata of all available pipes.
+    available_pipelines_json = rox_requests.get_pipelines()
+    # Convert to list of tuples.
+    pipeline_data = []
+    for key, value in available_pipelines_json.items():
+        data = (key, value["services"], value["active"])
+        pipeline_data.append(data)
+    # Send all data to view.
     context = {"available_service_names": available_service_name_list,
-               "running_service_names": running_service_name_list}
+               "running_service_names": running_service_name_list,
+               "pipeline_data": pipeline_data}
     return render(request, "web/web.html", context)
 
 
