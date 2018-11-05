@@ -33,6 +33,9 @@ def main(request):
     available_service_name_list = filesystemIO.get_service_list()
     # Get names of all running services.
     running_service_name_list = rox_requests.get_running_services()
+    #only show services that aren't already active in the available services menu
+    available_service_name_list = list(set(available_service_name_list) - set(running_service_name_list))
+
     # Get metadata of all available pipes.
     available_pipelines_json = rox_requests.get_pipelines()
     # Convert to list of tuples.
