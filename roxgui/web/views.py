@@ -27,6 +27,10 @@ MSG_CONNECTION_ERROR = "No connection to server."
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
+    #Messaging Level
+    messages.set_level(request, messages.DEBUG)
+    #messages.set_level(request, messages.INFO)
+
     # Update database concerning available services.
     databaseIO.update_service_db()
     # Get names of all available services.
@@ -47,6 +51,8 @@ def main(request):
     context = {"available_service_names": available_service_name_list,
                "running_service_names": running_service_name_list,
                "pipeline_data": pipeline_data}
+
+    messages.set_level(request, messages.DEBUG)
     return render(request, "web/web.html", context)
 
 
@@ -69,7 +75,8 @@ def start_service(request):
 
         # Convert JSON dictionaries to corresponding service name.
         for error_service in msg_list:
-            messages.add_message(request, messages.WARNING, error_service)
+            messages.add_message(request, messages.DEBUG, error_service)
+            messages.add_message(request, messages.WARNING, "Could not start service.")
 
         return redirect(views.main)
 
@@ -107,11 +114,13 @@ def post_to_pipeline(request):
     delivered, msg = rox_requests.post_to_pipeline(pipeline_name, message)
     if delivered:
         #message was sent
-        messages.success(request, msg)
+        messages.success(request, "Message posted.")
+        messages.debug(request, msg)
         return redirect(views.main)
     else:
         #error while sending message
-        messages.add_message(request, messages.WARNING, msg)
+        messages.add_message(request, messages.DEBUG, msg)
+        messages.add_message(request, messages.WARNING, "Message could not be sent.")
         return redirect(views.main)
 
 @require_http_methods(["POST"])
@@ -120,10 +129,12 @@ def save_session(request):
     dumpfile = request.POST["dumpfile"]
     dumped, msg = rox_requests.dump_everything(dumpfile)
     if dumped:
-        messages.success(request, msg)
+        messages.success(request, "Session saved as {}.".format(dumpfile))
+        messages.debug(request, msg)
         return redirect(views.main)
     else:
-        messages.error(request, msg)
+        messages.error(request, "Session could not be saved.")
+        messages.debug(request, msg)
         return redirect(views.main)
 
 @require_http_methods(["POST"])
@@ -132,8 +143,9 @@ def load_session(request):
     dumpfile = request.POST["dumpfile"]
     loaded, msg = rox_requests.restore_session(dumpfile)
     if loaded:
-        messages.success(request, msg)
+        messages.debug(request, msg)
         return redirect(views.main)
     else:
-        messages.error(request, msg)
+        messages.error(request, "Session could not be restored.")
+        messages.debug(request, msg)
         return redirect(views.main)

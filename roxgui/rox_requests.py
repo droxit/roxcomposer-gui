@@ -56,13 +56,15 @@ def post_to_pipeline(pipeline, message):
     if r.status_code == 200:
         logging.info("Posted message: {}".format(message))
         msg_id = r.json()['message_id']
-        return True, "Message posted - ID: {} ".format(msg_id)
+        msg = "Message posted - ID: {} ".format(msg_id)
+        return True, msg
     else:
-        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
-        return False, 'ERROR: {} - {}'.format(r.status_code, r.text)
+        msg = 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error(msg)
+        return False, msg
 
 
-def get_msg_history():  # TODO
+def get_msg_history(msg_ID):  # TODO
     pass
 
 
@@ -264,7 +266,9 @@ def dump_everything(file_name):
         logging.error(err)
         return False, err
 
+
 def restore_session(file_name):
+    """ restore a saved session """
     session_file = os.path.join(rox_composer_dir, file_name)
     if os.path.isfile(session_file):
         f = open(session_file, "r")
@@ -312,12 +316,16 @@ def reset_watchers():  # TODO
 def get_service_logs():  # TODO
     pass
 
+def save_pipeline(file_name): #TODO
+    pass
 
 def load_and_start_pipeline(pipe_path):  # TODO
     d = {'pipe_path': pipe_path}
-    headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=headers)
+    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
     if r.status_code == 200:
-        return r.text
+        msg = r.text
+        logging.info(msg)
+        return True, msg
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
+        return False, err
