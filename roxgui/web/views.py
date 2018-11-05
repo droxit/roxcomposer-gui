@@ -149,3 +149,17 @@ def load_session(request):
         messages.error(request, "Session could not be restored.")
         messages.debug(request, msg)
         return redirect(views.main)
+
+
+@require_http_methods(["POST"])
+def get_message_history(request):
+    """get the message history of a specific message"""
+    msg_id = request.POST["msg_id"]
+    delivered, msg = rox_requests.get_msg_history(msg_id)
+    if delivered:
+        messages.debug(request, msg)
+        return redirect(views.main)
+    else:
+        messages.error(request, "Message history could not be retrieved.")
+        messages.debug(request, msg)
+        return redirect(views.main)

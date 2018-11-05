@@ -64,8 +64,22 @@ def post_to_pipeline(pipeline, message):
         return False, msg
 
 
-def get_msg_history(msg_ID):  # TODO
-    pass
+def get_msg_history(msg_id):  # TODO
+    d = {'message_id': msg_id}
+
+    try:
+        r = requests.post('http://{}/get_msg_history'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as e:
+        err = "ERROR: no connection to server - {}".format(e)
+        logging.error(err)
+        return False, err
+    if r.status_code == 200:
+        logging.info(r.text)
+        return True, r.text
+    else:
+        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error(err)
+        return False, err
 
 
 def start_service(service_json: dict) -> bool:

@@ -17,7 +17,12 @@
 
 
 
-
+<form action="get_message_history" method="post">
+     {% csrf_token %}
+     <input type="text" name="msg_id" value="A message ID">
+     <input type="submit" value="Show History">
+</form>
+<br>
 <div class="row">
     {% if available_service_names %}
     <div class="col-lg-1">

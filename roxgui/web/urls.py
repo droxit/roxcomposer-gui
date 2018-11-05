@@ -17,5 +17,6 @@ urlpatterns = [
     path("stop_service", views.stop_service, name="web_stop_service"),
     path("post_to_pipeline", views.post_to_pipeline, name="web_post_to_pipeline"),
     path("save_session", views.save_session, name="web_save_session"),
-    path("load_session", views.load_session, name="web_load_session")
+    path("load_session", views.load_session, name="web_load_session"),
+    path("get_message_history", views.get_message_history, name="web_get_message_history")
 ]
