@@ -172,6 +172,7 @@ def get_running_services() -> list:
         return []
 
 
+#TODO: check if services are running
 def set_pipeline(pipename: str, services: list) -> bool:
     """
     create a new pipeline with the specified services, where the order is important
@@ -256,7 +257,7 @@ def get_service_logs():  # TODO
 def load_and_start_pipeline(pipe_path):  # TODO
     d = {'pipe_path': pipe_path}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
         return r.text
     else:
