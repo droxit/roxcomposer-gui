@@ -64,7 +64,7 @@ def post_to_pipeline(pipeline, message):
         return False, msg
 
 
-def get_msg_history(msg_id):  # TODO
+def get_msg_history(msg_id):
     d = {'message_id': msg_id}
 
     try:
