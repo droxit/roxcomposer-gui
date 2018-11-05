@@ -16,6 +16,7 @@ import requests
 
 from user_settings import ROX_DIR, ROX_URL
 
+#Log settings
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
 
@@ -39,11 +40,10 @@ MSG_CONNECTION_ERROR = "No connection to server."
 
 
 # post data to pipeline
-def post_to_pipeline(*args):  # TODO
+def post_to_pipeline(*args): #TODO
     pass
 
-
-def get_msg_history():  # TODO
+def get_msg_history(): #TODO
     pass
 
 
@@ -181,7 +181,6 @@ def set_pipeline(pipename: str, services: list) -> bool:
 def remove_pipeline():  # TODO
     pass
 
-
 def get_pipelines() -> list:
     """
     get the names of all registered pipelines
@@ -234,5 +233,11 @@ def get_service_logs():  # TODO
     pass
 
 
-def load_and_start_pipeline():  # TODO
-    pass
+def load_and_start_pipeline(pipe_path): #TODO
+    d = {'pipe_path': pipe_path}
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
