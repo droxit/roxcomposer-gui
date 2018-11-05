@@ -107,11 +107,33 @@ def post_to_pipeline(request):
     delivered, msg = rox_requests.post_to_pipeline(pipeline_name, message)
     if delivered:
         #message was sent
-        logging.error("HERE!")
-        messages.success(request, "Message sent")
-        #messages.add_message(request, messages.SUCCESS, msg)
+        messages.success(request, msg)
         return redirect(views.main)
     else:
         #error while sending message
         messages.add_message(request, messages.WARNING, msg)
+        return redirect(views.main)
+
+@require_http_methods(["POST"])
+def save_session(request):
+    """save the session to a json file """
+    dumpfile = request.POST["dumpfile"]
+    dumped, msg = rox_requests.dump_everything(dumpfile)
+    if dumped:
+        messages.success(request, msg)
+        return redirect(views.main)
+    else:
+        messages.error(request, msg)
+        return redirect(views.main)
+
+@require_http_methods(["POST"])
+def load_session(request):
+    """save the session to a json file """
+    dumpfile = request.POST["dumpfile"]
+    loaded, msg = rox_requests.restore_session(dumpfile)
+    if loaded:
+        messages.success(request, msg)
+        return redirect(views.main)
+    else:
+        messages.error(request, msg)
         return redirect(views.main)

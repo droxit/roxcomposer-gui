@@ -13,6 +13,7 @@ import logging
 import requests
 
 from user_settings import ROX_DIR, ROX_URL
+import os
 
 # Log settings.
 logger = logging.getLogger(__name__)
@@ -54,7 +55,8 @@ def post_to_pipeline(pipeline, message):
 
     if r.status_code == 200:
         logging.info("Posted message: {}".format(message))
-        return True,"Message posted"
+        msg_id = r.json()['message_id']
+        return True, "Message posted - ID: {} ".format(msg_id)
     else:
         logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
         return False, 'ERROR: {} - {}'.format(r.status_code, r.text)
@@ -226,9 +228,62 @@ def get_pipelines() -> dict:
         return r.json()
 
 
-def dump_everything():  # TODO
-    pass
+def dump_everything(file_name):
+    """Save current session to specified file"""
+    file_name = os.path.join(rox_composer_dir, file_name)
+    f = None
+    try:
+        f = open(file_name, 'w')
+    except Exception as e:
+        err = 'ERROR unable to open file {} - {}'.format(file_name, e)
+        logging.error(err)
+        return False, err
 
+    try:
+        r = requests.get('http://{}/dump_services_and_pipelines'.format(rox_connector_url))
+    except requests.exceptions.ConnectionError as e:
+        err = "{}\n{}".format(MSG_CONNECTION_ERROR, e)
+        logging.error(err)
+        return False, err
+
+    if r.status_code == 200:
+        o = r.json()
+        try:
+            json.dump(o, f)
+        except Exception as e:
+            err = 'ERROR: unable to write dump to file {} - {}'.format(file_name, e)
+            logging.error(err)
+            return False, err
+        finally:
+            f.close()
+
+        return True, "dump written to file {}\n{}".format(file_name, r.text)
+    else:
+        f.close()
+        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error(err)
+        return False, err
+
+def restore_session(file_name):
+    session_file = os.path.join(rox_composer_dir, file_name)
+    if os.path.isfile(session_file):
+        f = open(session_file, "r")
+        restore_json = json.loads(f.read())
+        f.close()
+
+    else:
+        err = 'file {} not found'.format(file_name)
+        logging.error(err)
+        return False, err
+
+    r = requests.post('http://{}/load_services_and_pipelines'.format(rox_connector_url), data=json.dumps(restore_json),
+                      headers=JSON_HEADER)
+    if r.status_code == 200:
+        return True, r.text
+    else:
+        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
+        logging.error(err)
+        return False, err
 
 def watch_services():  # TODO
     pass

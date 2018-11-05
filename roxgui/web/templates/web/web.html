@@ -103,5 +103,16 @@
     {% endif %}
 </div>
 
+ <form action="save_session" method="post">
+     {% csrf_token %}
+     <input type="text" name="dumpfile" value="Filename.json">
+     <input type="submit" value="Save Session">
+ </form>
+ <form action="load_session" method="post">
+     {% csrf_token %}
+     <input type="text" name="dumpfile" value="Filename.json">
+     <input type="submit" value="Load Session">
+ </form>
+
 <script src="{% static 'web/js/web.js'%}"></script>
 {% endblock content %}
