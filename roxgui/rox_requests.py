@@ -39,9 +39,25 @@ JSON_HEADER = {"Content-Type": "application/json"}
 MSG_CONNECTION_ERROR = "No connection to server."
 
 
-# post data to pipeline
-def post_to_pipeline(*args): #TODO
-    pass
+def post_to_pipeline(pipeline, message): #TODO
+    """
+    Post a message to the pipeline
+    :param pipeline: the pipeline name that the message is to be sent to
+    :param message: a string
+    :return: True if message was sent
+    """
+    d = {'name': pipeline, 'data': message}
+    try:
+        r = requests.post('http://{}/post_to_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
+        return False
+
+    if r.status_code == 200:
+        return True
+    else:
+        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+
 
 def get_msg_history(): #TODO
     pass
