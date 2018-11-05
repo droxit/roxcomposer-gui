@@ -98,13 +98,14 @@ def start_services(service_json_list: list) -> list:
     delivered = True
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
-        return error_json_list
+        return False, ["Please select a service to start."]
 
     for service_json in service_json_list:
         delivered, result = start_service(service_json)
         if not delivered:
             error_json_list.append("Service could not be started: {} \n Error: {}".format(service_json, result))
             delivered = False
+
     return delivered, error_json_list
 
 
