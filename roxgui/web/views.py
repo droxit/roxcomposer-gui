@@ -23,7 +23,7 @@ def main(request):
     # Update database concerning available services.
     databaseIO.update_service_db()
     # Get names of all available services.
-    available_service_name_list = filesystemIO.get_service_list()  # TODO: pull from DB
+    available_service_name_list = filesystemIO.get_service_list()
     # Get names of all running services.
     running_service_name_list = rox_requests.get_running_services()
     # Send both lists to view.
