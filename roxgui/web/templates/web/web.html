@@ -29,30 +29,47 @@
 <div class="row">
     {% if available_service_names %}
     <div class="col-lg-1">
-        <form action="start_service" method="post">
+        <form action="start_service" method="post" id="start_service_form">
             {% csrf_token %}
             <select name="available_service_names" multiple>
                 {% for name in available_service_names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="Start">
+
         </form>
     </div>
     <div class="col-lg-1">
-        <form action="stop_service" method="post">
+        <button type="submit" form="start_service_form" class="btn btn-default">></button>
+        <br>
+        <button type="submit" form="stop_service_form" class="btn btn-default"><</button>
+    </div>
+    <div class="col-lg-1">
+        <form action="stop_service" method="post" id="stop_service_form">
             {% csrf_token %}
             <select name="running_service_names" multiple>
                 {% for name in running_service_names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="Stop">
         </form>
     </div>
-    {% else %}
-    <p>No services available.</p>
-    {% endif %}
+    <div class="col-lg-1">
+        <input type="button" id="btnRight" value=">" class="btn btn-default"/><br>
+        <input type="button" id="btnLeft" value="<" class="btn btn-default"/>
+    </div>
+    <div class="col-lg-1">
+        <form action="start_pipeline" method="post">
+            {% csrf_token %}
+            <select name="service_names" multiple>
+            </select>
+        </form>
+    </div>
+
+</div>
+{% else %}
+<p>No services available.</p>
+{% endif %}
 </div>
 
 
