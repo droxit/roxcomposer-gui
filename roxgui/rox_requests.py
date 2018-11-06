@@ -37,141 +37,186 @@ JSON_HEADER = {"Content-Type": "application/json"}
 # Error message for connection error.
 MSG_CONNECTION_ERROR = "No connection to server."
 
+# Error message for missing services.
+MSG_MISSING_SERVICES_ERROR = "No services specified."
+
+
+def create_result(success: bool, message: str = "", data=None) -> dict:
+    """
+    Create dictionary containing information about retrieved response.
+
+    :param success: Boolean flag indicating if request was successful.
+    :param message: Corresponding system message.
+    :param data: Retrieved data.
+    :return: Response data as dictionary.
+    """
+    result_message = dict()
+    result_message["success"] = success
+    result_message["message"] = message
+    result_message["data"] = data
+    return result_message
+
+
+def _create_connection_error(message: str) -> str:
+    """
+    Create standard message concerning connection errors.
+    :param message: Received error message.
+    :return: Error message concerning connection errors.
+    """
+    return "{}.\n{}.".format(MSG_CONNECTION_ERROR, message)
+
+
+def _create_http_status_error(http_status_code: int, message: str) -> str:
+    """
+    Create standard message concerning non-200 HTTP status codes.
+    :param http_status_code: Received HTTP status code.
+    :param message: Received error message.
+    :return: Error message concerning non-200 HTTP status codes.
+    """
+    return "Error code {}.\n{}.".format(http_status_code, message)
+
 #Timeout for a session
 SESSION_TIMEOUT = 3600
 
 
-def post_to_pipeline(pipeline, message):
+def post_to_pipeline(pipeline_name: str, message: str) -> dict:
     """
-    Post a message to the pipeline
-    :param pipeline: the pipeline name that the message is to be sent to
-    :param message: a string
-    :return: True if message was sent
+    Post message to specified pipeline.
+    :param pipeline_name: Pipeline name to which a message should be sent.
+    :param message: Message as string.
+    :return: Result dictionary documenting if data could be posted to pipeline.
     """
-    d = {'name': pipeline, 'data': message}
+
+    content = {'name': pipeline_name, 'data': message}
+    url = "http://{}/post_to_pipeline".format(rox_connector_url)
+
     try:
-        r = requests.post('http://{}/post_to_pipeline'.format(rox_connector_url), data=json.dumps(d),
-                          headers=JSON_HEADER)
+        r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
-        logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False, "{}\n{}".format(MSG_CONNECTION_ERROR, err)
+        error_msg = _create_connection_error(err)
+        return create_result(False, message=error_msg)
 
-    if r.status_code == 200:
-        logging.info("Posted message: {}".format(message))
-        msg_id = r.json()['message_id']
-        msg = "Message posted - ID: {} ".format(msg_id)
-        return True, msg
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return create_result(False, message=error_msg)
     else:
-        msg = 'ERROR: {} - {}'.format(r.status_code, r.text)
-        logging.error(msg)
-        return False, msg
+        result_msg = "Message {} posted: {}.".format(r.json()['message_id'], message)
+        return create_result(True, message=result_msg)
 
 
-def get_msg_history(msg_id):
-    d = {'message_id': msg_id}
+def get_msg_history(message_id: str) -> dict:
+    """
+    Get history of specified message ID.
+    :param message_id: Message ID.
+    :return: Result dictionary with corresponding message history (if available).
+    """
+
+    content = {'message_id': message_id}
+    url = "http://{}/get_msg_history".format(rox_connector_url)
 
     try:
-        r = requests.post('http://{}/get_msg_history'.format(rox_connector_url), data=json.dumps(d),
-                          headers=JSON_HEADER)
-    except requests.exceptions.ConnectionError as e:
-        err = "ERROR: no connection to server - {}".format(e)
-        logging.error(err)
-        return False, err
-    if r.status_code == 200:
-        logging.info(r.text)
-        return True, r.text
+        r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(err)
+        return create_result(False, message=error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return create_result(False, message=error_msg)
     else:
-        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
-        logging.error(err)
-        return False, err
+        return create_result(True, data=r.text)
 
 
-def start_service(service_json: dict):
+def start_service(service_json: dict) -> dict:
     """
     Start service defined by given JSON dictionary.
     :param service_json: JSON dictionary defining service.
-    :return: True if service could be started and False otherwise.
+    :return: Result dictionary documenting if service could be started.
     """
     if not service_json:
         # JSON data is empty and therefore invalid.
-        return False
+        return create_result(False, message=MSG_MISSING_SERVICES_ERROR)
 
     url = "http://{}/start_service".format(rox_connector_url)
 
     try:
         r = requests.post(url, json=service_json, headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
-        logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False, "{}\n{}".format(MSG_CONNECTION_ERROR, err)
+        error_msg = _create_connection_error(err)
+        return create_result(False, message=error_msg)
+
     if r.status_code != 200:
-        logging.error("Service could not be started. Error code {}.\n{}".format(r.status_code, r.text))
-        return False, "Service could not be started. Error code {}.\n{}".format(r.status_code, r.text)
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return create_result(False, message=error_msg)
     else:
-        return True, ""
+        return create_result(True)
 
 
-def start_services(service_json_list: list):
+def start_services(service_json_list: list) -> dict:
     """
     Start all services defined by given list of JSON dictionaries.
     :param service_json_list: List of JSON dictionaries defining multiple services.
-    :return: List of JSON dictionaries representing all services which could not be started.
+    :return: Result dictionary documenting which services could not be started.
     """
-    error_json_list = []
-    delivered = True
+    not_started_json_list = []
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
-        return False, ["Please select a service to start."]
+        return create_result(False, message=MSG_MISSING_SERVICES_ERROR, data=not_started_json_list)
 
+    all_services_started = True
     for service_json in service_json_list:
-        delivered, result = start_service(service_json)
-        if not delivered:
-            error_json_list.append("Service could not be started: {} \n Error: {}".format(service_json, result))
-            delivered = False
+        result_dict = start_service(service_json)
+        if not result_dict["success"]:
+            not_started_json_list.append(service_json["params"]["name"])
+            all_services_started = False
 
-    return delivered, error_json_list
+    return create_result(all_services_started, data=not_started_json_list)
 
 
-def shutdown_service(service_name: dict) -> bool:
+def shutdown_service(service_name: dict) -> dict:
     """
     Stop service defined by given name.
     :param service_name: Service name.
-    :return: True if service could be stopped and False otherwise.
+    :return: Result dictionary documenting if service could be stopped.
     """
     if not service_name:
         # Service name is empty and therefore invalid.
-        return False
+        return create_result(False, message=MSG_MISSING_SERVICES_ERROR)
 
+    content = {'name': service_name}
     url = "http://{}/shutdown_service".format(rox_connector_url)
-    data = {'name': service_name}
 
     try:
-        r = requests.post(url, json=data, headers=JSON_HEADER)
+        r = requests.post(url, json=content, headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
-        logger.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False
+        error_msg = _create_connection_error(err)
+        return create_result(False, error_msg)
+
     if r.status_code != 200:
-        logging.error("Service could not be stopped. Error code {}.\n{}".format(r.status_code, r.text))
-        return False
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return create_result(False, error_msg)
     else:
-        return True
+        return create_result(True)
 
 
-def shutdown_services(service_name_list: list) -> list:
+def shutdown_services(service_name_list: list) -> dict:
     """
     Stop all services defined by given list of service names.
     :param service_name_list: List of service names.
-    :return: List of service names which could not be stopped.
+    :return: Result dictionary documenting which services could not be stopped.
     """
-    error_name_list = []
+    not_stopped_name_list = []
     if len(service_name_list) < 1:
         # Service list is empty and therefore invalid.
-        return error_name_list
+        return create_result(False, message=MSG_MISSING_SERVICES_ERROR, data=not_stopped_name_list)
 
+    all_services_stopped = True
     for service_name in service_name_list:
-        result = shutdown_service(service_name)
-        if not result:
-            error_name_list.append(service_name)
-    return error_name_list
+        result_dict = shutdown_service(service_name)
+        if not result_dict["success"]:
+            not_stopped_name_list.append(service_name)
+            all_services_stopped = False
+    return create_result(all_services_stopped, data=not_stopped_name_list)
 
 
 def get_running_services() -> list:
@@ -202,14 +247,15 @@ def get_running_services() -> list:
 def set_pipeline(pipeline_name: str, service_names: list) -> bool:
     """
     Create new pipeline with specified services in exactly the given order.
-    :param pipeline_name: Pipeline name.
-    :param service_names: A list of service name strings. The services
+    :param pipeline_name: Name of pipeline.
+    :param service_names: A list of service names. The services
     are applied in the same order as they appear in this list.
     :returns: True if pipeline could be created an False otherwise.
     """
 
     url = "http://{}/set_pipeline".format(rox_connector_url)
     content = {'name': pipeline_name, 'services': service_names}
+    logging.error("Halllo" + str(service_names))
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
@@ -218,7 +264,7 @@ def set_pipeline(pipeline_name: str, service_names: list) -> bool:
         return False
 
     if r.status_code != 200:
-        logging.error("Pipeline could not be created. Error code {}.\n{}".format(r.status_code, r.text))
+        logger.error("Pipeline could not be created. Error code {}.\n{}".format(r.status_code, r.text))
         return False
     else:
         return True
@@ -371,6 +417,7 @@ def watch_services(service_names, session = None, timeout = SESSION_TIMEOUT):
 
 def get_service_logs():
     pass
+
 
 def unwatch_services():  # TODO
     pass

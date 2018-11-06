@@ -65,7 +65,7 @@ def get_service_json_from_filesystem(service_name: str) -> dict:
 
 def get_service_jsons_from_filesystem(service_name_list: list) -> list:
     """
-    Convert service name list to corresponding list of JSON dictionaries.
+    Convert list of service namesvto corresponding list of JSON dictionaries.
     :param service_name_list: List of service names.
     :return: Corresponding list of JSON dictionaries which may be empty in case of an error.
     """

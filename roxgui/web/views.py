@@ -21,9 +21,6 @@ from web import views
 
 logger = logging.getLogger(__name__)
 
-# Error message for connection error.
-MSG_CONNECTION_ERROR = "No connection to server."
-
 
 @require_http_methods(["GET"])
 def main(request):
@@ -61,19 +58,16 @@ def start_service(request):
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
-    delivered, msg_list = rox_requests.start_services(service_json_list)
-    if delivered:
+    result_dict = rox_requests.start_services(service_json_list)
+    if result_dict["success"]:
         # All services could be started.
 
         return redirect(views.main)
     else:
         # At least one service could not be started.
 
-        # Convert JSON dictionaries to corresponding service name.
-        for error_service in msg_list:
-            messages.add_message(request, messages.DEBUG, error_service)
-            messages.add_message(request, messages.WARNING, "Could not start service.")
-
+        services_not_started = ", ".join(result_dict["data"])
+        messages.error(request, "Unable to start service: {}.".format(services_not_started))
         return redirect(views.main)
 
 
@@ -84,8 +78,8 @@ def stop_service(request):
     service_name_list = request.POST.getlist("running_service_names")
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
-    error_name_list = rox_requests.shutdown_services(service_name_list)
-    if not error_name_list:
+    result_dict = rox_requests.shutdown_services(service_name_list)
+    if result_dict["success"]:
         # All services could be stopped.
 
         # Redirect to main page specifying all service
@@ -96,8 +90,8 @@ def stop_service(request):
 
         # Redirect to main page specifying all
         # service names which could not be stopped.
-        error_name_string = ", ".join(error_name_list)
-        messages.add_message(request, messages.WARNING, error_name_string)
+        services_not_stopped = ", ".join(result_dict["data"])
+        messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
         return redirect(views.main)
 
 
@@ -106,7 +100,7 @@ def create_pipeline(request):
     # Get list of service names which should be used for pipeline.
     service_name_list = request.POST.getlist("piped_service_names")
     # Create pipe name.
-    pipe_name = "pip" + datetime.datetime.now().strftime("%Y%m$%d%H%M")
+    pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m$%d%H%M")
     # Create new pipeline.
     result = rox_requests.set_pipeline(pipe_name, service_name_list)
     if result:
@@ -118,21 +112,20 @@ def create_pipeline(request):
 
 @require_http_methods(["POST"])
 def post_to_pipeline(request):
-    """Check if pipeline is active then send a message to specified pipeline"""
-    # Get the pipeline name.
+    """Send message to specified pipeline."""
+    # Get pipeline name.
     pipeline_name = request.POST["pipeline_name"]
-    # Get the message
+    # Get message.
     message = request.POST["pipe_message"]
-    delivered, msg = rox_requests.post_to_pipeline(pipeline_name, message)
-    if delivered:
-        # message was sent
-        messages.success(request, "Message posted.")
-        messages.debug(request, msg)
+    # Send message and get result.
+    result_dict = rox_requests.post_to_pipeline(pipeline_name, message)
+    if result_dict["success"]:
+        # Message was sent successfully.
+        messages.success(request, result_dict["message"])
         return redirect(views.main)
     else:
-        # error while sending message
-        messages.add_message(request, messages.DEBUG, msg)
-        messages.add_message(request, messages.WARNING, "Message could not be sent.")
+        # Error while sending message.
+        messages.error(request, result_dict["message"])
         return redirect(views.main)
 
 
@@ -167,13 +160,12 @@ def load_session(request):
 
 @require_http_methods(["POST"])
 def get_message_history(request):
-    """get the message history of a specific message"""
-    msg_id = request.POST["msg_id"]
-    delivered, msg = rox_requests.get_msg_history(msg_id)
-    if delivered:
-        messages.debug(request, msg)
+    """Get history of a specified message."""
+    message_id = request.POST["msg_id"]
+    result_dict = rox_requests.get_msg_history(message_id)
+    if result_dict["success"]:
+        messages.success(request, result_dict["data"])
         return redirect(views.main)
     else:
-        messages.error(request, "Message history could not be retrieved.")
-        messages.debug(request, msg)
+        messages.error(request, result_dict["message"])
         return redirect(views.main)
