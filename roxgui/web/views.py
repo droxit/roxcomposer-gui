@@ -7,6 +7,7 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
+import datetime
 import logging
 
 from django.contrib import messages
@@ -27,39 +28,34 @@ MSG_CONNECTION_ERROR = "No connection to server."
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
-    #Messaging Level
-    messages.set_level(request, messages.DEBUG)
-    #messages.set_level(request, messages.INFO)
-
     # Update database concerning available services.
     databaseIO.update_service_db()
+
     # Get names of all available services.
     available_service_name_list = filesystemIO.get_service_list()
     # Get names of all running services.
     running_service_name_list = rox_requests.get_running_services()
-    #only show services that aren't already active in the available services menu
+    # Only consider non-running services as available.
     available_service_name_list = list(set(available_service_name_list) - set(running_service_name_list))
 
     # Get metadata of all available pipes.
     available_pipelines_json = rox_requests.get_pipelines()
     # Convert to list of tuples.
-    pipeline_data = []
+    pipeline_data_list = []
     for key, value in available_pipelines_json.items():
         data = (key, value["services"], value["active"])
-        pipeline_data.append(data)
+        pipeline_data_list.append(data)
     # Send all data to view.
     context = {"available_service_names": available_service_name_list,
                "running_service_names": running_service_name_list,
-               "pipeline_data": pipeline_data}
-
-    messages.set_level(request, messages.DEBUG)
+               "pipeline_data": pipeline_data_list}
     return render(request, "web/web.html", context)
 
 
 @require_http_methods(["POST"])
 def start_service(request):
     """Start services specified in POST request's metadata."""
-    # Get list of specified service names.
+    # Get list of service names which should be started.
     service_name_list = request.POST.getlist("available_service_names")
     # Get list of corresponding JSON dictionaries.
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
@@ -84,7 +80,7 @@ def start_service(request):
 @require_http_methods(["POST"])
 def stop_service(request):
     """Stop services specified in POST request's metadata."""
-    # Get list of specified service names.
+    # Get list of service names which should be stopped.
     service_name_list = request.POST.getlist("running_service_names")
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
@@ -104,6 +100,22 @@ def stop_service(request):
         messages.add_message(request, messages.WARNING, error_name_string)
         return redirect(views.main)
 
+
+@require_http_methods(["POST"])
+def create_pipeline(request):
+    # Get list of service names which should be used for pipeline.
+    service_name_list = request.POST.getlist("piped_service_names")
+    # Create pipe name.
+    pipe_name = "pip" + datetime.datetime.now().strftime("%Y%m$%d%H%M")
+    # Create new pipeline.
+    result = rox_requests.set_pipeline(pipe_name, service_name_list)
+    if result:
+        return redirect(views.main)
+    else:
+        messages.add_message(request, messages.ERROR, "Could not create pipeline.")
+        return redirect(views.main)
+
+
 @require_http_methods(["POST"])
 def post_to_pipeline(request):
     """Check if pipeline is active then send a message to specified pipeline"""
@@ -113,15 +125,16 @@ def post_to_pipeline(request):
     message = request.POST["pipe_message"]
     delivered, msg = rox_requests.post_to_pipeline(pipeline_name, message)
     if delivered:
-        #message was sent
+        # message was sent
         messages.success(request, "Message posted.")
         messages.debug(request, msg)
         return redirect(views.main)
     else:
-        #error while sending message
+        # error while sending message
         messages.add_message(request, messages.DEBUG, msg)
         messages.add_message(request, messages.WARNING, "Message could not be sent.")
         return redirect(views.main)
+
 
 @require_http_methods(["POST"])
 def save_session(request):
@@ -136,6 +149,7 @@ def save_session(request):
         messages.error(request, "Session could not be saved.")
         messages.debug(request, msg)
         return redirect(views.main)
+
 
 @require_http_methods(["POST"])
 def load_session(request):

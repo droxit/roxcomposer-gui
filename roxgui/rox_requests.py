@@ -9,11 +9,11 @@
 
 import json
 import logging
+import os
 
 import requests
 
 from user_settings import ROX_DIR, ROX_URL
-import os
 
 # Log settings.
 logger = logging.getLogger(__name__)
@@ -68,7 +68,8 @@ def get_msg_history(msg_id):
     d = {'message_id': msg_id}
 
     try:
-        r = requests.post('http://{}/get_msg_history'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
+        r = requests.post('http://{}/get_msg_history'.format(rox_connector_url), data=json.dumps(d),
+                          headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as e:
         err = "ERROR: no connection to server - {}".format(e)
         logging.error(err)
@@ -195,28 +196,29 @@ def get_running_services() -> list:
         return []
 
 
-def set_pipeline(pipename: str, services: list) -> bool:
+def set_pipeline(pipeline_name: str, service_names: list) -> bool:
     """
-    create a new pipeline with the specified services, where the order is important
-    :param pipename: Name of the Pipeline
-    :param services: a list of service names (string) that should be added to the pipeline
-    :returns: True if pipeline was sent
+    Create new pipeline with specified services in exactly the given order.
+    :param pipeline_name: Pipeline name.
+    :param service_names: A list of service name strings. The services
+    are applied in the same order as they appear in this list.
+    :returns: True if pipeline could be created an False otherwise.
     """
 
-    d = {'name': pipename, 'services': services}
-    headers = {'Content-Type': 'application/json'}
+    url = "http://{}/set_pipeline".format(rox_connector_url)
+    content = {'name': pipeline_name, 'services': service_names}
+
     try:
-        r = requests.post('http://{}/set_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=headers)
-    except requests.exceptions.ConnectionError as e:
-        logging.error("ERROR: no connection to server - {}".format(e))
+        r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        logger.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
         return False
 
-    if r.status_code == 200:
-        logging.info("Pipeline sent, Response: " + r.text)
-        return True
-    else:
-        logging.error('ERROR: {} - {}'.format(r.status_code, r.text))
+    if r.status_code != 200:
+        logging.error("Pipeline could not be created. Error code {}.\n{}".format(r.status_code, r.text))
         return False
+    else:
+        return True
 
 
 def remove_pipeline():  # TODO
@@ -303,6 +305,7 @@ def restore_session(file_name):
         logging.error(err)
         return False, err
 
+
 def watch_services():  # TODO
     pass
 
@@ -330,12 +333,15 @@ def reset_watchers():  # TODO
 def get_service_logs():  # TODO
     pass
 
-def save_pipeline(file_name): #TODO
+
+def save_pipeline(file_name):  # TODO
     pass
+
 
 def load_and_start_pipeline(pipe_path):  # TODO
     d = {'pipe_path': pipe_path}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d), headers=JSON_HEADER)
+    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d),
+                      headers=JSON_HEADER)
     if r.status_code == 200:
         msg = r.text
         logging.info(msg)

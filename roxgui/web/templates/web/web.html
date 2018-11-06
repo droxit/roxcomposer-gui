@@ -3,7 +3,6 @@
 {% extends "base/base.html" %}
 
 {% load static %}
-{% load custom_filters %}
 
 {% block title %}
 <title>ROXcomposer</title>
@@ -15,36 +14,35 @@
     <h1>Welcome!</h1>
 </div>
 
+<div class="row">
+    <form action="get_message_history" method="post">
+        {% csrf_token %}
+        <input type="text" name="msg_id" value="A message ID">
+        <input type="submit" value="Show History">
+    </form>
+</div>
 
-
-<form action="get_message_history" method="post">
-     {% csrf_token %}
-     <input type="text" name="msg_id" value="A message ID">
-     <input type="submit" value="Show History">
-</form>
-<br>
 <div class="row">
     {% if available_service_names %}
-    <div class="col-lg-1">
-        <form action="start_service" method="post" id="start_service_form">
+    <div class="col-lg-2">
+        <form action="start_service" method="post" id="available_service_form">
             {% csrf_token %}
-            <select name="available_service_names" multiple>
+            <select name="available_service_names" id="available_service_list" multiple>
                 {% for name in available_service_names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
             </select>
-
         </form>
     </div>
     <div class="col-lg-1">
-        <button type="submit" form="start_service_form" class="btn btn-default">></button>
+        <button type="submit" form="available_service_form" class="btn btn-default">></button>
         <br>
-        <button type="submit" form="stop_service_form" class="btn btn-default"><</button>
+        <button type="submit" form="running_service_form" class="btn btn-default"><</button>
     </div>
-    <div class="col-lg-1">
-        <form action="stop_service" method="post" id="stop_service_form">
+    <div class="col-lg-2">
+        <form action="stop_service" method="post" id="running_service_form">
             {% csrf_token %}
-            <select name="running_service_names" multiple>
+            <select name="running_service_names" id="running_service_list" multiple>
                 {% for name in running_service_names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
@@ -52,17 +50,20 @@
         </form>
     </div>
     <div class="col-lg-1">
-        <input type="button" id="btnRight" value=">" class="btn btn-default"/><br>
-        <input type="button" id="btnLeft" value="<" class="btn btn-default"/>
+        <input type="button" onclick="addToPipe()" value=">" class="btn btn-default"/>
+        <br>
+        <input type="button" onclick="removeFromPipe()" value="<" class="btn btn-default"/>
     </div>
-    <div class="col-lg-1">
-        <form action="start_pipeline" method="post">
+    <div class="col-lg-2">
+        <form action="create_pipeline" method="post">
             {% csrf_token %}
-            <select name="service_names" multiple>
-            </select>
+            <select name="piped_service_names" id="piped_service_list" multiple></select>
+            <input type="submit" value="Create pipe">
         </form>
     </div>
+    <div class="row">
 
+    </div>
 </div>
 {% else %}
 <p>No services available.</p>
@@ -108,16 +109,16 @@
     {% endif %}
 </div>
 
- <form action="save_session" method="post">
-     {% csrf_token %}
-     <input type="text" name="dumpfile" value="Filename.json">
-     <input type="submit" value="Save Session">
- </form>
- <form action="load_session" method="post">
-     {% csrf_token %}
-     <input type="text" name="dumpfile" value="Filename.json">
-     <input type="submit" value="Load Session">
- </form>
+<form action="save_session" method="post">
+    {% csrf_token %}
+    <input type="text" name="dumpfile" value="Filename.json">
+    <input type="submit" value="Save Session">
+</form>
+<form action="load_session" method="post">
+    {% csrf_token %}
+    <input type="text" name="dumpfile" value="Filename.json">
+    <input type="submit" value="Load Session">
+</form>
 
 <script src="{% static 'web/js/web.js'%}"></script>
 {% endblock content %}
