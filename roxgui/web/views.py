@@ -55,20 +55,24 @@ def start_service(request):
     # Get list of service names which should be started.
     service_name_list = request.POST.getlist("available_service_names")
     # Get list of corresponding JSON dictionaries.
-    service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
+    service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
     result_dict = rox_requests.start_services(service_json_list)
     if result_dict["success"]:
         # All services could be started.
-
         return redirect(views.main)
     else:
-        # At least one service could not be started.
-
-        services_not_started = ", ".join(result_dict["data"])
-        messages.error(request, "Unable to start service: {}.".format(services_not_started))
-        return redirect(views.main)
+        # Some services could not be started.
+        if not result_dict["data"]:
+            # No services were specified.
+            messages.error(request, result_dict["message"])
+            return redirect(views.main)
+        else:
+            # Some services were specified but could not be started.
+            services_not_started = ", ".join(result_dict["data"])
+            messages.error(request, "Unable to start service: {}.".format(services_not_started))
+            return redirect(views.main)
 
 
 @require_http_methods(["POST"])
@@ -81,18 +85,18 @@ def stop_service(request):
     result_dict = rox_requests.shutdown_services(service_name_list)
     if result_dict["success"]:
         # All services could be stopped.
-
-        # Redirect to main page specifying all service
-        # names which could not be stopped in metadata.
         return redirect(views.main)
     else:
-        # At least one service could not be stopped.
-
-        # Redirect to main page specifying all
-        # service names which could not be stopped.
-        services_not_stopped = ", ".join(result_dict["data"])
-        messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
-        return redirect(views.main)
+        # Some services could not be stopped.
+        if not result_dict["data"]:
+            # No services were specified.
+            messages.error(request, result_dict["message"])
+            return redirect(views.main)
+        else:
+            # Some services were specified but could not be stopped.
+            services_not_stopped = ", ".join(result_dict["data"])
+            messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
+            return redirect(views.main)
 
 
 @require_http_methods(["POST"])
@@ -100,7 +104,7 @@ def create_pipeline(request):
     # Get list of service names which should be used for pipeline.
     service_name_list = request.POST.getlist("piped_service_names")
     # Create pipe name.
-    pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m$%d%H%M")
+    pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M")
     # Create new pipeline.
     result = rox_requests.set_pipeline(pipe_name, service_name_list)
     if result:
