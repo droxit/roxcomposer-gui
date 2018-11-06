@@ -9,11 +9,11 @@
 
 import json
 import logging
-import os
 
 import requests
 
 from user_settings import ROX_DIR, ROX_URL
+import os
 
 # Log settings.
 logger = logging.getLogger(__name__)
@@ -36,6 +36,9 @@ JSON_HEADER = {"Content-Type": "application/json"}
 
 # Error message for connection error.
 MSG_CONNECTION_ERROR = "No connection to server."
+
+#Timeout for a session
+SESSION_TIMEOUT = 3600
 
 
 def post_to_pipeline(pipeline, message):
@@ -83,7 +86,7 @@ def get_msg_history(msg_id):
         return False, err
 
 
-def start_service(service_json: dict) -> bool:
+def start_service(service_json: dict):
     """
     Start service defined by given JSON dictionary.
     :param service_json: JSON dictionary defining service.
@@ -107,7 +110,7 @@ def start_service(service_json: dict) -> bool:
         return True, ""
 
 
-def start_services(service_json_list: list) -> list:
+def start_services(service_json_list: list):
     """
     Start all services defined by given list of JSON dictionaries.
     :param service_json_list: List of JSON dictionaries defining multiple services.
@@ -306,9 +309,68 @@ def restore_session(file_name):
         return False, err
 
 
-def watch_services():  # TODO
-    pass
+def watch_services(service_names, session = None, timeout = SESSION_TIMEOUT):
+    """
 
+    :param service_names: List of Names of the services to watch
+    :param session: A dictionary with an id, a timeout and a set of services that are being watched.
+    :return: Tuple (bool, str, dict): True if watch service worked, String is message from server and dict the session
+    """
+
+    #if there is no session yet start new session
+    if session is None:
+        session = dict()
+        session['services'] = set()
+        session['timeout'] = timeout
+
+        services = ", ".join(service_names)
+        data = {'lines': 100, 'timeout': timeout, 'services': services}
+        try:
+            r = requests.put('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
+        except requests.exceptions.ConnectionError as e:
+            err = "ERROR: no connection to server - {}".format(e)
+            logging.error(err)
+            return False, err, None
+
+        if r.status_code != 200:
+            err = 'ERROR: {}'.format(r.text)
+            logging.error(err)
+            return False, err, None
+
+        session['id'] = r.json()['sessionid']
+
+        for s in services:
+            session['services'].add(s)
+
+        return True, r.text, session
+
+    else:
+        unwatched_services = list(session['services'] - set(service_names))
+
+        if unwatched_services:
+            services = ", ".join(unwatched_services)
+            data = {'sessionid': session['id'], 'services': services}
+            try:
+                r = requests.post('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
+            except requests.exceptions.ConnectionError as e:
+                err = "ERROR: no connection to server - {}".format(e)
+                logging.error(err)
+                return False, err, session
+
+            if r.status_code != 200:
+                err = 'ERROR: {}'.format(r.text)
+                logging.error(err)
+                return False, err, session
+
+            response = r.json()
+            for s in response['ok']:
+                session['services'].add(s)
+
+            return True, r.text, session
+
+
+def get_service_logs():
+    pass
 
 def unwatch_services():  # TODO
     pass
