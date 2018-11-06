@@ -58,15 +58,15 @@ def start_service(request):
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)  # TODO: pull from DB
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
-    result_dict = rox_requests.start_services(service_json_list)
-    if result_dict["success"]:
+    result = rox_requests.start_services(service_json_list)
+    if result.success:
         # All services could be started.
 
         return redirect(views.main)
     else:
         # At least one service could not be started.
 
-        services_not_started = ", ".join(result_dict["data"])
+        services_not_started = ", ".join(result.data)
         messages.error(request, "Unable to start service: {}.".format(services_not_started))
         return redirect(views.main)
 
@@ -78,8 +78,8 @@ def stop_service(request):
     service_name_list = request.POST.getlist("running_service_names")
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
-    result_dict = rox_requests.shutdown_services(service_name_list)
-    if result_dict["success"]:
+    result = rox_requests.shutdown_services(service_name_list)
+    if result.success:
         # All services could be stopped.
 
         # Redirect to main page specifying all service
@@ -90,7 +90,7 @@ def stop_service(request):
 
         # Redirect to main page specifying all
         # service names which could not be stopped.
-        services_not_stopped = ", ".join(result_dict["data"])
+        services_not_stopped = ", ".join(result.data)
         messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
         return redirect(views.main)
 
@@ -118,14 +118,14 @@ def post_to_pipeline(request):
     # Get message.
     message = request.POST["pipe_message"]
     # Send message and get result.
-    result_dict = rox_requests.post_to_pipeline(pipeline_name, message)
-    if result_dict["success"]:
+    result = rox_requests.post_to_pipeline(pipeline_name, message)
+    if result.success:
         # Message was sent successfully.
-        messages.success(request, result_dict["message"])
+        messages.success(request, result.msg)
         return redirect(views.main)
     else:
         # Error while sending message.
-        messages.error(request, result_dict["message"])
+        messages.error(request, result.msg)
         return redirect(views.main)
 
 
@@ -133,14 +133,14 @@ def post_to_pipeline(request):
 def save_session(request):
     """save the session to a json file """
     dumpfile = request.POST["dumpfile"]
-    dumped, msg = rox_requests.dump_everything(dumpfile)
-    if dumped:
+    result = rox_requests.dump_everything(dumpfile)
+    if result.success:
         messages.success(request, "Session saved as {}.".format(dumpfile))
-        messages.debug(request, msg)
+        messages.debug(request, result.msg)
         return redirect(views.main)
     else:
         messages.error(request, "Session could not be saved.")
-        messages.debug(request, msg)
+        messages.debug(request, result.msg)
         return redirect(views.main)
 
 
@@ -148,13 +148,13 @@ def save_session(request):
 def load_session(request):
     """save the session to a json file """
     dumpfile = request.POST["dumpfile"]
-    loaded, msg = rox_requests.restore_session(dumpfile)
-    if loaded:
-        messages.debug(request, msg)
+    result = rox_requests.restore_session(dumpfile)
+    if result.success:
+        messages.debug(request, result.msg)
         return redirect(views.main)
     else:
         messages.error(request, "Session could not be restored.")
-        messages.debug(request, msg)
+        messages.debug(request, result.msg)
         return redirect(views.main)
 
 
@@ -162,10 +162,10 @@ def load_session(request):
 def get_message_history(request):
     """Get history of a specified message."""
     message_id = request.POST["msg_id"]
-    result_dict = rox_requests.get_msg_history(message_id)
-    if result_dict["success"]:
-        messages.success(request, result_dict["data"])
+    result = rox_requests.get_msg_history(message_id)
+    if result.success:
+        messages.success(request, result.msg)
         return redirect(views.main)
     else:
-        messages.error(request, result_dict["message"])
+        messages.error(request, result.msg)
         return redirect(views.main)
