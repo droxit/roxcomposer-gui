@@ -9,11 +9,11 @@
 
 import json
 import logging
+import os
 
 import requests
 
 from user_settings import ROX_DIR, ROX_URL
-import os
 
 # Log settings.
 logger = logging.getLogger(__name__)
@@ -37,10 +37,13 @@ JSON_HEADER = {"Content-Type": "application/json"}
 # Error message for connection error.
 MSG_CONNECTION_ERROR = "No connection to server."
 
+# Error message for invalid services.
+MSG_INVALID_SERVICE_ERROR = "Service invalid."
+
 # Error message for missing services.
 MSG_MISSING_SERVICES_ERROR = "No services specified."
 
-#Timeout for a session
+# Session timeout.
 SESSION_TIMEOUT = 3600
 
 
@@ -151,13 +154,14 @@ def start_services(service_json_list: list) -> RoxResponse:
     :param service_json_list: List of JSON dictionaries defining multiple services.
     :return: Result dictionary documenting which services could not be started.
     """
-    not_started_json_list = []
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
         res = RoxResponse(False, MSG_MISSING_SERVICES_ERROR)
         res.data = not_started_json_list
         return res
 
+    # Collect names of all services which could not be started.
+    not_started_json_list = []
     all_services_started = True
     for service_json in service_json_list:
         res = start_service(service_json)
@@ -203,13 +207,14 @@ def shutdown_services(service_name_list: list) -> RoxResponse:
     :param service_name_list: List of service names.
     :return: Result dictionary documenting which services could not be stopped.
     """
-    not_stopped_name_list = []
     if len(service_name_list) < 1:
         # Service list is empty and therefore invalid.
         res = RoxResponse(False, MSG_MISSING_SERVICES_ERROR)
         res.data= not_stopped_name_list
         return res
 
+    # Collect names of all services which could not be stopped.
+    not_stopped_name_list = []
     all_services_stopped = True
     for service_name in service_name_list:
         res = shutdown_service(service_name)
@@ -357,7 +362,7 @@ def restore_session(file_name):
         return RoxResponse(False, err)
 
 
-def watch_services(service_names, session = None, timeout = SESSION_TIMEOUT):
+def watch_services(service_names, session=None, timeout=SESSION_TIMEOUT):
     """
 
     :param service_names: List of Names of the services to watch
@@ -365,7 +370,7 @@ def watch_services(service_names, session = None, timeout = SESSION_TIMEOUT):
     :return: Tuple (bool, str, dict): True if watch service worked, String is message from server and dict the session
     """
 
-    #if there is no session yet start new session
+    # if there is no session yet start new session
     if session is None:
         session = dict()
         session['services'] = set()
