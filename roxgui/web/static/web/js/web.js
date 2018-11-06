@@ -9,5 +9,5 @@ function addToPipe() {
 }
 
 function removeFromPipe() {
-    $('#piped_service_list option:selected').remove()
+    $('#piped_service_list').find('option:selected').remove()
 }
