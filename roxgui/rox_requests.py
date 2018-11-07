@@ -46,6 +46,10 @@ MSG_MISSING_SERVICES_ERROR = "No services specified."
 # Session timeout.
 SESSION_TIMEOUT = 3600
 
+FORBIDDEN_SERVICES = ['basic_reporting']
+
+removed_pipes = []
+
 
 class RoxResponse():
 
@@ -53,6 +57,9 @@ class RoxResponse():
         self.success = success
         self.msg = message
         self.data = None
+        self.debug_msg = ""
+
+
 
 
 
@@ -106,6 +113,10 @@ def get_msg_history(message_id: str) -> RoxResponse:
     :param message_id: Message ID.
     :return: Result dictionary with corresponding message history (if available).
     """
+    if not message_id:
+        res = RoxResponse(False, "Please provide a message ID.")
+        res.log_level = 'ERROR'
+        return res
 
     content = {'message_id': message_id}
     url = "http://{}/get_msg_history".format(rox_connector_url)
@@ -157,7 +168,7 @@ def start_services(service_json_list: list) -> RoxResponse:
     if len(service_json_list) < 1:
         # Service list is empty and therefore invalid.
         res = RoxResponse(False, MSG_MISSING_SERVICES_ERROR)
-        res.data = not_started_json_list
+        #res.data = not_started_json_list
         return res
 
     # Collect names of all services which could not be started.
@@ -244,6 +255,7 @@ def get_running_services() -> list:
 
     if r.status_code == 200:
         services = list(r.json().keys())
+        services = [x for x in services if x not in FORBIDDEN_SERVICES]
         logging.info('currently running services: ' + str(services))
         return services
     else:
@@ -262,7 +274,6 @@ def set_pipeline(pipeline_name: str, service_names: list) -> bool:
 
     url = "http://{}/set_pipeline".format(rox_connector_url)
     content = {'name': pipeline_name, 'services': service_names}
-    logging.error("Halllo" + str(service_names))
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)

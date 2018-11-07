@@ -14,13 +14,17 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
+import json
 import databaseIO
 import filesystemIO
 import rox_requests
 from web import views
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
+
+removed_pipelines = []
 
 @require_http_methods(["GET"])
 def main(request):
@@ -40,6 +44,8 @@ def main(request):
     # Convert to list of tuples.
     pipeline_data_list = []
     for key, value in available_pipelines_json.items():
+        if key in rox_requests.removed_pipes:
+            continue
         data = (key, value["services"], value["active"])
         pipeline_data_list.append(data)
     # Send all data to view.
@@ -64,13 +70,13 @@ def start_service(request):
         return redirect(views.main)
     else:
         # Some services could not be started.
-        if not result_dict["data"]:
+        if not result.data:
             # No services were specified.
-            messages.error(request, result_dict["message"])
+            messages.error(request, result.msg)
             return redirect(views.main)
         else:
             # Some services were specified but could not be started.
-            services_not_started = ", ".join(result_dict["data"])
+            services_not_started = ", ".join(result.data)
             messages.error(request, "Unable to start service: {}.".format(services_not_started))
             return redirect(views.main)
 
@@ -88,13 +94,13 @@ def stop_service(request):
         return redirect(views.main)
     else:
         # Some services could not be stopped.
-        if not result_dict["data"]:
+        if not result.data:
             # No services were specified.
-            messages.error(request, result_dict["message"])
+            messages.error(request, result.msg)
             return redirect(views.main)
         else:
             # Some services were specified but could not be stopped.
-            services_not_stopped = ", ".join(result_dict["data"])
+            services_not_stopped = ", ".join(result.data)
             messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
             return redirect(views.main)
 
@@ -102,21 +108,35 @@ def stop_service(request):
 @require_http_methods(["POST"])
 def create_pipeline(request):
     # Get list of service names which should be used for pipeline.
-    service_name_list = request.POST.getlist("piped_service_names")
+    service_name_list = request.POST.getlist("services[]")
+    logging.error(service_name_list)
     # Create pipe name.
     pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M")
     # Create new pipeline.
     result = rox_requests.set_pipeline(pipe_name, service_name_list)
     if result:
-        return redirect(views.main)
+        if pipe_name in rox_requests.removed_pipes:
+            rox_requests.removed_pipes(pipe_name)
+        response = {'status': 1, 'message': ("Ok")}
+        return HttpResponse(json.dumps(response), content_type='application/json')
     else:
         messages.add_message(request, messages.ERROR, "Could not create pipeline.")
-        return redirect(views.main)
+        response = {'status': 0, 'message': ("Your error")}
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+@require_http_methods(["POST"])
+def delete_pipeline(request):
+
+    pipe_name = request.POST.get("pipe_name","")
+    rox_requests.removed_pipes.append(pipe_name)
+    return redirect(views.main)
+
 
 
 @require_http_methods(["POST"])
 def post_to_pipeline(request):
     """Send message to specified pipeline."""
+
     # Get pipeline name.
     pipeline_name = request.POST["pipeline_name"]
     # Get message.
@@ -165,11 +185,24 @@ def load_session(request):
 @require_http_methods(["POST"])
 def get_message_history(request):
     """Get history of a specified message."""
-    message_id = request.POST["msg_id"]
+    message_id = request.POST.get("msg_id", "")
     result = rox_requests.get_msg_history(message_id)
+
     if result.success:
-        messages.success(request, result.msg)
+        if result.msg == "[]":
+            messages.error(request, "Invalid message ID")
+        else:
+            messages.success(request, result.msg)
         return redirect(views.main)
     else:
         messages.error(request, result.msg)
         return redirect(views.main)
+
+
+def get_response_values(request):
+    mstring = []
+    for key in request.POST.keys():  # "for key in request.GET" works too.
+        # Add filtering logic here.
+        valuelist = request.POST.getlist(key)
+        mstring.extend(['%s=%s' % (key, val) for val in valuelist])
+    return '&'.join(mstring)

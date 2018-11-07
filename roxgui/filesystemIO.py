@@ -24,6 +24,8 @@ def get_service_list():
     available_services = {}
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
+            if f.name == "basic_reporting.json":
+                continue
             service_file = open(os.path.join(services_dir, f.name), 'r')
             service_args = json.load(service_file)
             available_services[f.name[:-5]] = service_args

@@ -1,0 +1,71 @@
+{%block selects%}
+<!-- List of available services -->
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-10">
+                <form action="start_service" method="post" id="available_service_form">
+                    {% csrf_token %}
+                    <select class="custom-select" name="available_service_names" id="available_service_list" multiple>
+                        {% for name in available_service_names %}
+                        <option value="{{ name }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" form="available_service_form" class="btn btn-default">></button>
+                <br>
+                <button type="submit" form="running_service_form" class="btn btn-default"><</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- List of running services -->
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                            <form action="stop_service" method="post" id="running_service_form">
+                            {% csrf_token %}
+                            <select class="custom-select" name="running_service_names" id="running_service_list" multiple>
+                                {% for name in running_service_names %}
+                                <option value="{{ name }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" form="running_service_form" name="watch" class="btn btn-default">Watch</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <input type="button" onclick="addToPipe()" value=">" class="btn btn-default"/>
+                <br>
+                <input type="button" onclick="removeFromPipe()" value="<" class="btn btn-default"/>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Create Pipeline -->
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <form action="create_pipeline" method="post" id="create_pipeline">
+                    {% csrf_token %}
+                    <select class="custom-select" name="piped_service_names" id="piped_service_list" multiple></select>
+                </form>
+            </div>
+            <div class="col-md 12">
+                <button type="submit" onclick="postPipeOptions()" class="btn btn-default">Create Pipeline</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
