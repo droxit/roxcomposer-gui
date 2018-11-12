@@ -63,7 +63,9 @@
 
     <br><br>
 
-
+    {% block logs %}
+    {% include "web/_includes/logs.html"%}
+    {% endblock %}
 
     {% block session %}
     {% include "web/_includes/session.html"%}

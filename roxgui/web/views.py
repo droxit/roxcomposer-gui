@@ -199,6 +199,20 @@ def get_message_history(request):
         return redirect(views.main)
 
 
+@require_http_methods(["POST"])
+def watch_service(request):
+    """save the session to a json file """
+    service_names = request.POST.get("running_service_names", [])
+    result = rox_requests.watch_services(service_names)
+    if result.success:
+        messages.debug(request, result.msg)
+        return redirect(views.main)
+    else:
+        messages.error(request, "Service could not be added to watchlist.")
+        messages.debug(request, result.msg)
+        return redirect(views.main)
+
+
 def get_response_values(request):
     mstring = []
     for key in request.POST.keys():  # "for key in request.GET" works too.

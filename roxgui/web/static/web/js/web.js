@@ -12,6 +12,13 @@ function removeFromPipe() {
     $('#piped_service_list').find('option:selected').remove()
 }
 
+function refresh() {
+
+    setTimeout(function () {
+        location.reload()
+    }, 100);
+}
+
 function postPipeOptions(){
     var options = $('#piped_service_list option');
 
@@ -22,12 +29,7 @@ function postPipeOptions(){
 
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 
-    $.post("create_pipeline", {services: values, csrfmiddlewaretoken : CSRFtoken}, function(data) {
-             if(data.status == 1){ // meaning that everyhting went ok
-                window.location('')
-             }
-             else{
-                window.location('')
-             }
-        });
+    $.post("create_pipeline", {services: values, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload();
+     });
 }

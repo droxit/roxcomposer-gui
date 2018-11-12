@@ -16,3 +16,7 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+
+class Logline(models.Model):
+    service = models.CharField(max_length=200)
+    msg = models.TextField()
