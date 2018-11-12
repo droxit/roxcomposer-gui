@@ -8,23 +8,23 @@
 #
 
 import datetime
+import json
 import logging
 
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
-import json
 import databaseIO
 import filesystemIO
 import rox_requests
 from web import views
-from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
-
 removed_pipelines = []
+
 
 @require_http_methods(["GET"])
 def main(request):
@@ -33,9 +33,10 @@ def main(request):
     databaseIO.update_service_db()
 
     # Get names of all available services.
-    available_service_name_list = filesystemIO.get_service_list()
+    available_service_name_list = filesystemIO.get_json_available_services()
     # Get names of all running services.
-    running_service_name_list = rox_requests.get_running_services()
+    res = rox_requests.get_name_running_services()
+    running_service_name_list = res.data
     # Only consider non-running services as available.
     available_service_name_list = list(set(available_service_name_list) - set(running_service_name_list))
 
@@ -64,19 +65,19 @@ def start_service(request):
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
-    result = rox_requests.start_services(service_json_list)
-    if result.success:
+    res = rox_requests.start_services(service_json_list)
+    if res.success:
         # All services could be started.
         return redirect(views.main)
     else:
         # Some services could not be started.
-        if not result.data:
+        if not res.data:
             # No services were specified.
-            messages.error(request, result.msg)
+            messages.error(request, res.message)
             return redirect(views.main)
         else:
             # Some services were specified but could not be started.
-            services_not_started = ", ".join(result.data)
+            services_not_started = ", ".join(res.data)
             messages.error(request, "Unable to start service: {}.".format(services_not_started))
             return redirect(views.main)
 
@@ -88,19 +89,19 @@ def stop_service(request):
     service_name_list = request.POST.getlist("running_service_names")
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
-    result = rox_requests.shutdown_services(service_name_list)
-    if result.success:
+    res = rox_requests.shutdown_services(service_name_list)
+    if res.success:
         # All services could be stopped.
         return redirect(views.main)
     else:
         # Some services could not be stopped.
-        if not result.data:
+        if not res.data:
             # No services were specified.
-            messages.error(request, result.msg)
+            messages.error(request, res.message)
             return redirect(views.main)
         else:
             # Some services were specified but could not be stopped.
-            services_not_stopped = ", ".join(result.data)
+            services_not_stopped = ", ".join(res.data)
             messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
             return redirect(views.main)
 
@@ -109,9 +110,8 @@ def stop_service(request):
 def create_pipeline(request):
     # Get list of service names which should be used for pipeline.
     service_name_list = request.POST.getlist("services[]")
-    logging.error(service_name_list)
-    # Create pipe name.
-    pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M")
+    # Get pipe name.
+    pipe_name = request.POST.get("name", "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M"))
     # Create new pipeline.
     result = rox_requests.set_pipeline(pipe_name, service_name_list)
     if result:
@@ -124,19 +124,17 @@ def create_pipeline(request):
         response = {'status': 0, 'message': ("Your error")}
         return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 @require_http_methods(["POST"])
 def delete_pipeline(request):
-
-    pipe_name = request.POST.get("pipe_name","")
+    pipe_name = request.POST.get("pipe_name", "")
     rox_requests.removed_pipes.append(pipe_name)
     return redirect(views.main)
-
 
 
 @require_http_methods(["POST"])
 def post_to_pipeline(request):
     """Send message to specified pipeline."""
-
     # Get pipeline name.
     pipeline_name = request.POST["pipeline_name"]
     # Get message.
@@ -145,11 +143,11 @@ def post_to_pipeline(request):
     result = rox_requests.post_to_pipeline(pipeline_name, message)
     if result.success:
         # Message was sent successfully.
-        messages.success(request, result.msg)
+        messages.success(request, result.message)
         return redirect(views.main)
     else:
         # Error while sending message.
-        messages.error(request, result.msg)
+        messages.error(request, result.message)
         return redirect(views.main)
 
 
@@ -189,13 +187,14 @@ def get_message_history(request):
     result = rox_requests.get_msg_history(message_id)
 
     if result.success:
+        messages.success(request, result.message)
         if result.msg == "[]":
             messages.error(request, "Invalid message ID")
         else:
             messages.success(request, result.msg)
         return redirect(views.main)
     else:
-        messages.error(request, result.msg)
+        messages.error(request, result.message)
         return redirect(views.main)
 
 

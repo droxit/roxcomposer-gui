@@ -1,70 +1,67 @@
 {% block pipelineheading %}
-    <div class="fluid-container">
-        <div class="row">
-            <div class="col-sm-10">
-                <p class="h4" data-toggle="collapse" href="#card{{ data.0 }}" aria-expanded="true" aria-controls="{{ data.0 }}">
-                    {{ data.0 }}
-                </p>
-            </div>
-            <div class="col-sm-1">
-                {% if data.2 %}
-                <p>Active</p>
-                {% else %}
-                <p class="text-muted">Inactive</p>
-                {% endif %}
-            </div>
-            <div class="col-sm-1">
-                <form action="delete_pipeline" method="post" id="delete_pipeline">
-                    {% csrf_token %}
-                    <input type="hidden" name="pipe_name" value="{{ data.0 }}">
-                </form>
 
-                <button class="btn btn-primary" form="delete_pipeline">
-                    <span class="glyphicon glyphicon-trash" aria-hidden="true">x</span>
-                </button>
-
-            </div>
+<div class="fluid-container">
+    <div class="row">
+        <div class="col-sm-10">
+            <p class="h4" data-toggle="collapse" href="#card{{ data.0 }}" aria-expanded="true"
+               aria-controls="{{ data.0 }}">
+                {{ data.0 }}
+            </p>
+        </div>
+        <div class="col-sm-1">
+            {% if data.2 %}
+            <p>Active</p>
+            {% else %}
+            <p class="text-muted">Inactive</p>
+            {% endif %}
+        </div>
+        <div class="col-sm-1">
+            <form action="delete_pipeline" method="post" id="delete_pipeline">
+                {% csrf_token %}
+                <input type="hidden" name="pipe_name" value="{{ data.0 }}">
+            </form>
+            <button class="btn btn-primary" form="delete_pipeline">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true">x</span>
+            </button>
         </div>
     </div>
+</div>
 
 {% endblock %}
 
 {%block pipeline%}
 
-     <div id="card{{ data.0 }}" class="collapse">
-        <div class="card-body">
-            <div class="row">
-                <!--<h5 class="card-title">Pipeline: {{ data.0 }}</h5> -->
+<div id="card{{ data.0 }}" class="collapse">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <form action="post_to_pipeline" method="post" id="post_to_pipeline">
+                    <input type="hidden" name="pipeline_name" value="{{ data.0 }}">
+                    {% csrf_token %}
+                    <div class="col-lg-6">
+                        <ul class="list-group">
+                            {% for name in data.1 %}
+                            <li class="list-group-item">{{ name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <small id="pipeHelp" class="form-text text-muted">Services in this pipeline</small>
+                    </div>
+                </form>
             </div>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <form action="post_to_pipeline" method="post" id="post_to_pipeline">
-                        <input type="hidden" name="pipeline_name" value="{{ data.0 }}">
-                        {% csrf_token %}
-                        <div class="col-lg-6">
-                            <ul class="list-group">
-                                {% for name in data.1 %}
-                                    <li class="list-group-item">{{ name }}</li>
-                                {% endfor %}
-                            </ul>
-                            <small id="pipeHelp" class="form-text text-muted">Services in this pipeline</small>
-                        </div>
-
-                    </form>
-                </div>
-                <div class="col-md-4">
-                    <div class="row">
-                        <div class="col-lg-9">
-                            <label for="msg" class="sr-only">Message</label>
-                            <input form="post_to_pipeline" type="text" class="form-control" name="pipe_message" id="msg" placeholder="Message">
-                        </div>
-                        <div class="col-lg-3">
-                            <button type="submit" form="post_to_pipeline" class="btn btn-default">Send</button>
-                        </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <label for="msg" class="sr-only">Message</label>
+                        <input form="post_to_pipeline" type="text" class="form-control" name="pipe_message" id="msg"
+                               placeholder="Message">
+                    </div>
+                    <div class="col-lg-3">
+                        <button type="submit" form="post_to_pipeline" class="btn btn-default">Send</button>
                     </div>
                 </div>
             </div>
         </div>
-     </div>
+    </div>
+</div>
+
 {% endblock %}

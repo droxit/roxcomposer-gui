@@ -16,7 +16,7 @@ from web.models import Service
 
 def update_service_db():
     """checks the SERVICE_DIR for new services and adds them to the DB"""
-    services = filesystemIO.get_service_list()
+    services = filesystemIO.get_json_available_services()
     for service in services:
         try:
             Service.objects.get(name=service)

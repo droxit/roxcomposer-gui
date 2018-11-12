@@ -13,23 +13,19 @@ function removeFromPipe() {
 }
 
 function refresh() {
-
     setTimeout(function () {
         location.reload()
     }, 100);
 }
 
-function postPipeOptions(){
-    var options = $('#piped_service_list option');
-
-    var values = $.map(options ,function(option) {
+function postPipeOptions() {
+    var pipeline_options = $('#piped_service_list option');
+    var pipeline_name = document.getElementById('pipeline_name').value;
+    var pipeline_services = $.map(pipeline_options, function(option) {
         return option.value;
     });
-    console.log(values);
-
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-
-    $.post("create_pipeline", {services: values, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+    $.post("create_pipeline", {name: pipeline_name, services: pipeline_services, csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload();
      });
 }

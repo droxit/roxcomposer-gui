@@ -16,10 +16,12 @@ from user_settings import SERVICES_DIR
 services_dir = SERVICES_DIR  # get path to services directory
 
 
-def get_service_list():
+def get_json_available_services() -> dict:
     """
-    get a list of all available services in the services directory
-    key: unique service name, value: its JSON data
+    Get JSON data of all available services.
+    :return: Dictionary concerning all available services
+    (key: unique service name, value: corresponding JSON data).
+    May be empty in case of an error.
     """
     available_services = {}
     for f in os.scandir(services_dir):
@@ -33,9 +35,12 @@ def get_service_list():
     return available_services
 
 
-def get_service_names():
-    """get the names of available services in a list (names are unique)"""
-
+def get_name_available_services() -> list:
+    """
+    Get names of all available services.
+    :return: List of names concerning all available services.
+    May be empty in case of an error.
+    """
     available_services = []
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
@@ -67,7 +72,7 @@ def get_service_json_from_filesystem(service_name: str) -> dict:
 
 def get_service_jsons_from_filesystem(service_name_list: list) -> list:
     """
-    Convert list of service namesvto corresponding list of JSON dictionaries.
+    Convert list of service names to corresponding list of JSON dictionaries.
     :param service_name_list: List of service names.
     :return: Corresponding list of JSON dictionaries which may be empty in case of an error.
     """
