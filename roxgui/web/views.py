@@ -60,7 +60,7 @@ def main(request):
 def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.
-    service_name_list = request.POST.getlist("available_service_names")
+    service_name_list = request.POST.getlist("available_service_names", default=[])
     # Get list of corresponding JSON dictionaries.
     service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)
     # Start specified services and get list of JSON dictionaries
@@ -86,7 +86,7 @@ def start_service(request):
 def stop_service(request):
     """Stop services specified in POST request's metadata."""
     # Get list of service names which should be stopped.
-    service_name_list = request.POST.getlist("running_service_names")
+    service_name_list = request.POST.getlist("running_service_names", default=[])
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
     res = rox_requests.shutdown_services(service_name_list)
@@ -108,8 +108,9 @@ def stop_service(request):
 
 @require_http_methods(["POST"])
 def create_pipeline(request):
+    """Create new pipeline."""
     # Get list of service names which should be used for pipeline.
-    service_name_list = request.POST.getlist("services[]")
+    service_name_list = request.POST.getlist("services", default=[])
     # Get pipe name.
     pipe_name = request.POST.get("name", "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M"))
     # Create new pipeline.
@@ -127,6 +128,7 @@ def create_pipeline(request):
 
 @require_http_methods(["POST"])
 def delete_pipeline(request):
+    """Delete pipeline specified in POST request's metadata."""
     pipe_name = request.POST.get("pipe_name", "")
     rox_requests.removed_pipes.append(pipe_name)
     return redirect(views.main)
@@ -134,11 +136,11 @@ def delete_pipeline(request):
 
 @require_http_methods(["POST"])
 def post_to_pipeline(request):
-    """Send message to specified pipeline."""
+    """Send message to pipeline specified in POST request's metadata."""
     # Get pipeline name.
-    pipeline_name = request.POST["pipeline_name"]
+    pipeline_name = request.POST.get("pipeline_name", default="");
     # Get message.
-    message = request.POST["pipe_message"]
+    message = request.POST.get("pipe_message", default="")
     # Send message and get result.
     result = rox_requests.post_to_pipeline(pipeline_name, message)
     if result.success:
@@ -153,30 +155,30 @@ def post_to_pipeline(request):
 
 @require_http_methods(["POST"])
 def save_session(request):
-    """save the session to a json file """
-    dumpfile = request.POST["dumpfile"]
-    result = rox_requests.dump_everything(dumpfile)
+    """Save current session to JSON file."""
+    file_name = request.POST.get("save_file_name", default="")
+    result = rox_requests.save_session(file_name)
     if result.success:
-        messages.success(request, "Session saved as {}.".format(dumpfile))
-        messages.debug(request, result.msg)
+        messages.success(request, "Session saved as {}.".format(file_name))
+        messages.debug(request, result.message)
         return redirect(views.main)
     else:
         messages.error(request, "Session could not be saved.")
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
 
 
 @require_http_methods(["POST"])
 def load_session(request):
-    """save the session to a json file """
-    dumpfile = request.POST["dumpfile"]
-    result = rox_requests.restore_session(dumpfile)
+    """Load session from JSON file."""
+    file_name = request.POST.get("load_file_name", default="")
+    result = rox_requests.load_session(file_name)
     if result.success:
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
     else:
         messages.error(request, "Session could not be restored.")
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
 
 
@@ -216,6 +218,6 @@ def get_response_values(request):
     mstring = []
     for key in request.POST.keys():  # "for key in request.GET" works too.
         # Add filtering logic here.
-        valuelist = request.POST.getlist(key)
+        valuelist = request.POST.getlist(key, default=[])
         mstring.extend(['%s=%s' % (key, val) for val in valuelist])
     return '&'.join(mstring)

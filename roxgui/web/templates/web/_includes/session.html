@@ -1,23 +1,23 @@
 {% block session %}
-    <div class="row">
-        <div class="col-lg-3">
-            <form id="save_session" action="save_session" method="post">
-                {% csrf_token %}
-                <input type="text" class="form-control" name="dumpfile" placeholder="Filtername.json">
-            </form>
-        </div>
-        <div class="col-lg-2">
-            <button type="submit" class="btn btn-primary mb-2" form="save_session">Save Session</button>
-        </div>
-        <div class="col-lg-2"></div>
-        <div class="col-lg-3">
-            <form id="load_session" action="load_session" method="post">
-                {% csrf_token %}
-                <input type="text" class="form-control" name="dumpfile" placeholder="Filtername.json">
-            </form>
-        </div>
-        <div class="col-lg-2">
-            <button type="submit" form="load_session"  class="btn btn-primary mb-2">Load Session</button>
-        </div>
+<div class="row">
+    <div class="col-lg-3">
+        <form id="save_session" action="save_session" method="post">
+            {% csrf_token %}
+            <input type="text" class="form-control" name="save_file_name" placeholder="Filtername.json">
+        </form>
     </div>
+    <div class="col-lg-2">
+        <button type="submit" form="save_session" class="btn btn-primary mb-2">Save session</button>
+    </div>
+    <div class="col-lg-2"></div>
+    <div class="col-lg-3">
+        <form id="load_session" action="load_session" method="post">
+            {% csrf_token %}
+            <input type="text" class="form-control" name="load_file_name" placeholder="Filtername.json">
+        </form>
+    </div>
+    <div class="col-lg-2">
+        <button type="submit" form="load_session" class="btn btn-primary mb-2">Load session</button>
+    </div>
+</div>
 {% endblock %}

@@ -79,6 +79,16 @@ def _create_http_status_error(http_status_code: int, message: str) -> str:
     return "Error code {}.\n{}.".format(http_status_code, message)
 
 
+def _create_file_error(file_path: str, message: str):
+    """
+    Create standard message concerning file IO errors.
+    :param file_path: Corresponding file path.
+    :param message: Received error message.
+    :return: Error message concerning file IO errors.
+    """
+    return "Unable to open file {}.\n{}.".format(file_path, message)
+
+
 def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
     """
     Post message to specified pipeline.
@@ -304,64 +314,64 @@ def get_pipelines() -> dict:
         return r.json()
 
 
-def dump_everything(file_name):
-    """Save current session to specified file"""
-    file_name = os.path.join(rox_composer_dir, file_name)
-    f = None
+def save_session(file_name: str) -> RoxResponse:
+    """
+    Save current session to specified file.
+    :param file_path: File name.
+    :return: RoxResponse instance documenting if session could be saved.
+    """
+    file_path = os.path.join(rox_composer_dir, file_name)
+    fd = None
     try:
-        f = open(file_name, 'w')
-    except Exception as e:
-        err = 'ERROR unable to open file {} - {}'.format(file_name, e)
-        logging.error(err)
-        return RoxResponse(False, err)
+        fd = open(file_path, 'w')
+    except OSError as err:
+        error_msg = _create_file_error(file_path, err)
+        return RoxResponse(False, error_msg)
 
     try:
         r = requests.get('http://{}/dump_services_and_pipelines'.format(rox_connector_url))
-    except requests.exceptions.ConnectionError as e:
-        err = "{}\n{}".format(MSG_CONNECTION_ERROR, e)
-        logging.error(err)
-        return RoxResponse(False, err)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(err)
+        return RoxResponse(False, error_msg)
 
     if r.status_code == 200:
         o = r.json()
         try:
-            json.dump(o, f)
-        except Exception as e:
-            err = 'ERROR: unable to write dump to file {} - {}'.format(file_name, e)
-            logging.error(err)
-            return RoxResponse(False, err)
+            json.dump(o, fd)
+        except Exception as err:
+            error_msg = _create_file_error(file_path, err)
+            return RoxResponse(False, error_msg)
         finally:
-            f.close()
-
-        return RoxResponse(True, "dump written to file {}\n{}".format(file_name, r.text))
+            fd.close()
+        return RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
     else:
-        f.close()
-        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
-        logging.error(err)
-        return RoxResponse(False, err)
+        fd.close()
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
 
 
-def restore_session(file_name):
-    """ restore a saved session """
+def load_session(file_name: str) -> RoxResponse:
+    """
+    Load session from specified JSON file.
+    :param file_name: File name.
+    :return: RoxResponse instance documenting if session could be loaded.
+    """
     session_file = os.path.join(rox_composer_dir, file_name)
     if os.path.isfile(session_file):
-        f = open(session_file, "r")
-        restore_json = json.loads(f.read())
-        f.close()
-
+        fd = open(session_file, 'r')
+        restore_json = json.loads(fd.read())
+        fd.close()
     else:
-        err = 'file {} not found'.format(file_name)
-        logging.error(err)
-        return RoxResponse(False, err)
+        error_msg = _create_file_error(session_file, "Not a valid file.")
+        return RoxResponse(False, error_msg)
 
     r = requests.post('http://{}/load_services_and_pipelines'.format(rox_connector_url), data=json.dumps(restore_json),
                       headers=JSON_HEADER)
     if r.status_code == 200:
         return RoxResponse(True, r.text)
     else:
-        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
-        logging.error(err)
-        return RoxResponse(False, err)
+        error_msg = -_create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
 
 
 def watch_services(service_names, session=None, timeout=SESSION_TIMEOUT):
