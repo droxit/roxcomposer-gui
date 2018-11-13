@@ -17,7 +17,7 @@ from user_settings import ROX_DIR, ROX_URL
 
 # Log settings.
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="test.log", filemode='w', level=logging.INFO)
+logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 # Connection details for ROXconnector.
 # ====================================
@@ -49,6 +49,8 @@ SESSION_TIMEOUT = 3600
 FORBIDDEN_SERVICES = ['basic_reporting']
 
 removed_pipes = []
+
+current_session = None
 
 
 class RoxResponse():
@@ -110,8 +112,11 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        result_msg = "Message {} posted: {}.".format(r.json()['message_id'], message)
-        return RoxResponse(True, result_msg)
+        msg_id = r.json()['message_id']
+        result_msg = "Message {} posted: {}.".format(msg_id, message)
+        response = RoxResponse(True, result_msg)
+        response.data = msg_id
+        return response
 
 
 def get_msg_history(message_id: str) -> RoxResponse:
@@ -445,6 +450,8 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
             res = RoxResponse(True, r.text)
             res.data = rox_session
             return res
+        else:
+            return RoxResponse(False, "All services already watched.")
 
 
 def get_service_logs(session = None):
@@ -453,7 +460,6 @@ def get_service_logs(session = None):
         logging.error(err)
         return RoxResponse(False, err)
 
-    #logging.error(str(session))
     data = {'sessionid': session['id']}
 
     try:
@@ -469,7 +475,9 @@ def get_service_logs(session = None):
         return RoxResponse(False, r.text)
 
     logs = [json.loads(logline) for logline in r.json()['loglines']]
-    return RoxResponse(True, logs)
+    response = RoxResponse(True, r.text)
+    response.data = logs
+    return response
 
 
 def unwatch_services():  # TODO
