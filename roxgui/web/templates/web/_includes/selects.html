@@ -1,7 +1,6 @@
 {%block selects%}
+<!-- List of available services -->
 <div class="row mb-5">
-
-    <!-- List of available services. -->
     <div class="col-md-4">
         <div class="row">
             <div class="col-md-10">
@@ -14,6 +13,7 @@
                     </select>
                 </form>
             </div>
+
             <div class="col-md-2">
                 <button type="submit" form="available_service_form" class="btn btn-default">></button>
                 <br>
@@ -22,16 +22,15 @@
         </div>
     </div>
 
-    <!-- List of running services. -->
+    <!-- List of running services -->
     <div class="col-md-4">
         <div class="row">
             <div class="col-md-10">
                 <div class="row">
                     <div class="col-md-12 mb-2">
-                        <form action="stop_service" method="post" id="running_service_form">
+                            <form action="stop_service" method="post" id="running_service_form">
                             {% csrf_token %}
-                            <select class="custom-select" name="running_service_names" id="running_service_list"
-                                    multiple>
+                            <select class="custom-select" name="running_service_names" id="running_service_list" multiple>
                                 {% for name in running_service_names %}
                                 <option value="{{ name }}">{{ name }}</option>
                                 {% endfor %}
@@ -39,20 +38,23 @@
                         </form>
                     </div>
                     <div class="col-md-12">
-                        <button type="submit" form="running_service_form" name="watch" class="btn btn-default">Watch
-                        </button>
+                        <button type="submit" onclick="watch()" id="watch" class="btn btn-default">Watch</button>
+                        <button type="submit" onclick="unwatch()" id="unwatch" class="btn btn-default">Unwatch</button>
                     </div>
                 </div>
             </div>
+
             <div class="col-md-2">
                 <input type="button" onclick="addToPipe()" value=">" class="btn btn-default"/>
                 <br>
                 <input type="button" onclick="removeFromPipe()" value="<" class="btn btn-default"/>
             </div>
         </div>
+
+
     </div>
 
-    <!-- Create pipeline. -->
+    <!-- Create Pipeline -->
     <div class="col-md-4">
         <div class="row">
             <div class="col-md-12 mb-2">
@@ -61,9 +63,11 @@
                     <select class="custom-select" name="piped_service_names" id="piped_service_list" multiple></select>
                 </form>
             </div>
-            <div class="col-md 12">
+            <div class="col-md-12 mb-2">
                 <label for="pipeline_name" class="sr-only">Pipeline name</label>
                 <input type="text" class="form-control" id="pipeline_name" placeholder="Pipeline name">
+            </div>
+            <div class="col-md-12 mb-2">
                 <button type="submit" onclick="postPipeOptions()" class="btn btn-default">Create pipeline</button>
             </div>
         </div>

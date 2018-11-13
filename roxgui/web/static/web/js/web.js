@@ -29,3 +29,24 @@ function postPipeOptions() {
         location.reload();
      });
 }
+
+function watch(){
+    var options = $('#running_service_list').val();
+    console.log(options)
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    if(options.length >= 1){
+        $.post("watch", {services: options, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload();
+     });
+    }
+}
+
+function unwatch(){
+    var options = $('#running_service_list').val();
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    if(options.length >= 1){
+        $.post("unwatch", {services: options, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload();
+     });
+    }
+}

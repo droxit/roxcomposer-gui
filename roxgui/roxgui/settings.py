@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Message level for django style messages
-MESSAGE_LEVEL = message_constants.DEBUG
+#MESSAGE_LEVEL = message_constants.DEBUG
 
 # Application definition
 

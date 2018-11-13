@@ -11,7 +11,7 @@ import json
 import logging
 
 import filesystemIO
-from web.models import Service
+from web.models import Service, RoxSession
 
 
 def update_service_db():
@@ -21,7 +21,7 @@ def update_service_db():
         try:
             Service.objects.get(name=service)
         except Service.DoesNotExist:
-            service_json = json.dumps(serviceIO.get_service_json(service))
+            service_json = json.dumps(filesystemIO.get_service_json(service))
             s = Service(name=service, service_json=service_json)
             s.save()
             logging.info("service saved: " + str(service))
@@ -50,3 +50,16 @@ def get_service_jsons(service_names: list) -> list:
         service_jsons.append(service_json)
 
     return service_jsons
+
+def get_session(sess_id):
+    """
+
+    :return: session dict
+    """
+    try:
+        s = RoxSession.objects.get(id=sess_id)
+        services = set(", ".split(s.services))
+        sess = {'id':s.id, 'timeout':s.timeout, 'services':services}
+        return sess
+    except RoxSession.DoesNotExist:
+        logging.error("Session does not exist: " +  sess_id)
