@@ -20,7 +20,7 @@ import filesystemIO
 import rox_requests
 from web import views
 from django.http import HttpResponse
-from web.models import RoxSession
+from web.models import RoxSession, Logline
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,7 @@ LOG_RELOAD = 100
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
+    global current_session
     # Update database concerning available services.
     databaseIO.update_service_db()
 
@@ -47,8 +48,20 @@ def main(request):
     # Convert to list of tuples.
     pipeline_data_list = []
 
+    if current_session is not None:
+        sess = databaseIO.get_session(current_session)
+        response = rox_requests.get_service_logs(sess)
+        logging.debug("logging data: "+ str(response.data))
+        for log in response.data:
+            l = Logline(service= log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+            l.save()
+            logging.debug("saved a log line")
 
-    logs = get_service_logs(request)
+    logs = Logline.objects.values()
+    logging.debug("logs: " + str(logs))
+    #logging.error("LOGS" + str(logs))
+    #logs = [str(l) for l in list(logs)]
+    #logging.error("LOGS" + str(logs))
 
     for key, value in available_pipelines_json.items():
         if key in rox_requests.removed_pipes:
@@ -117,14 +130,14 @@ def stop_service(request):
 def create_pipeline(request):
     """Create new pipeline."""
     # Get list of service names which should be used for pipeline.
-    service_name_list = request.POST.getlist("services[]")
+    service_name_list = request.POST.getlist("services[]", default=[])
     # Get pipe name.
     pipe_name = request.POST.get("name", "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M"))
     # Create new pipeline.
     result = rox_requests.set_pipeline(pipe_name, service_name_list)
     if result:
         if pipe_name in rox_requests.removed_pipes:
-            rox_requests.removed_pipes(pipe_name)
+            rox_requests.removed_pipes.remove(pipe_name)
         response = {'status': 1, 'message': ("Ok")}
         return HttpResponse(json.dumps(response), content_type='application/json')
     else:
@@ -146,7 +159,7 @@ def delete_pipeline(request):
 def post_to_pipeline(request):
     """Send message to pipeline specified in POST request's metadata."""
     # Get pipeline name.
-    pipeline_name = request.POST.get("pipeline_name", default="");
+    pipeline_name = request.POST.get("pipeline_name", default="")
     # Get message.
     message = request.POST.get("pipe_message", default="")
     # Send message and get result.
@@ -221,26 +234,28 @@ def watch(request):
     else:
         result = rox_requests.watch_services(service_names)
         rox_session = result.data
-        s = RoxSession(id=rox_session['id'], services=rox_session['services'], timeout=rox_session['timeout'])
+        session_services = ", ".join(list(rox_session['services']))
+        s = RoxSession(id=rox_session['id'], services=session_services, timeout=rox_session['timeout'])
         s.save()
 
-        logging.error("HERE!")
         current_session = rox_session['id']
 
 
     if result.success:
-        logging.error("HERE1!")
         messages.debug(request, result.message)
         return redirect(views.main)
     else:
-        logging.error("HERE2!")
         messages.error(request, "Service could not be added to watchlist.")
         messages.debug(request, result.message)
         return redirect(views.main)
 
 @require_http_methods(["POST"])
 def get_service_logs(request):
-    pass
+    global current_session
+
+
+    return redirect(views.main)
+
 
 @require_http_methods(["POST"])
 def unwatch(request):

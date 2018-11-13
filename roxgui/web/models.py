@@ -20,6 +20,9 @@ class Service(models.Model):
 class Logline(models.Model):
     service = models.CharField(max_length=200)
     msg = models.TextField()
+    level = models.CharField(max_length=200, default='debug')
+    time = models.TextField(default="")
+
 
 class RoxSession(models.Model):
     id = models.CharField(max_length=200, primary_key=True)
@@ -27,4 +30,4 @@ class RoxSession(models.Model):
     timeout = models.IntegerField()
 
     def __str__(self):
-        return self.id
+        return "ID: {}, TIMEOUT: {}, SERVICES: {}.".format(str(self.id), str(self.timeout), str(self.services))
