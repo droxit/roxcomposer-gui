@@ -10,6 +10,7 @@
 import json
 import logging
 import os
+import rox_requests
 
 from user_settings import SERVICES_DIR
 
@@ -26,7 +27,7 @@ def get_json_available_services() -> dict:
     available_services = {}
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
-            if f.name == "basic_reporting.json":
+            if f.name[:-5] in rox_requests.FORBIDDEN_SERVICES:
                 continue
             service_file = open(os.path.join(services_dir, f.name), 'r')
             service_args = json.load(service_file)
@@ -44,6 +45,8 @@ def get_name_available_services() -> list:
     available_services = []
     for f in os.scandir(services_dir):
         if f.is_file() and f.name.endswith('.json'):
+            if f.name[:-5] in rox_requests.FORBIDDEN_SERVICES:
+                continue
             available_services.append(f.name[:-5])
     return available_services
 

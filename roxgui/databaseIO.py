@@ -11,6 +11,7 @@ import json
 import logging
 
 import filesystemIO
+import rox_requests
 from web.models import Service, RoxSession
 
 
@@ -46,6 +47,8 @@ def get_service_jsons(service_names: list) -> list:
     """
     service_jsons = []
     for service in service_names:
+        if service[:-5] in rox_requests.FORBIDDEN_SERVICES:
+            continue
         service_json = get_service_json(service)
         service_jsons.append(service_json)
 
@@ -58,7 +61,9 @@ def get_session(sess_id):
     """
     try:
         s = RoxSession.objects.get(id=sess_id)
-        services = set(", ".split(s.services))
+        logging.error(s.services)
+        services = set(s.services.split(", "))
+        logging.error(services)
         sess = {'id':s.id, 'timeout':s.timeout, 'services':services}
         return sess
     except RoxSession.DoesNotExist:

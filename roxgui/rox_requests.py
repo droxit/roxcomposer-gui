@@ -260,6 +260,7 @@ def get_name_running_services() -> RoxResponse:
         return RoxResponse(False, error_msg)
     else:
         running_service_names = list(r.json().keys())
+        running_service_names = [x for x in running_service_names if x not in FORBIDDEN_SERVICES]
         res = RoxResponse(True, "")
         res.data = running_service_names
         return res
@@ -419,7 +420,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
         unwatched_services = list(rox_session['services'] - set(service_names))
 
         if unwatched_services:
-            #services = ", ".join(unwatched_services)
+
             data = {'sessionid': rox_session['id'], 'services': unwatched_services}
             try:
                 r = requests.post('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
@@ -452,6 +453,7 @@ def get_service_logs(session = None):
         logging.error(err)
         return RoxResponse(False, err)
 
+    #logging.error(str(session))
     data = {'sessionid': session['id']}
 
     try:
@@ -461,11 +463,13 @@ def get_service_logs(session = None):
         logging.error(err)
         return RoxResponse(False, err)
 
+
     if r.status_code != 200:
         logging.error(r.text)
         return RoxResponse(False, r.text)
 
-    return RoxResponse(True, "\n".join(r.json()['loglines']))
+    logs = [json.loads(logline) for logline in r.json()['loglines']]
+    return RoxResponse(True, logs)
 
 
 def unwatch_services():  # TODO
