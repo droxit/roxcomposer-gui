@@ -117,7 +117,7 @@ def stop_service(request):
 def create_pipeline(request):
     """Create new pipeline."""
     # Get list of service names which should be used for pipeline.
-    service_name_list = request.POST.getlist("services", default=[])
+    service_name_list = request.POST.getlist("services[]")
     # Get pipe name.
     pipe_name = request.POST.get("name", "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M"))
     # Create new pipeline.
@@ -230,12 +230,12 @@ def watch(request):
 
     if result.success:
         logging.error("HERE1!")
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
     else:
         logging.error("HERE2!")
         messages.error(request, "Service could not be added to watchlist.")
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
 
 @require_http_methods(["POST"])
@@ -253,11 +253,11 @@ def unwatch(request):
 
 
     if result.success:
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
     else:
         messages.error(request, "Couldn't unwatch services.")
-        messages.debug(request, result.msg)
+        messages.debug(request, result.message)
         return redirect(views.main)
 
 
