@@ -22,7 +22,7 @@ def update_service_db():
         try:
             Service.objects.get(name=service)
         except Service.DoesNotExist:
-            service_json = json.dumps(filesystemIO.get_service_json(service))
+            service_json = json.dumps(filesystemIO.get_service_json_from_filesystem(service))
             s = Service(name=service, service_json=service_json)
             s.save()
             logging.info("service saved: " + str(service))
@@ -61,9 +61,8 @@ def get_session(sess_id):
     """
     try:
         s = RoxSession.objects.get(id=sess_id)
-        logging.error(s.services)
         services = set(s.services.split(", "))
-        logging.error(services)
+
         sess = {'id':s.id, 'timeout':s.timeout, 'services':services}
         return sess
     except RoxSession.DoesNotExist:

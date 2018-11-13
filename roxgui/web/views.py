@@ -24,14 +24,13 @@ from web.models import RoxSession, Logline
 
 logger = logging.getLogger(__name__)
 
-current_session = None
-removed_pipelines = []
+
 LOG_RELOAD = 100
+LOG_TIMEOUT = 10000
 
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
-    global current_session
     # Update database concerning available services.
     databaseIO.update_service_db()
 
@@ -48,20 +47,8 @@ def main(request):
     # Convert to list of tuples.
     pipeline_data_list = []
 
-    if current_session is not None:
-        sess = databaseIO.get_session(current_session)
-        response = rox_requests.get_service_logs(sess)
-        logging.debug("logging data: "+ str(response.data))
-        for log in response.data:
-            l = Logline(service= log['service'], level=log['level'], msg=log['msg'], time=log['time'])
-            l.save()
-            logging.debug("saved a log line")
-
-    logs = Logline.objects.values()
-    logging.debug("logs: " + str(logs))
-    #logging.error("LOGS" + str(logs))
-    #logs = [str(l) for l in list(logs)]
-    #logging.error("LOGS" + str(logs))
+    #save_log()
+    logs = get_logs()
 
     for key, value in available_pipelines_json.items():
         if key in rox_requests.removed_pipes:
@@ -166,6 +153,7 @@ def post_to_pipeline(request):
     result = rox_requests.post_to_pipeline(pipeline_name, message)
     if result.success:
         # Message was sent successfully.
+        save_log(msg_id=result.data)
         messages.success(request, result.message)
         return redirect(views.main)
     else:
@@ -224,12 +212,10 @@ def get_message_history(request):
 @require_http_methods(["POST"])
 def watch(request):
     """save the session to a json file """
-    global current_session
 
     service_names = request.POST.getlist("services[]")
-    logging.error("DATA:"+str(service_names))
-    if current_session is not None:
-        rox_session = databaseIO.get_session(current_session)
+    if rox_requests.current_session:
+        rox_session = databaseIO.get_session(rox_requests.current_session)
         result = rox_requests.watch_services(service_names, rox_session=rox_session)
     else:
         result = rox_requests.watch_services(service_names)
@@ -238,7 +224,7 @@ def watch(request):
         s = RoxSession(id=rox_session['id'], services=session_services, timeout=rox_session['timeout'])
         s.save()
 
-        current_session = rox_session['id']
+        rox_requests.current_session = rox_session['id']
 
 
     if result.success:
@@ -251,7 +237,6 @@ def watch(request):
 
 @require_http_methods(["POST"])
 def get_service_logs(request):
-    global current_session
 
 
     return redirect(views.main)
@@ -260,9 +245,8 @@ def get_service_logs(request):
 @require_http_methods(["POST"])
 def unwatch(request):
     """save the session to a json file """
-    global current_session
     service_names = request.POST.getlist("services[]")
-    sess_id = current_session
+    sess_id = rox_requests.current_session
     rox_session = databaseIO.get_session(sess_id)
     result = rox_requests.unwatch_services(service_names, rox_session = rox_session)
 
@@ -283,3 +267,29 @@ def get_response_values(request):
         valuelist = request.POST.getlist(key, default=[])
         mstring.extend(['%s=%s' % (key, val) for val in valuelist])
     return '&'.join(mstring)
+
+def save_log(msg_id = None):
+    """
+    Save all new log messages from server
+    A log message can either be from watching services #TODO
+    :param msg_id: optional, if the log concerns a specific message
+    :return:
+    """
+    if rox_requests.current_session: #if there is a current session write logs to database
+        sess = databaseIO.get_session(rox_requests.current_session) #retrieve current session
+        response = rox_requests.get_service_logs(sess) #get the recent logs
+        if response.data: #if there are any new log lines write them to database
+            for log in response.data: #write each log line separately
+                if msg_id: #TODO
+                    l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+                else:
+                    l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+                l.save() #save to DB
+
+def get_logs():
+    logs = Logline.objects.order_by('-time')[:LOG_RELOAD]
+    return logs
+
+def update_logs():
+    pass
+    #logs = Logline.objects.filter(time__range=(datetime.datetime.combine(d)))
