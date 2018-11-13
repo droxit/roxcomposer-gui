@@ -1,6 +1,6 @@
 {%block selects%}
 <!-- List of available services -->
-<div class="row mb-5">
+<div class="row">
     <div class="col-md-4">
         <div class="row">
             <div class="col-md-10">
@@ -20,6 +20,9 @@
                 <button type="submit" form="running_service_form" class="btn btn-default"><</button>
             </div>
         </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#service_params">
+            Create service
+        </button>
     </div>
 
     <!-- List of running services -->
@@ -28,9 +31,10 @@
             <div class="col-md-10">
                 <div class="row">
                     <div class="col-md-12 mb-2">
-                            <form action="stop_service" method="post" id="running_service_form">
+                        <form action="stop_service" method="post" id="running_service_form">
                             {% csrf_token %}
-                            <select class="custom-select" name="running_service_names" id="running_service_list" multiple>
+                            <select class="custom-select" name="running_service_names" id="running_service_list"
+                                    multiple>
                                 {% for name in running_service_names %}
                                 <option value="{{ name }}">{{ name }}</option>
                                 {% endfor %}

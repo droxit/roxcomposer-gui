@@ -13,6 +13,7 @@ from web import views
 
 urlpatterns = [
     path('', views.main, name="web_main"),
+    path("create_service", views.create_service, name="web_create_service"),
     path("start_service", views.start_service, name="web_start_service"),
     path("stop_service", views.stop_service, name="web_stop_service"),
     path("create_pipeline", views.create_pipeline, name="web_create_pipeline"),

@@ -18,57 +18,58 @@
         </div>
     </div>
 
-
     <!-- Message History -->
     <form class="form-inline" action="get_message_history" method="post">
         {% csrf_token %}
         <div class="form-group mr-sm-3 mb-2">
             <label for="msg_id" class="sr-only">Message ID</label>
-            <input type="text" class="form-control" name="msg_id" id="msg_id" placeholder="Message ID">
+            <input type="text" class="form-control" name="pipe_message_id" id="msg_id" placeholder="Message ID">
         </div>
         <button type="submit" class="btn btn-primary mb-2">Show History</button>
     </form>
 
-
     {%block selects%}
-        {% include "web/_includes/selects.html" %}
+    {% include "web/_includes/selects.html" %}
     {%endblock%}
-
 
     {% if pipeline_data %}
 
-        {% for data in pipeline_data %}
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12 mb-2">
-                    <div class="card">
-                        <div class="card-header">
-                            {% block pipelineheading %}
-                            {% include "web/_includes/pipeline.html" %}
-                            {% endblock %}
-                        </div>
-                        {%block pipeline%}
-                        {%endblock%}
+    {% for data in pipeline_data %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 mb-2">
+                <div class="card">
+                    <div class="card-header">
+                        {% block pipelineheading %}
+                        {% include "web/_includes/pipeline.html" %}
+                        {% endblock %}
                     </div>
+                    {%block pipeline%}
+                    {%endblock%}
                 </div>
             </div>
-
         </div>
 
-        {% endfor %}
+    </div>
+
+    {% endfor %}
 
     {% else %}
-        <p>No pipelines available.</p>
+    <p>No pipelines available.</p>
     {% endif %}
 
     <br><br>
 
     {% block logs %}
-    {% include "web/_includes/logs.html"%}
+    {% include "web/_includes/logs.html" %}
     {% endblock %}
 
     {% block session %}
-    {% include "web/_includes/session.html"%}
+    {% include "web/_includes/session.html" %}
+    {% endblock %}
+
+    {% block service_params %}
+    {% include "web/_includes/service_params.html" %}
     {% endblock %}
 </div>
 <script src="{% static 'web/js/web.js'%}"></script>

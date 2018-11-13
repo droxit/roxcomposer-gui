@@ -10,11 +10,11 @@
 import json
 import logging
 import os
-import rox_requests
 
+import rox_requests
 from user_settings import SERVICES_DIR
 
-services_dir = SERVICES_DIR  # get path to services directory
+services_dir = SERVICES_DIR
 
 
 def get_json_available_services() -> dict:

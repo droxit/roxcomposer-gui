@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-8">
                 <form action="post_to_pipeline" method="post" id="post_to_pipeline">
-                    <input type="hidden" name="pipeline_name" value="{{ data.0 }}">
+                    <input type="hidden" name="pipe_name" value="{{ data.0 }}">
                     {% csrf_token %}
                     <div class="col-lg-6">
                         <ul class="list-group">
@@ -51,8 +51,10 @@
             <div class="col-md-4">
                 <div class="row">
                     <div class="col-lg-9">
-                        <label for="msg" class="sr-only">Message</label>
-                        <input form="post_to_pipeline" type="text" class="form-control" id="msg" placeholder="Message">
+                        <label for="msg_text" class="sr-only">Message</label>
+                        <input form="post_to_pipeline" type="text" class="form-control" name="pipe_message_text"
+                               id="msg_text"
+                               placeholder="Message">
                     </div>
                     <div class="col-lg-3">
                         <button type="submit" form="post_to_pipeline" class="btn btn-default">Send</button>

@@ -13,10 +13,9 @@ import os
 
 import requests
 
-from user_settings import ROX_DIR, ROX_URL
+from user_settings import ROX_DIR, ROX_URL, SERVICES_DIR
 
 # Log settings.
-logger = logging.getLogger(__name__)
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 # Connection details for ROXconnector.
@@ -27,6 +26,9 @@ rox_connector_url = ROX_URL
 
 # Path to ROXcomposer project.
 rox_composer_dir = ROX_DIR
+
+# Path to services folder.
+services_dir = SERVICES_DIR
 
 # Constants.
 # ==========
@@ -46,6 +48,7 @@ MSG_MISSING_SERVICES_ERROR = "No services specified."
 # Session timeout.
 SESSION_TIMEOUT = 3600
 
+# Default services.
 FORBIDDEN_SERVICES = ['basic_reporting']
 
 removed_pipes = []
@@ -53,13 +56,13 @@ removed_pipes = []
 current_session = None
 
 
-class RoxResponse():
+class RoxResponse:
     """Class encapsulating ROXconnector response."""
 
-    def __init__(self, success: bool, message: str):
+    def __init__(self, success: bool, message: str = "", data=[]):
         self.success = success
         self.message = message
-        self.data = []
+        self.data = data
 
 
 def _create_connection_error(message: str) -> str:
@@ -91,16 +94,17 @@ def _create_file_error(file_path: str, message: str):
     return "Unable to open file {}.\n{}.".format(file_path, message)
 
 
-def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
+def get_message_history(message_id: str) -> RoxResponse:
     """
-    Post message to specified pipeline.
-    :param pipeline_name: Pipeline name to which a message should be sent.
-    :param message: Message as string.
-    :return: RoxResponse instance documenting if data could be posted to pipeline.
+    Get history of specified message ID.
+    :param message_id: Message ID.
+    :return: RoxResponse instance with corresponding message history (if available).
     """
+    if not message_id:
+        return RoxResponse(False, "Please provide a message ID.")
 
-    content = {'name': pipeline_name, 'data': message}
-    url = "http://{}/post_to_pipeline".format(rox_connector_url)
+    content = {'message_id': message_id}
+    url = "http://{}/get_msg_history".format(rox_connector_url)
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
@@ -119,22 +123,16 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
         return response
 
 
-def get_msg_history(message_id: str) -> RoxResponse:
+def get_running_service_names() -> RoxResponse:
     """
-    Get history of specified message ID.
-    :param message_id: Message ID.
-    :return: RoxResponse instance with corresponding message history (if available).
+    Get names of all currently running services.
+    :returns: RoxResponse instance containing list of names concerning currently running services.
     """
-    if not message_id:
-        res = RoxResponse(False, "Please provide a message ID.")
-        res.log_level = 'ERROR'
-        return res
 
-    content = {'message_id': message_id}
-    url = "http://{}/get_msg_history".format(rox_connector_url)
+    url = "http://{}/services".format(rox_connector_url)
 
     try:
-        r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
+        r = requests.get(url)
     except requests.exceptions.ConnectionError as err:
         error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
@@ -143,7 +141,42 @@ def get_msg_history(message_id: str) -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        return RoxResponse(True, r.text)
+        running_service_names = list(r.json().keys())
+        running_service_names = [name for name in running_service_names if name not in FORBIDDEN_SERVICES]
+        return RoxResponse(True, data=running_service_names)
+
+
+def create_service(ip: str, port: int, name: str, classpath: str) -> RoxResponse:
+    """
+    Create new service with given metadata and store it as JSON file in services folder.
+    :param ip: IP address of service.
+    :param port: Used port number.
+    :param name: Service name.
+    :param classpath: Classpath of service implementation.
+    :return: RoxResponse instance documenting if service could be created.
+    """
+    # Use service name as JSON file name.
+    file_name = name + ".json"
+    # Store JSON file to service folder.
+    file_path = os.path.join(services_dir, file_name)
+    # Create JSON dictionary.
+    json_dict = {
+        "classpath": classpath,
+        "params": {
+            "ip": ip,
+            "port": port,
+            "name": name
+        }
+    }
+    # Write specified dictionary to JSON file.
+    try:
+        fd = open(file_path, 'w')
+        json.dump(json_dict, fd)
+        fd.close()
+    except OSError as err:
+        error_msg = _create_file_error(file_path, str(err))
+        return RoxResponse(False, error_msg)
+    return RoxResponse(True)
 
 
 def start_service(service_json: dict) -> RoxResponse:
@@ -190,10 +223,7 @@ def start_services(service_json_list: list) -> RoxResponse:
             not_started_json_list.append(service_json["params"]["name"])
             all_services_started = False
 
-    res = RoxResponse(all_services_started, "")
-    res.data = not_started_json_list
-
-    return res
+    return RoxResponse(all_services_started, data=not_started_json_list)
 
 
 def shutdown_service(service_name: dict) -> RoxResponse:
@@ -241,21 +271,23 @@ def shutdown_services(service_name_list: list) -> RoxResponse:
             not_stopped_name_list.append(service_name)
             all_services_stopped = False
 
-    res = RoxResponse(all_services_stopped, "")
-    res.data = not_stopped_name_list
-    return res
+    return RoxResponse(all_services_stopped, data=not_stopped_name_list)
 
 
-def get_name_running_services() -> RoxResponse:
+def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
     """
-    Get names of all currently running services.
-    :returns: RoxResponse instance containing list of names concerning currently running services.
+    Create new pipeline with specified services in exactly the given order.
+    :param pipe_name: Name of pipeline.
+    :param service_names: A list of service names. The services
+    are applied in the same order as they appear in this list.
+    :returns: RoxResponse instance documenting if pipeline could be created.
     """
 
-    url = "http://{}/services".format(rox_connector_url)
+    url = "http://{}/set_pipeline".format(rox_connector_url)
+    content = {'name': pipe_name, 'services': service_names}
 
     try:
-        r = requests.get(url)
+        r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
         error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
@@ -266,44 +298,42 @@ def get_name_running_services() -> RoxResponse:
     else:
         running_service_names = list(r.json().keys())
         running_service_names = [x for x in running_service_names if x not in FORBIDDEN_SERVICES]
-        res = RoxResponse(True, "")
-        res.data = running_service_names
-        return res
+        return RoxResponse(True, data=running_service_names)
 
 
-def set_pipeline(pipeline_name: str, service_names: list) -> bool:
+def remove_pipeline() -> RoxResponse:
+    raise NotImplementedError
+
+
+def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
     """
-    Create new pipeline with specified services in exactly the given order.
-    :param pipeline_name: Name of pipeline.
-    :param service_names: A list of service names. The services
-    are applied in the same order as they appear in this list.
-    :returns: True if pipeline could be created an False otherwise.
+    Post message to specified pipeline.
+    :param pipeline_name: Pipeline name to which a message should be sent.
+    :param message: Message as string.
+    :return: RoxResponse instance documenting if data could be posted to pipeline.
     """
 
-    url = "http://{}/set_pipeline".format(rox_connector_url)
-    content = {'name': pipeline_name, 'services': service_names}
+    content = {'name': pipeline_name, 'data': message}
+    url = "http://{}/post_to_pipeline".format(rox_connector_url)
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
     except requests.exceptions.ConnectionError as err:
-        logger.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return False
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
 
     if r.status_code != 200:
-        logger.error("Pipeline could not be created. Error code {}.\n{}".format(r.status_code, r.text))
-        return False
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
     else:
-        return True
+        result_msg = "Message {} posted: {}.".format(r.json()['message_id'], message)
+        return RoxResponse(True, result_msg)
 
 
-def remove_pipeline():  # TODO
-    pass
-
-
-def get_pipelines() -> dict:
+def get_pipelines() -> RoxResponse:
     """
     Get metadata of each available pipeline, i.e. pipeline name, involved services and current status.
-    :returns: Pipeline metadata as JSON dictionary. May be empty in case of an error.
+    :returns: RoxResponse instance containing pipeline metadata.
     """
 
     url = "http://{}/pipelines".format(rox_connector_url)
@@ -311,14 +341,14 @@ def get_pipelines() -> dict:
     try:
         r = requests.get(url)
     except requests.exceptions.ConnectionError as err:
-        logging.error("{}\n{}".format(MSG_CONNECTION_ERROR, err))
-        return {}
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(True, error_msg)
 
     if r.status_code != 200:
-        logging.error("Pipelines could not be received. Error code {}.\n{}".format(r.status_code, r.text))
-        return {}
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
     else:
-        return r.json()
+        return RoxResponse(True, data=r.json())
 
 
 def save_session(file_name: str) -> RoxResponse:
@@ -395,7 +425,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
         rox_session['services'] = set()
         rox_session['timeout'] = timeout
 
-        #services = ", ".join(service_names)
+        # services = ", ".join(service_names)
         services = service_names
 
         data = {'lines': 100, 'timeout': timeout, 'services': services}
@@ -425,7 +455,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
         unwatched_services = list(rox_session['services'] - set(service_names))
 
         if unwatched_services:
-
+            # services = ", ".join(unwatched_services)
             data = {'sessionid': rox_session['id'], 'services': unwatched_services}
             try:
                 r = requests.post('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
@@ -433,7 +463,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
                 err = "ERROR: no connection to server - {}".format(e)
                 logging.error(err)
                 res = RoxResponse(False, err)
-                res.data=rox_session
+                res.data = rox_session
                 return res
 
             if r.status_code != 200:
@@ -454,7 +484,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
             return RoxResponse(False, "All services already watched.")
 
 
-def get_service_logs(session = None):
+def get_service_logs(session=None):
     if session is None:
         err = 'Trying to get logs, but no session instantiated.'
         logging.error(err)
@@ -468,7 +498,6 @@ def get_service_logs(session = None):
         err = "ERROR: no connection to server - {}".format(e)
         logging.error(err)
         return RoxResponse(False, err)
-
 
     if r.status_code != 200:
         logging.error(r.text)
