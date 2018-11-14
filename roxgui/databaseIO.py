@@ -54,6 +54,7 @@ def get_service_jsons(service_names: list) -> list:
 
     return service_jsons
 
+
 def get_session(sess_id):
     """
 
@@ -63,7 +64,7 @@ def get_session(sess_id):
         s = RoxSession.objects.get(id=sess_id)
         services = set(s.services.split(", "))
 
-        sess = {'id':s.id, 'timeout':s.timeout, 'services':services}
+        sess = {'id': s.id, 'timeout': s.timeout, 'services': services}
         return sess
     except RoxSession.DoesNotExist:
-        logging.error("Session does not exist: " +  sess_id)
+        logging.error("Session does not exist: " + sess_id)

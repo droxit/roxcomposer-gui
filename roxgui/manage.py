@@ -2,7 +2,7 @@
 #
 # encoding: utf-8
 #
-# Define URL patterns.
+# Entry point to Django backend.
 #
 # devs@droxit.de
 #
