@@ -8,80 +8,92 @@
 #
 
 import json
-import logging
 import os
 
-import rox_requests
-from user_settings import SERVICES_DIR
+from rox_request import FORBIDDEN_SERVICES
+from rox_response import RoxResponse
+from roxgui.settings import SERVICE_DIR
 
-services_dir = SERVICES_DIR
 
+# File system operations.
+# =======================
 
-def get_json_available_services() -> dict:
+def get_available_service_jsons() -> RoxResponse:
     """
     Get JSON data of all available services.
-    :return: Dictionary concerning all available services
-    (key: unique service name, value: corresponding JSON data).
-    May be empty in case of an error.
+    :return: RoxResponse instance which contains a dictionary mapping service names to corresponding JSON data.
     """
     available_services = {}
-    for f in os.scandir(services_dir):
-        if f.is_file() and f.name.endswith('.json'):
-            if f.name[:-5] in rox_requests.FORBIDDEN_SERVICES:
+    for f in os.scandir(SERVICE_DIR):
+        if f.is_file() and f.name.endswith(".json"):
+            if f.name[:-5] in FORBIDDEN_SERVICES:
                 continue
-            service_file = open(os.path.join(services_dir, f.name), 'r')
+            service_file = open(os.path.join(SERVICE_DIR, f.name), 'r')
             service_args = json.load(service_file)
             available_services[f.name[:-5]] = service_args
             service_file.close()
-    return available_services
+    res = RoxResponse(True)
+    res.data = available_services
+    return res
 
 
-def get_name_available_services() -> list:
+def get_available_service_names() -> RoxResponse:
     """
     Get names of all available services.
-    :return: List of names concerning all available services.
-    May be empty in case of an error.
+    :return: RoxResponse instance which contains a list of names concerning all available services.
     """
     available_services = []
-    for f in os.scandir(services_dir):
+    for f in os.scandir(SERVICE_DIR):
         if f.is_file() and f.name.endswith('.json'):
-            if f.name[:-5] in rox_requests.FORBIDDEN_SERVICES:
+            if f.name[:-5] in FORBIDDEN_SERVICES:
                 continue
             available_services.append(f.name[:-5])
-    return available_services
+    res = RoxResponse(True)
+    res.data = available_services
+    return res
 
 
-def get_service_json_from_filesystem(service_name: str) -> dict:
+def convert_to_service_json(service_name: str) -> RoxResponse:
     """
     Convert service name to corresponding JSON dictionary.
-    :param service_name: Service name as string.
-    :return: Corresponding JSON dictionary which may be None in case of an error.
+    :param service_name: Service name.
+    :return: RoxResponse instance containing corresponding JSON dictionary.
     """
-    json_data = None
+    fd = None
     name_with_ext = service_name + ".json"
-    service_file = None
     try:
-        service_file = open(os.path.join(services_dir, name_with_ext))
-        json_data = json.load(service_file)
+        fd = open(os.path.join(SERVICE_DIR, name_with_ext))
+        json_data = json.load(fd)
     except OSError:
-        logging.error("Could not open JSON file for service {}.".format(service_name))
+        error_msg = "Could not open JSON file for service {}.".format(service_name)
+        return RoxResponse(False, error_msg)
     except json.JSONDecodeError:
-        logging.error("JSON data for service {} is broken.".format(service_name))
+        error_msg = "JSON data for service {} is broken.".format(service_name)
+        return RoxResponse(False, error_msg)
     finally:
-        if service_file is not None:
-            service_file.close()
-    return json_data
+        if fd is not None:
+            fd.close()
+    res = RoxResponse(True)
+    res.data = json_data
+    return res
 
 
-def get_service_jsons_from_filesystem(service_name_list: list) -> list:
+def convert_to_service_json_list(service_name_list: list) -> RoxResponse:
     """
     Convert list of service names to corresponding list of JSON dictionaries.
     :param service_name_list: List of service names.
-    :return: Corresponding list of JSON dictionaries which may be empty in case of an error.
+    :return: RoxResponse instance containing list of corresponding JSON dictionaries
+    Service names which could not be converted to JSON format are included as error_data.
     """
-    service_jsons = []
+    valid_service_jsons = []
+    invalid_service_names = []
     for name in service_name_list:
-        json_data = get_service_json_from_filesystem(name)
-        if json_data is not None:
-            service_jsons.append(json_data)
-    return service_jsons
+        res = convert_to_service_json(name)
+        if res.success:
+            valid_service_jsons.append(res.data)
+        else:
+            invalid_service_names.append(res.data)
+    res = RoxResponse(True)
+    res.data = valid_service_jsons
+    res.error_data = invalid_service_names
+    return res

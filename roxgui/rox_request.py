@@ -13,22 +13,12 @@ import os
 
 import requests
 
-from user_settings import ROX_DIR, ROX_URL, SERVICES_DIR
+from rox_response import RoxResponse
+from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP
 
-# Log settings.
+# Logging.
+# ========
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
-
-# Connection details for ROXconnector.
-# ====================================
-
-# URL to ROXconnector.
-rox_connector_url = ROX_URL
-
-# Path to ROXcomposer project.
-rox_composer_dir = ROX_DIR
-
-# Path to services folder.
-services_dir = SERVICES_DIR
 
 # Constants.
 # ==========
@@ -56,43 +46,60 @@ removed_pipes = []
 current_session = None
 
 
-class RoxResponse:
-    """Class encapsulating ROXconnector response."""
-
-    def __init__(self, success: bool, message: str = "", data=[]):
-        self.success = success
-        self.message = message
-        self.data = data
-
+# Error messages.
+# ===============
 
 def _create_connection_error(message: str) -> str:
     """
-    Create standard message concerning connection errors.
+    Create default message concerning connection errors.
     :param message: Received error message.
-    :return: Error message concerning connection errors.
+    :return: Default error message concerning connection errors.
     """
     return "{}.\n{}.".format(MSG_CONNECTION_ERROR, message)
 
 
 def _create_http_status_error(http_status_code: int, message: str) -> str:
     """
-    Create standard message concerning non-200 HTTP status codes.
+    Create default message concerning non-200 HTTP status codes.
     :param http_status_code: Received HTTP status code.
     :param message: Received error message.
-    :return: Error message concerning non-200 HTTP status codes.
+    :return: Default error message concerning non-200 HTTP status codes.
     """
     return "Error code {}.\n{}.".format(http_status_code, message)
 
 
 def _create_file_error(file_path: str, message: str):
     """
-    Create standard message concerning file IO errors.
+    Create default message concerning file IO errors.
     :param file_path: Corresponding file path.
     :param message: Received error message.
-    :return: Error message concerning file IO errors.
+    :return: Default error message concerning file IO errors.
     """
     return "Unable to open file {}.\n{}.".format(file_path, message)
 
+
+# ROXconnector URL.
+# =================
+
+def create_rox_connector_url(relative_path: str = "") -> str:
+    """
+    Create valid ROXconnector URL to specified path.
+    :param relative_path: Relative URL path, i.e. everything without scheme, host and port (default: "")
+    :return: Corresponding ROXconnector URL.
+    """
+    if not relative_path:
+        # Relative path is empty.
+        return "http://{}".format(ROX_CONNECTOR_IP)
+    elif relative_path.endswith('/'):
+        # Relative path ends with slash.
+        relative_path = relative_path[:-1]
+        return "http://{}/{}".format(ROX_CONNECTOR_IP, relative_path)
+    else:
+        return "http://{}/{}".format(ROX_CONNECTOR_IP, relative_path)
+
+
+# Requests to ROXconnector.
+# =========================
 
 def get_message_history(message_id: str) -> RoxResponse:
     """
@@ -101,10 +108,10 @@ def get_message_history(message_id: str) -> RoxResponse:
     :return: RoxResponse instance with corresponding message history (if available).
     """
     if not message_id:
-        return RoxResponse(False, "Please provide a message ID.")
+        return RoxResponse(False, "No message ID provided.")
 
     content = {'message_id': message_id}
-    url = "http://{}/get_msg_history".format(rox_connector_url)
+    url = create_rox_connector_url("get_msg_history")
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
@@ -116,20 +123,19 @@ def get_message_history(message_id: str) -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        msg_id = r.json()['message_id']
-        result_msg = "Message {} posted: {}.".format(msg_id, message)
-        response = RoxResponse(True, result_msg)
-        response.data = msg_id
-        return response
+        history = r.json()
+        res = RoxResponse(True)
+        res.data = history
+        return res
 
 
 def get_running_service_names() -> RoxResponse:
     """
-    Get names of all currently running services.
-    :returns: RoxResponse instance containing list of names concerning currently running services.
+    Get names of all currently running services ignoring those specified in FORBIDDEN_SERVICES.
+    :returns: RoxResponse instance containing a name list of all currently running services.
     """
 
-    url = "http://{}/services".format(rox_connector_url)
+    url = create_rox_connector_url("services")
 
     try:
         r = requests.get(url)
@@ -141,38 +147,44 @@ def get_running_service_names() -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
+        # Extract service names.
         running_service_names = list(r.json().keys())
+        # Exclude services specified in forbidden services list.
         running_service_names = [name for name in running_service_names if name not in FORBIDDEN_SERVICES]
-        return RoxResponse(True, data=running_service_names)
+        res = RoxResponse(True)
+        res.data = running_service_names
+        return res
 
 
-def create_service(ip: str, port: int, name: str, classpath: str) -> RoxResponse:
+def create_service(ip: str, port: int, name: str, class_path: str, output_file_path: str = "") -> RoxResponse:
     """
     Create new service with given metadata and store it as JSON file in services folder.
     :param ip: IP address of service.
     :param port: Used port number.
     :param name: Service name.
-    :param classpath: Classpath of service implementation.
+    :param class_path: Classpath of service implementation.
+    :param output_file_path: Path to output file (default: "").
     :return: RoxResponse instance documenting if service could be created.
     """
     # Use service name as JSON file name.
     file_name = name + ".json"
     # Store JSON file to service folder.
-    file_path = os.path.join(services_dir, file_name)
+    file_path = os.path.join(SERVICE_DIR, file_name)
     # Create JSON dictionary.
     json_dict = {
-        "classpath": classpath,
+        "classpath": class_path,
         "params": {
             "ip": ip,
             "port": port,
             "name": name
         }
     }
+    if output_file_path:
+        json_dict["params"]["filepath"] = output_file_path
     # Write specified dictionary to JSON file.
     try:
-        fd = open(file_path, 'w')
-        json.dump(json_dict, fd)
-        fd.close()
+        with open(file_path, 'w') as fd:
+            json.dump(json_dict, fd)
     except OSError as err:
         error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
@@ -182,14 +194,14 @@ def create_service(ip: str, port: int, name: str, classpath: str) -> RoxResponse
 def start_service(service_json: dict) -> RoxResponse:
     """
     Start service defined by given JSON dictionary.
-    :param service_json: JSON dictionary defining service.
+    :param service_json: JSON dictionary defining single service.
     :return: RoxResponse instance documenting if service could be started.
     """
     if not service_json:
         # JSON data is empty and therefore invalid.
         return RoxResponse(False, MSG_INVALID_SERVICE_ERROR)
 
-    url = "http://{}/start_service".format(rox_connector_url)
+    url = create_rox_connector_url("start_service")
 
     try:
         r = requests.post(url, json=service_json, headers=JSON_HEADER)
@@ -223,7 +235,9 @@ def start_services(service_json_list: list) -> RoxResponse:
             not_started_json_list.append(service_json["params"]["name"])
             all_services_started = False
 
-    return RoxResponse(all_services_started, data=not_started_json_list)
+    res = RoxResponse(all_services_started)
+    res.error_data = not_started_json_list
+    return res
 
 
 def shutdown_service(service_name: dict) -> RoxResponse:
@@ -236,8 +250,8 @@ def shutdown_service(service_name: dict) -> RoxResponse:
         # Service name is empty and therefore invalid.
         return RoxResponse(False, MSG_INVALID_SERVICE_ERROR)
 
+    url = create_rox_connector_url("shutdown_service")
     content = {'name': service_name}
-    url = "http://{}/shutdown_service".format(rox_connector_url)
 
     try:
         r = requests.post(url, json=content, headers=JSON_HEADER)
@@ -270,8 +284,9 @@ def shutdown_services(service_name_list: list) -> RoxResponse:
         if not res.success:
             not_stopped_name_list.append(service_name)
             all_services_stopped = False
-
-    return RoxResponse(all_services_stopped, data=not_stopped_name_list)
+    res = RoxResponse(all_services_stopped)
+    res.error_data = not_stopped_name_list
+    return res
 
 
 def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
@@ -283,7 +298,7 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
     :returns: RoxResponse instance documenting if pipeline could be created.
     """
 
-    url = "http://{}/set_pipeline".format(rox_connector_url)
+    url = create_rox_connector_url("set_pipeline")
     content = {'name': pipe_name, 'services': service_names}
 
     try:
@@ -298,7 +313,9 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
     else:
         running_service_names = list(r.json().keys())
         running_service_names = [x for x in running_service_names if x not in FORBIDDEN_SERVICES]
-        return RoxResponse(True, data=running_service_names)
+        res = RoxResponse(True)
+        res.data = running_service_names
+        return res
 
 
 def remove_pipeline() -> RoxResponse:
@@ -313,8 +330,8 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
     :return: RoxResponse instance documenting if data could be posted to pipeline.
     """
 
+    url = create_rox_connector_url("post_to_pipeline")
     content = {'name': pipeline_name, 'data': message}
-    url = "http://{}/post_to_pipeline".format(rox_connector_url)
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
@@ -336,7 +353,7 @@ def get_pipelines() -> RoxResponse:
     :returns: RoxResponse instance containing pipeline metadata.
     """
 
-    url = "http://{}/pipelines".format(rox_connector_url)
+    url = create_rox_connector_url("pipelines")
 
     try:
         r = requests.get(url)
@@ -348,7 +365,9 @@ def get_pipelines() -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        return RoxResponse(True, data=r.json())
+        res = RoxResponse(True)
+        res.data = r.json()
+        return res
 
 
 def save_session(file_name: str) -> RoxResponse:
@@ -357,18 +376,20 @@ def save_session(file_name: str) -> RoxResponse:
     :param file_path: File name.
     :return: RoxResponse instance documenting if session could be saved.
     """
-    file_path = os.path.join(rox_composer_dir, file_name)
+    file_path = os.path.join(SESSION_DIR, file_name)
     fd = None
     try:
         fd = open(file_path, 'w')
     except OSError as err:
-        error_msg = _create_file_error(file_path, err)
+        error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
 
+    url = create_rox_connector_url("dump_services_and_pipelines")
+
     try:
-        r = requests.get('http://{}/dump_services_and_pipelines'.format(rox_connector_url))
+        r = requests.get(url)
     except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(err)
+        error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
 
     if r.status_code == 200:
@@ -376,7 +397,7 @@ def save_session(file_name: str) -> RoxResponse:
         try:
             json.dump(o, fd)
         except Exception as err:
-            error_msg = _create_file_error(file_path, err)
+            error_msg = _create_file_error(file_path, str(err))
             return RoxResponse(False, error_msg)
         finally:
             fd.close()
@@ -393,7 +414,7 @@ def load_session(file_name: str) -> RoxResponse:
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be loaded.
     """
-    session_file = os.path.join(rox_composer_dir, file_name)
+    session_file = os.path.join(SESSION_DIR, file_name)
     if os.path.isfile(session_file):
         fd = open(session_file, 'r')
         restore_json = json.loads(fd.read())
@@ -402,13 +423,19 @@ def load_session(file_name: str) -> RoxResponse:
         error_msg = _create_file_error(session_file, "Not a valid file.")
         return RoxResponse(False, error_msg)
 
-    r = requests.post('http://{}/load_services_and_pipelines'.format(rox_connector_url), data=json.dumps(restore_json),
-                      headers=JSON_HEADER)
-    if r.status_code == 200:
-        return RoxResponse(True, r.text)
-    else:
-        error_msg = -_create_http_status_error(r.status_code, r.text)
+    url = create_rox_connector_url("load_services_and_pipelines")
+
+    try:
+        r = requests.post(url, data=json.dumps(restore_json), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    else:
+        return RoxResponse(True, r.text)
 
 
 def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
@@ -419,6 +446,8 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
     :return: Tuple (bool, str, dict): True if watch service worked, String is message from server and dict the session
     """
 
+    url = create_rox_connector_url("log_observer")
+
     # if there is no session yet start new session
     if rox_session is None:
         rox_session = dict()
@@ -428,10 +457,10 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
         # services = ", ".join(service_names)
         services = service_names
 
-        data = {'lines': 100, 'timeout': timeout, 'services': services}
+        content = {'lines': 100, 'timeout': timeout, 'services': services}
 
         try:
-            r = requests.put('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
+            r = requests.put(url, headers=JSON_HEADER, json=content)
         except requests.exceptions.ConnectionError as e:
             err = "ERROR: no connection to server - {}".format(e)
             logging.error(err)
@@ -456,9 +485,9 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
 
         if unwatched_services:
             # services = ", ".join(unwatched_services)
-            data = {'sessionid': rox_session['id'], 'services': unwatched_services}
+            content = {'sessionid': rox_session['id'], 'services': unwatched_services}
             try:
-                r = requests.post('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
+                r = requests.post(url, headers=JSON_HEADER, json=content)
             except requests.exceptions.ConnectionError as e:
                 err = "ERROR: no connection to server - {}".format(e)
                 logging.error(err)
@@ -490,10 +519,11 @@ def get_service_logs(session=None):
         logging.error(err)
         return RoxResponse(False, err)
 
-    data = {'sessionid': session['id']}
+    url = create_rox_connector_url("log_observer")
+    content = {'sessionid': session['id']}
 
     try:
-        r = requests.get('http://{}/log_observer'.format(rox_connector_url), headers=JSON_HEADER, json=data)
+        r = requests.get(url, headers=JSON_HEADER, json=content)
     except requests.exceptions.ConnectionError as e:
         err = "ERROR: no connection to server - {}".format(e)
         logging.error(err)
@@ -533,10 +563,10 @@ def save_pipeline(file_name):  # TODO
     pass
 
 
-def load_and_start_pipeline(pipe_path):  # TODO
-    d = {'pipe_path': pipe_path}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(rox_connector_url), data=json.dumps(d),
-                      headers=JSON_HEADER)
+def load_and_start_pipeline(pipe_path):
+    url = create_rox_connector_url("load_and_start_pipeline")
+    content = {'pipe_path': pipe_path}
+    r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
     if r.status_code == 200:
         msg = r.text
         logging.info(msg)

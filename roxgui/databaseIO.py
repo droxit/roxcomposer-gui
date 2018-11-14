@@ -11,21 +11,25 @@ import json
 import logging
 
 import filesystemIO
-import rox_requests
+import rox_request
 from web.models import Service, RoxSession
 
 
 def update_service_db():
     """checks the SERVICE_DIR for new services and adds them to the DB"""
-    services = filesystemIO.get_json_available_services()
+    res = filesystemIO.get_available_service_jsons()
+    services = res.data
     for service in services:
         try:
             Service.objects.get(name=service)
         except Service.DoesNotExist:
-            service_json = json.dumps(filesystemIO.get_service_json_from_filesystem(service))
-            s = Service(name=service, service_json=service_json)
-            s.save()
-            logging.info("service saved: " + str(service))
+            res = filesystemIO.convert_to_service_json(service)
+            if res.success:
+                service_json = json.dumps(res.data)
+                s = Service(name=service, service_json=service_json)
+                s.save()
+            else:
+                logging.error(res.message)
 
 
 def get_service_json(service_name):
@@ -47,7 +51,7 @@ def get_service_jsons(service_names: list) -> list:
     """
     service_jsons = []
     for service in service_names:
-        if service[:-5] in rox_requests.FORBIDDEN_SERVICES:
+        if service[:-5] in rox_request.FORBIDDEN_SERVICES:
             continue
         service_json = get_service_json(service)
         service_jsons.append(service_json)

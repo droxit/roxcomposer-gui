@@ -9,6 +9,7 @@
 
 import datetime
 import json
+import os
 
 from django.contrib import messages
 from django.http import HttpResponse
@@ -17,7 +18,7 @@ from django.views.decorators.http import require_http_methods
 
 import databaseIO
 import filesystemIO
-import rox_requests
+import rox_request
 from web import views
 from web.models import RoxSession, Logline
 
@@ -34,27 +35,26 @@ def main(request):
     databaseIO.update_service_db()
 
     # Get names of all available services.
-    available_service_name_list = filesystemIO.get_json_available_services()
+    res = filesystemIO.get_available_service_names()
+    available_service_name_list = res.data
     # Get names of all running services.
-    res = rox_requests.get_running_service_names()
+    res = rox_request.get_running_service_names()
     running_service_name_list = res.data
     # Only consider non-running services as available.
     available_service_name_list = list(set(available_service_name_list) - set(running_service_name_list))
 
     # Get metadata of all available pipes.
-    res = rox_requests.get_pipelines()
+    res = rox_request.get_pipelines()
     available_pipelines_json = res.data
     # Convert to list of tuples.
     pipeline_data_list = []
-
-    # save_log()
+    if res.success:
+        for key, value in available_pipelines_json.items():
+            if key in rox_request.removed_pipes:
+                continue
+            data = (key, value["services"], value["active"])
+            pipeline_data_list.append(data)
     logs = get_logs()
-
-    for key, value in available_pipelines_json.items():
-        if key in rox_requests.removed_pipes:
-            continue
-        data = (key, value["services"], value["active"])
-        pipeline_data_list.append(data)
     # Send all data to view.
     context = {"available_service_names": available_service_name_list,
                "running_service_names": running_service_name_list,
@@ -68,7 +68,7 @@ def create_service(request):
     """Create service specified in POST request's metadata."""
     # Get IP address.
     ip = request.POST.get("ip")
-    # Check if it is valid.
+    # Check if given IP is valid.
     ip_parts = ip.split('.')
     for part in ip_parts:
         part = int(part)
@@ -80,8 +80,23 @@ def create_service(request):
     # Get service name.
     name = request.POST.get("name")
     # Get classpath.
-    classpath = request.POST.get("classpath")
-    res = rox_requests.create_service(ip, port, name, classpath)
+    class_path = request.POST.get("class_path")
+    # Get path to output file.
+    output_file_path = request.POST.get("output_file_path", "")
+    if output_file_path:
+        # Output file is specified. It does not
+        # need to exist yet, but its directory should.
+        if os.path.isdir(os.path.dirname(output_file_path)):
+            # Output file path is valid.
+            res = rox_request.create_service(ip, port, name, class_path, output_file_path)
+        else:
+            # Redirect with error.
+            messages.error(request, "Path to output file invalid.")
+            return redirect(views.main)
+    else:
+        # Output file is not specified.
+        res = rox_request.create_service(ip, port, name, class_path)
+
     if res.success:
         messages.success(request, "Service created successfully.")
     else:
@@ -95,22 +110,23 @@ def start_service(request):
     # Get list of service names which should be started.
     service_name_list = request.POST.getlist("available_service_names", default=[])
     # Get list of corresponding JSON dictionaries.
-    service_json_list = filesystemIO.get_service_jsons_from_filesystem(service_name_list)
+    res = filesystemIO.convert_to_service_json_list(service_name_list)
+    service_json_list = res.data
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
-    result = rox_requests.start_services(service_json_list)
+    result = rox_request.start_services(service_json_list)
     if result.success:
         # All services could be started.
         return redirect(views.main)
     else:
         # Some services could not be started.
-        if not result.data:
+        if not result.error_data:
             # No services were specified.
             messages.error(request, result.message)
             return redirect(views.main)
         else:
             # Some services were specified but could not be started.
-            services_not_started = ", ".join(result.data)
+            services_not_started = ", ".join(result.error_data)
             messages.error(request, "Unable to start service: {}.".format(services_not_started))
             return redirect(views.main)
 
@@ -122,19 +138,19 @@ def stop_service(request):
     service_name_list = request.POST.getlist("running_service_names", default=[])
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
-    res = rox_requests.shutdown_services(service_name_list)
+    res = rox_request.shutdown_services(service_name_list)
     if res.success:
         # All services could be stopped.
         return redirect(views.main)
     else:
         # Some services could not be stopped.
-        if not res.data:
+        if not res.error_data:
             # No services were specified.
             messages.error(request, res.message)
             return redirect(views.main)
         else:
             # Some services were specified but could not be stopped.
-            services_not_stopped = ", ".join(res.data)
+            services_not_stopped = ", ".join(res.error_data)
             messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
             return redirect(views.main)
 
@@ -149,10 +165,10 @@ def create_pipeline(request):
     if not pipe_name:
         pipe_name = "pipe_" + datetime.datetime.now().strftime("%Y%m%d%H%M")
     # Create new pipeline.
-    res = rox_requests.create_pipeline(pipe_name, service_name_list)
+    res = rox_request.create_pipeline(pipe_name, service_name_list)
     if res.success:
-        if pipe_name in rox_requests.removed_pipes:
-            rox_requests.removed_pipes.remove(pipe_name)
+        if pipe_name in rox_request.removed_pipes:
+            rox_request.removed_pipes.remove(pipe_name)
         response = {'status': 1, 'message': ("Ok")}
         return HttpResponse(json.dumps(response), content_type='application/json')
     else:
@@ -165,7 +181,7 @@ def create_pipeline(request):
 def delete_pipeline(request):
     """Delete pipeline specified in POST request's metadata."""
     pipe_name = request.POST.get("pipe_name", "")
-    rox_requests.removed_pipes.append(pipe_name)
+    rox_request.removed_pipes.append(pipe_name)
     return redirect(views.main)
 
 
@@ -177,7 +193,7 @@ def post_to_pipeline(request):
     # Get message.
     pipe_message_id = request.POST.get("pipe_message_text", default="")
     # Send message and get result.
-    result = rox_requests.post_to_pipeline(pipe_name, pipe_message_id)
+    result = rox_request.post_to_pipeline(pipe_name, pipe_message_id)
     if result.success:
         # Message was sent successfully.
         save_log(msg_id=result.data)
@@ -193,7 +209,7 @@ def post_to_pipeline(request):
 def save_session(request):
     """Save current session to JSON file."""
     file_name = request.POST.get("save_file_name", default="")
-    result = rox_requests.save_session(file_name)
+    result = rox_request.save_session(file_name)
     if result.success:
         messages.success(request, "Session saved as {}.".format(file_name))
         messages.debug(request, result.message)
@@ -208,7 +224,7 @@ def save_session(request):
 def load_session(request):
     """Load session from JSON file."""
     file_name = request.POST.get("load_file_name", default="")
-    result = rox_requests.load_session(file_name)
+    result = rox_request.load_session(file_name)
     if result.success:
         messages.debug(request, result.message)
         return redirect(views.main)
@@ -222,14 +238,9 @@ def load_session(request):
 def get_message_history(request):
     """Get history of a specified message."""
     pipe_message_id = request.POST.get("pipe_message_id", "")
-    result = rox_requests.get_message_history(pipe_message_id)
-
+    result = rox_request.get_message_history(pipe_message_id)
     if result.success:
-        messages.success(request, result.message)
-        if result.message == "[]":
-            messages.error(request, "Invalid message ID")
-        else:
-            messages.success(request, result.message)
+        messages.success(request, result.data)
         return redirect(views.main)
     else:
         messages.error(request, result.message)
@@ -239,19 +250,18 @@ def get_message_history(request):
 @require_http_methods(["POST"])
 def watch(request):
     """save the session to a json file """
-
     service_names = request.POST.getlist("services[]")
-    if rox_requests.current_session:
-        rox_session = databaseIO.get_session(rox_requests.current_session)
-        result = rox_requests.watch_services(service_names, rox_session=rox_session)
+    if rox_request.current_session:
+        rox_session = databaseIO.get_session(rox_request.current_session)
+        result = rox_request.watch_services(service_names, rox_session=rox_session)
     else:
-        result = rox_requests.watch_services(service_names)
+        result = rox_request.watch_services(service_names)
         rox_session = result.data
         session_services = ", ".join(list(rox_session['services']))
         s = RoxSession(id=rox_session['id'], services=session_services, timeout=rox_session['timeout'])
         s.save()
 
-        rox_requests.current_session = rox_session['id']
+        rox_request.current_session = rox_session['id']
 
     if result.success:
         messages.debug(request, result.message)
@@ -271,9 +281,9 @@ def get_service_logs(request):
 def unwatch(request):
     """save the session to a json file """
     service_names = request.POST.getlist("services[]")
-    sess_id = rox_requests.current_session
+    sess_id = rox_request.current_session
     rox_session = databaseIO.get_session(sess_id)
-    result = rox_requests.unwatch_services(service_names, rox_session=rox_session)
+    result = rox_request.unwatch_services(service_names, rox_session=rox_session)
 
     if result.success:
         messages.debug(request, result.message)
@@ -300,9 +310,9 @@ def save_log(msg_id=None):
     :param msg_id: optional, if the log concerns a specific message
     :return:
     """
-    if rox_requests.current_session:  # if there is a current session write logs to database
-        sess = databaseIO.get_session(rox_requests.current_session)  # retrieve current session
-        response = rox_requests.get_service_logs(sess)  # get the recent logs
+    if rox_request.current_session:  # if there is a current session write logs to database
+        sess = databaseIO.get_session(rox_request.current_session)  # retrieve current session
+        response = rox_request.get_service_logs(sess)  # get the recent logs
         if response.data:  # if there are any new log lines write them to database
             for log in response.data:  # write each log line separately
                 if msg_id:  # TODO

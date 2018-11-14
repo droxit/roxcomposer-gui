@@ -1,20 +1,17 @@
-# Compiled Python files.
-*.pyc
-
 # Log files.
 *.log
+
+# JSON files.
+*.json
 
 # Testing database.
 *.sqlite3
 
 # Migrations.
-**/migrations/**
+**/migrations/*
 
-# Static root folder.
+# Local static root folder.
 /roxgui/static_root/**
 
 # IDE
-**/.idea/**
-
-# Local settings.
-/roxgui/user_settings.py
+**/.idea/*

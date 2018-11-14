@@ -1,5 +1,3 @@
-{% block service_params %}
-
 <div class="modal fade" id="service_params" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -13,9 +11,9 @@
                 <form action="create_service" method="post" id="create_service_form">
                     {% csrf_token %}
                     <div class="form-group row">
-                        <label for="ip" class="col-sm-2 col-form-label">IP address:</label>
+                        <label for="ip" class="col-sm-2 col-form-label">IP:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="ip" id="ip" placeholder="IP"
+                            <input type="text" class="form-control" name="ip" id="ip" placeholder="IP address"
                                    pattern="[0-9]+.[0-9]+.[0-9]+.[0-9]+" required>
                         </div>
                     </div>
@@ -23,21 +21,28 @@
                         <label for="port" class="col-sm-2 col-form-label">Port:</label>
                         <div class="col-sm-10">
                             <input type="number" class="form-control" name="port" id="port" placeholder="Port" min="1"
-                                   max="65535"
+                                   max="65535" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Service name"
                                    required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="port" class="col-sm-2 col-form-label">Service name:</label>
+                        <label for="class_path" class="col-sm-2 col-form-label">Classpath:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
+                            <input type="text" class="form-control" name="class_path" id="class_path"
+                                   placeholder="Classpath" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="port" class="col-sm-2 col-form-label">Classpath:</label>
+                        <label for="output_file_path" class="col-sm-2 col-form-label">Output:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="classpath" id="classpath"
-                                   placeholder="Classpath" required>
+                            <input type="text" class="form-control" name="output_file_path" id="output_file_path"
+                                   placeholder="Output file path">
                         </div>
                     </div>
                 </form>
@@ -49,5 +54,3 @@
         </div>
     </div>
 </div>
-
-{% endblock service_params %}
