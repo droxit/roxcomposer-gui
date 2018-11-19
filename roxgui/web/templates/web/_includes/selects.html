@@ -8,9 +8,10 @@
                     <div class="col-md-12 mb-2">
                         <form action="start_service" method="post" id="available_service_form">
                             {% csrf_token %}
-                            <select class="custom-select" name="available_service_names" id="available_service_list" multiple>
-                                {% for name in available_service_names %}
-                                <option value="{{ name }}">{{ name }}</option>
+                            <select class="custom-select" name="available_service_names" id="available_service_list"
+                                    multiple>
+                                {% for key, value in available_services_dict.items %}
+                                <option value="{{ name }}" title="{{ value }}">{{ key }}</option>
                                 {% endfor %}
                             </select>
                         </form>
@@ -43,8 +44,8 @@
                             {% csrf_token %}
                             <select class="custom-select" name="running_service_names" id="running_service_list"
                                     multiple>
-                                {% for name in running_service_names %}
-                                <option value="{{ name }}">{{ name }}</option>
+                                {% for key, value in running_services_dict.items %}
+                                <option value="{{ key }}" title="{{ value }}">{{ key }}</option>
                                 {% endfor %}
                             </select>
                         </form>
