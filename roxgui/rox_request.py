@@ -39,7 +39,7 @@ MSG_MISSING_SERVICES_ERROR = "No services specified."
 SESSION_TIMEOUT = 3600
 
 # Default services.
-FORBIDDEN_SERVICES = ['basic_reporting']
+FORBIDDEN_SERVICES = {'basic_reporting'}
 
 # Store metadata for current GUI session.
 current_session = None
@@ -132,10 +132,10 @@ def get_message_history(message_id: str) -> RoxResponse:
         return res
 
 
-def get_running_service_names() -> RoxResponse:
+def get_running_service_jsons() -> RoxResponse:
     """
-    Get names of all currently running services ignoring those specified in FORBIDDEN_SERVICES.
-    :returns: RoxResponse instance containing a name list of all currently running services.
+    Get JSON data of all currently running services ignoring those specified in FORBIDDEN_SERVICES.
+    :return: RoxResponse instance containing a list of all currently running services.
     """
 
     url = create_rox_connector_url("services")
@@ -150,12 +150,8 @@ def get_running_service_names() -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        # Extract service names.
-        running_service_names = list(r.json().keys())
-        # Exclude services specified in forbidden services list.
-        running_service_names = [name for name in running_service_names if name not in FORBIDDEN_SERVICES]
         res = RoxResponse(True)
-        res.data = running_service_names
+        res.data = dict((key, value) for (key, value) in r.json().items() if key not in FORBIDDEN_SERVICES)
         return res
 
 

@@ -20,8 +20,8 @@ from roxgui.settings import SERVICE_DIR
 
 def get_available_service_jsons() -> RoxResponse:
     """
-    Get JSON data of all available services.
-    :return: RoxResponse instance which contains a dictionary mapping service names to corresponding JSON data.
+    Get JSON data of all available services excluding forbidden ones.
+    :return: RoxResponse instance containing a dictionary which maps each service name to its corresponding JSON data.
     """
     available_services = {}
     for f in os.scandir(SERVICE_DIR):
@@ -32,22 +32,6 @@ def get_available_service_jsons() -> RoxResponse:
             service_args = json.load(service_file)
             available_services[f.name[:-5]] = service_args
             service_file.close()
-    res = RoxResponse(True)
-    res.data = available_services
-    return res
-
-
-def get_available_service_names() -> RoxResponse:
-    """
-    Get names of all available services.
-    :return: RoxResponse instance which contains a list of names concerning all available services.
-    """
-    available_services = []
-    for f in os.scandir(SERVICE_DIR):
-        if f.is_file() and f.name.endswith('.json'):
-            if f.name[:-5] in FORBIDDEN_SERVICES:
-                continue
-            available_services.append(f.name[:-5])
     res = RoxResponse(True)
     res.data = available_services
     return res
@@ -68,7 +52,7 @@ def convert_to_service_json(service_name: str) -> RoxResponse:
         error_msg = "Could not open JSON file for service {}.".format(service_name)
         return RoxResponse(False, error_msg)
     except json.JSONDecodeError:
-        error_msg = "JSON data for service {} is broken.".format(service_name)
+        error_msg = "JSON data for service {} is invalid.".format(service_name)
         return RoxResponse(False, error_msg)
     finally:
         if fd is not None:
@@ -82,8 +66,8 @@ def convert_to_service_json_list(service_name_list: list) -> RoxResponse:
     """
     Convert list of service names to corresponding list of JSON dictionaries.
     :param service_name_list: List of service names.
-    :return: RoxResponse instance containing list of corresponding JSON dictionaries
-    Service names which could not be converted to JSON format are included as error_data.
+    :return: RoxResponse instance containing a list of corresponding JSON dictionaries. Service
+    names which could not be converted to JSON structure are included as error_data attribute.
     """
     valid_service_jsons = []
     invalid_service_names = []
@@ -92,7 +76,7 @@ def convert_to_service_json_list(service_name_list: list) -> RoxResponse:
         if res.success:
             valid_service_jsons.append(res.data)
         else:
-            invalid_service_names.append(res.data)
+            invalid_service_names.append(name)
     res = RoxResponse(True)
     res.data = valid_service_jsons
     res.error_data = invalid_service_names

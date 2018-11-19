@@ -11,12 +11,11 @@ import datetime
 import json
 import os
 
-from django.utils import timezone
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
-
 
 import databaseIO
 import filesystemIO
@@ -27,7 +26,7 @@ from web.models import RoxSession, Logline
 current_session = None
 removed_pipelines = []
 LOG_RELOAD = 100
-LOG_TIMEOUT = datetime.timedelta(days=10, hours=1, minutes=1, seconds = 0, microseconds= 0)
+LOG_TIMEOUT = datetime.timedelta(days=10, hours=1, minutes=1, seconds=0, microseconds=0)
 LOG_DELETE = datetime.timedelta(days=1)
 
 
@@ -37,38 +36,41 @@ def main(request):
     # Update database concerning available services.
     databaseIO.update_service_db()
 
-    # Get names of all available services.
-    res = filesystemIO.get_available_service_names()
-    available_service_name_list = res.data
-    # Get names of all running services.
-    res = rox_request.get_running_service_names()
-    running_service_name_list = res.data
-    # Only consider non-running services as available.
-    available_service_name_list = list(set(available_service_name_list) - set(running_service_name_list))
+    # Get JSON data of all available services (excluding forbidden ones).
+    file_result = filesystemIO.get_available_service_jsons()
+    available_services_json_dict = file_result.data
+    # Get JSON data of all running services (excluding forbidden ones).
+    rox_result = rox_request.get_running_service_jsons()
+    running_services_json_dict = rox_result.data
+    # Only consider services which are currently not running as available.
+    tmp_dict = {}
+    for key, value in available_services_json_dict.items():
+        if key not in running_services_json_dict:
+            tmp_dict[key] = value
+    available_services_json_dict = tmp_dict
 
     # Get metadata of all available pipes.
     res = rox_request.get_pipelines()
-    available_pipelines_json = res.data
+    available_pipeline_json_dict = res.data
     # Convert to list of tuples.
     pipeline_data_list = []
-
-
-
     if res.success:
-        for key, value in available_pipelines_json.items():
+        for key, value in available_pipeline_json_dict.items():
             if key in rox_request.removed_pipes:
                 continue
             data = (key, value["services"], value["active"])
             pipeline_data_list.append(data)
 
-    #retrieve the data for the selected pipeline
+    # Retrieve data for selected pipeline.
     selected_pipe = request.session.get('selected_pipe', "")
     selected_pipe_services = request.session.get('selected_pipe_services', [])
 
+    # Get current logs.
     logs = get_logs()
+
     # Send all data to view.
-    context = {"available_service_names": available_service_name_list,
-               "running_service_names": running_service_name_list,
+    context = {"available_services_dict": available_services_json_dict,
+               "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
                "logs": logs,
                "selected_pipe": selected_pipe,
@@ -189,6 +191,7 @@ def create_pipeline(request):
         response = {'status': 0, 'message': ("Your error")}
         return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 @require_http_methods(["POST"])
 def select_pipeline(request):
     """
@@ -197,13 +200,14 @@ def select_pipeline(request):
     the services of the selected pipeline
     :return:
     """
-    selected_pipeline = request.POST.get('pipe_name', default = "")
+    selected_pipeline = request.POST.get('pipe_name', default="")
     pipe_services = request.POST.get("pipe_services")
     pipe_services = eval(pipe_services)
     print("PIPE SERVICES: " + str(pipe_services))
     request.session['selected_pipe'] = selected_pipeline
     request.session['selected_pipe_services'] = pipe_services
     return redirect(views.main)
+
 
 @require_http_methods(["POST"])
 def delete_pipeline(request):
@@ -362,9 +366,9 @@ def get_logs():
     dt_start = dt_end - LOG_TIMEOUT
     dt_del_start = dt_end - LOG_DELETE
 
-    Logline.objects.exclude(time__range = (dt_del_start, dt_end)).delete()
+    Logline.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
 
-    logs = Logline.objects.filter(time__range = (dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
+    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
     return logs
 
 
