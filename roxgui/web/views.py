@@ -62,8 +62,8 @@ def main(request):
             pipeline_data_list.append(data)
 
     #retrieve the data for the selected pipeline
-    selected_pipe = request.session.get('selected_pipe', "")
-    selected_pipe_services = request.session.get('selected_pipe_services', [])
+    selected_pipe = request.session.get('selected_pipe_name', "")
+    selected_pipe_data = get_selected_pipe(selected_pipe, pipeline_data_list)
 
     logs = get_logs()
     # Send all data to view.
@@ -72,7 +72,8 @@ def main(request):
                "pipeline_data": pipeline_data_list,
                "logs": logs,
                "selected_pipe": selected_pipe,
-               "selected_pipe_services": selected_pipe_services}
+               "selected_pipe_services": selected_pipe_data['services'],
+               "selected_pipe_active": selected_pipe_data['active']}
     return render(request, "web/web.html", context)
 
 
@@ -200,9 +201,12 @@ def select_pipeline(request):
     selected_pipeline = request.POST.get('pipe_name', default = "")
     pipe_services = request.POST.get("pipe_services")
     pipe_services = eval(pipe_services)
-    print("PIPE SERVICES: " + str(pipe_services))
-    request.session['selected_pipe'] = selected_pipeline
+    pipe_active = request.POST.get("selected_active")
+
+
+    request.session['selected_pipe_name'] =  selected_pipeline
     request.session['selected_pipe_services'] = pipe_services
+    request.session['selected_pipe_active'] = pipe_active
     return redirect(views.main)
 
 @require_http_methods(["POST"])
@@ -371,3 +375,9 @@ def get_logs():
 def update_logs():
     pass
     # logs = Logline.objects.filter(time__range=(datetime.datetime.combine(d)))
+
+def get_selected_pipe(pipe_name, pipe_list):
+    """ convert the pipe list of tuples to a dictionary and get the data for pipe_name"""
+    pipe_dict = {data[0]:{'active':data[2], 'services':data[1]} for data in pipe_list}
+    selected = pipe_dict[pipe_name]
+    return selected
