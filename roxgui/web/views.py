@@ -25,7 +25,7 @@ from web.models import RoxSession, Logline
 current_session = None
 removed_pipelines = []
 LOG_RELOAD = 100
-LOG_TIMEOUT = 10000
+LOG_TIMEOUT = datetime.timedelta(days=0, hours=1, minutes=1, seconds = 0, microseconds= 0)
 
 
 @require_http_methods(["GET"])
@@ -324,7 +324,13 @@ def save_log(msg_id=None):
 
 
 def get_logs():
-    logs = Logline.objects.order_by('-time')[:LOG_RELOAD]
+    # Create a datetime object spanning a full day
+    dt_end = datetime.datetime.now()
+    dt_start = dt_end - LOG_TIMEOUT
+    #start = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+    #end = dt.replace(hour=24, minute=59, second=59, microsecond=999999)
+
+    logs = Logline.objects.filter(time__range = (dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
     return logs
 
 
