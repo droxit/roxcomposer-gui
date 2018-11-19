@@ -10,6 +10,7 @@
 import datetime
 import json
 import os
+import logging
 
 from django.contrib import messages
 from django.http import HttpResponse
@@ -28,6 +29,11 @@ removed_pipelines = []
 LOG_RELOAD = 100
 LOG_TIMEOUT = datetime.timedelta(days=10, hours=1, minutes=1, seconds=0, microseconds=0)
 LOG_DELETE = datetime.timedelta(days=1)
+
+# Logging.
+# ========
+logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
+
 
 
 @require_http_methods(["GET"])
@@ -224,11 +230,13 @@ def delete_pipeline(request):
 def post_to_pipeline(request):
     """Send message to pipeline specified in POST request's metadata."""
     # Get pipeline name.
-    pipe_name = request.POST.get("pipe_name", default="");
+    pipe_name = request.POST.get("pipe_name", default="")
+    logging.error("POST TO PIPE: "+ str(pipe_name))
     # Get message.
-    pipe_message_id = request.POST.get("pipe_message_text", default="")
+    pipe_message = request.POST.get("pipe_message_text", default="")
+    logging.error("MSG: " + str(pipe_message))
     # Send message and get result.
-    result = rox_request.post_to_pipeline(pipe_name, pipe_message_id)
+    result = rox_request.post_to_pipeline(pipe_name, pipe_message)
     if result.success:
         # Message was sent successfully.
         save_log(msg_id=result.data)

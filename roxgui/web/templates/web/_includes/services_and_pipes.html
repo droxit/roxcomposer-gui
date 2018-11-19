@@ -38,7 +38,7 @@
                   <div class="row">
                       <div class="col-md-7">
                         <form action="post_to_pipeline" method="post" id="post_to_pipeline">
-                            <input type="hidden" name="pipe_name" value="{{ data.0 }}">
+                            <input type="hidden" name="pipe_name" value="{{ selected_pipe }}">
                             {% csrf_token %}
                             <div class="col-lg-6">
                                 <ul class="list-group">
