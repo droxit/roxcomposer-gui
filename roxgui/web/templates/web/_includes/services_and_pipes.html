@@ -15,7 +15,7 @@
             <div class="card w-auto" style="width: 18rem;height:300px;overflow-y:scroll;">
               <div class="card-body">
                   <ul class="list-group">
-                      {% for name in available_service_names %}
+                      {% for name in available_services_dict %}
                         <li class="list-group-item border-0" value="{{ name }}">{{ name }}</li>
                       {% endfor %}
                     </ul>
