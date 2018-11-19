@@ -11,10 +11,12 @@ import datetime
 import json
 import os
 
+from django.utils import timezone
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+
 
 import databaseIO
 import filesystemIO
@@ -25,7 +27,8 @@ from web.models import RoxSession, Logline
 current_session = None
 removed_pipelines = []
 LOG_RELOAD = 100
-LOG_TIMEOUT = datetime.timedelta(days=0, hours=1, minutes=1, seconds=0, microseconds=0)
+LOG_TIMEOUT = datetime.timedelta(days=10, hours=1, minutes=1, seconds = 0, microseconds= 0)
+LOG_DELETE = datetime.timedelta(days=1)
 
 
 @require_http_methods(["GET"])
@@ -48,18 +51,28 @@ def main(request):
     available_pipelines_json = res.data
     # Convert to list of tuples.
     pipeline_data_list = []
+
+
+
     if res.success:
         for key, value in available_pipelines_json.items():
             if key in rox_request.removed_pipes:
                 continue
             data = (key, value["services"], value["active"])
             pipeline_data_list.append(data)
+
+    #retrieve the data for the selected pipeline
+    selected_pipe = request.session.get('selected_pipe', "")
+    selected_pipe_services = request.session.get('selected_pipe_services', [])
+
     logs = get_logs()
     # Send all data to view.
     context = {"available_service_names": available_service_name_list,
                "running_service_names": running_service_name_list,
                "pipeline_data": pipeline_data_list,
-               "logs": logs}
+               "logs": logs,
+               "selected_pipe": selected_pipe,
+               "selected_pipe_services": selected_pipe_services}
     return render(request, "web/web.html", context)
 
 
@@ -176,6 +189,21 @@ def create_pipeline(request):
         response = {'status': 0, 'message': ("Your error")}
         return HttpResponse(json.dumps(response), content_type='application/json')
 
+@require_http_methods(["POST"])
+def select_pipeline(request):
+    """
+    Save a selected pipeline that should be opened in the pipeline editing view to current session
+    :param request: contains 'selected_pipe', the name of the selected pipeline and 'pipe_services',
+    the services of the selected pipeline
+    :return:
+    """
+    selected_pipeline = request.POST.get('pipe_name', default = "")
+    pipe_services = request.POST.get("pipe_services")
+    pipe_services = eval(pipe_services)
+    print("PIPE SERVICES: " + str(pipe_services))
+    request.session['selected_pipe'] = selected_pipeline
+    request.session['selected_pipe_services'] = pipe_services
+    return redirect(views.main)
 
 @require_http_methods(["POST"])
 def delete_pipeline(request):
@@ -330,12 +358,13 @@ def save_log(msg_id=None):
 
 def get_logs():
     # Create a datetime object spanning a full day
-    dt_end = datetime.datetime.now()
+    dt_end = timezone.now()
     dt_start = dt_end - LOG_TIMEOUT
-    # start = dt.replace(hour=0, minute=0, second=0, microsecond=0)
-    # end = dt.replace(hour=24, minute=59, second=59, microsecond=999999)
+    dt_del_start = dt_end - LOG_DELETE
 
-    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
+    Logline.objects.exclude(time__range = (dt_del_start, dt_end)).delete()
+
+    logs = Logline.objects.filter(time__range = (dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
     return logs
 
 

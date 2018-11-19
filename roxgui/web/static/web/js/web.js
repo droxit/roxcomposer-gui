@@ -49,3 +49,12 @@ function unwatch(){
      });
     }
 }
+
+function show_pipeline(elem){
+    var selected_pipe = elem.dataset.value
+    var selected_pipe_services = elem.dataset.value2
+    console.log(selected_pipe_services)
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("select_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload(); });
+}

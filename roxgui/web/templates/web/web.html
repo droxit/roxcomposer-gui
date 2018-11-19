@@ -32,6 +32,10 @@
     {% include "web/_includes/selects.html" %}
     {%endblock%}
 
+    {% block services_and_pipes %}
+    {% include "web/_includes/services_and_pipes.html"%}
+    {% endblock %}
+
     {% if pipeline_data %}
 
     {% for data in pipeline_data %}
