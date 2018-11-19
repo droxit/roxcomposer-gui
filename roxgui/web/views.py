@@ -382,6 +382,12 @@ def update_logs():
 
 def get_selected_pipe(pipe_name, pipe_list):
     """ convert the pipe list of tuples to a dictionary and get the data for pipe_name"""
+    if pipe_name == "":
+        return {'active': False, 'services': []}
     pipe_dict = {data[0]:{'active':data[2], 'services':data[1]} for data in pipe_list}
-    selected = pipe_dict[pipe_name]
-    return selected
+
+    if pipe_name in pipe_dict:
+        selected = pipe_dict[pipe_name]
+        return selected
+    else:
+        return {'active': False, 'services': []}
