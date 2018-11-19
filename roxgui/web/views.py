@@ -61,7 +61,7 @@ def main(request):
             data = (key, value["services"], value["active"])
             pipeline_data_list.append(data)
 
-    #retrieve the data for the selected pipeline
+    # retrieve the data for the selected pipeline
     selected_pipe = request.session.get('selected_pipe_name', "")
     selected_pipe_data = get_selected_pipe(selected_pipe, pipeline_data_list)
 
@@ -206,8 +206,7 @@ def select_pipeline(request):
     pipe_services = eval(pipe_services)
     pipe_active = request.POST.get("selected_active")
 
-
-    request.session['selected_pipe_name'] =  selected_pipeline
+    request.session['selected_pipe_name'] = selected_pipeline
     request.session['selected_pipe_services'] = pipe_services
     request.session['selected_pipe_active'] = pipe_active
     return redirect(views.main)
@@ -380,11 +379,12 @@ def update_logs():
     pass
     # logs = Logline.objects.filter(time__range=(datetime.datetime.combine(d)))
 
+
 def get_selected_pipe(pipe_name, pipe_list):
     """ convert the pipe list of tuples to a dictionary and get the data for pipe_name"""
     if pipe_name == "":
         return {'active': False, 'services': []}
-    pipe_dict = {data[0]:{'active':data[2], 'services':data[1]} for data in pipe_list}
+    pipe_dict = {data[0]: {'active': data[2], 'services': data[1]} for data in pipe_list}
 
     if pipe_name in pipe_dict:
         selected = pipe_dict[pipe_name]
