@@ -77,8 +77,13 @@
               <div class="card-body">
                   <ul class="list-group">
                     {% for data in pipeline_data %}
-                        <li class="list-group-item border-0" onclick="show_pipeline(this)" data-value_name="{{ data.0 }}" data-value_services="{{ data.1 }}" data-value_active="{{data.2}}">{{ data.0 }}</li>
-                    {% endfor %}
+                        {% if data.2 == True %}
+                            <li class="list-group-item border-0" onclick="show_pipeline(this)" data-value_name="{{ data.0 }}" data-value_services="{{ data.1 }}" data-value_active="{{data.2}}">{{ data.0 }}</li>
+                        {% else %}
+                            <li class="list-group-item border-0 text-muted" onclick="show_pipeline(this)" data-value_name="{{ data.0 }}" data-value_services="{{ data.1 }}" data-value_active="{{data.2}}">{{ data.0 }}</li>
+                        {% endif %}
+
+                      {% endfor %}
                   </ul>
               </div>
             </div>
