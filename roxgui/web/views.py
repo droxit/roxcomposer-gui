@@ -252,29 +252,28 @@ def watch(request):
     """save the session to a json file """
     service_names = request.POST.getlist("services[]")
     if rox_request.current_session:
-        rox_session = databaseIO.get_session(rox_request.current_session)
-        result = rox_request.watch_services(service_names, rox_session=rox_session)
+        db_result = databaseIO.get_session(rox_request.current_session)
+        if db_result.success:
+            # Current session's metadata could be achieved from database.
+            rox_result = rox_request.watch_services(service_names, rox_session=db_result.data)
+        else:
+            # Current session does not have any previously stored metadata, therefore create it.
+            messages.warning(request, db_result.message)
+            rox_result = rox_request.watch_services(service_names)
     else:
-        result = rox_request.watch_services(service_names)
-        rox_session = result.data
+        rox_result = rox_request.watch_services(service_names)
+        rox_session = rox_result.data
         session_services = ", ".join(list(rox_session['services']))
         s = RoxSession(id=rox_session['id'], services=session_services, timeout=rox_session['timeout'])
         s.save()
-
         rox_request.current_session = rox_session['id']
 
-    if result.success:
-        messages.debug(request, result.message)
+    if rox_result.success:
+        messages.success(request, rox_result.message)
         return redirect(views.main)
     else:
-        messages.error(request, "Service could not be added to watchlist.")
-        messages.debug(request, result.message)
+        messages.error(request, "Service could not be watched.")
         return redirect(views.main)
-
-
-@require_http_methods(["POST"])
-def get_service_logs(request):
-    return redirect(views.main)
 
 
 @require_http_methods(["POST"])
@@ -294,6 +293,11 @@ def unwatch(request):
         return redirect(views.main)
 
 
+@require_http_methods(["POST"])
+def get_service_logs(request):
+    return redirect(views.main)
+
+
 def get_response_values(request):
     mstring = []
     for key in request.POST.keys():  # "for key in request.GET" works too.
@@ -305,22 +309,23 @@ def get_response_values(request):
 
 def save_log(msg_id=None):
     """
-    Save all new log messages from server
+    Get all new log messages from server.
     A log message can either be from watching services #TODO
     :param msg_id: optional, if the log concerns a specific message
     :return:
     """
     if rox_request.current_session:  # if there is a current session write logs to database
-        sess = databaseIO.get_session(rox_request.current_session)  # retrieve current session
-        response = rox_request.get_service_logs(sess)  # get the recent logs
-        if response.data:  # if there are any new log lines write them to database
-            for log in response.data:  # write each log line separately
-                if msg_id:  # TODO
-                    l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
-                                time=log['time'])
-                else:
-                    l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
-                l.save()  # save to DB
+        db_result = databaseIO.get_session(rox_request.current_session)  # retrieve current session
+        if db_result.success:
+            rox_result = rox_request.get_service_logs(db_result.data)  # get the recent logs
+            if rox_result.success:
+                for log in rox_result.data:  # write each log line separately
+                    if msg_id:  # TODO
+                        l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
+                                    time=log['time'])
+                    else:
+                        l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+                    l.save()  # save to DB
 
 
 def get_logs():

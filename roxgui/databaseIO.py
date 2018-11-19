@@ -12,6 +12,7 @@ import logging
 
 import filesystemIO
 import rox_request
+from rox_response import RoxResponse
 from web.models import Service, RoxSession
 
 
@@ -59,16 +60,19 @@ def get_service_jsons(service_names: list) -> list:
     return service_jsons
 
 
-def get_session(sess_id):
+def get_session(session_id: str) -> RoxResponse:
     """
-
-    :return: session dict
+    Get session with specified ROXcomposer ID.
+    :param session_id: Session's ROXcomposer ID.
+    :return: RoxResponse instance with corresponding session data.
     """
     try:
-        s = RoxSession.objects.get(id=sess_id)
+        s = RoxSession.objects.get(id=session_id)
         services = set(s.services.split(", "))
-
         sess = {'id': s.id, 'timeout': s.timeout, 'services': services}
-        return sess
+        res = RoxResponse(True)
+        res.data = sess
+        return res
     except RoxSession.DoesNotExist:
-        logging.error("Session does not exist: " + sess_id)
+        error_msg = "Session {} does not exist.".format(session_id)
+        return RoxResponse(False, error_msg)

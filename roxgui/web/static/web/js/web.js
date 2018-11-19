@@ -32,7 +32,6 @@ function postPipeOptions() {
 
 function watch(){
     var options = $('#running_service_list').val();
-    console.log(options)
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     if(options.length >= 1){
         $.post("watch", {services: options, csrfmiddlewaretoken : CSRFtoken}).done(function(){

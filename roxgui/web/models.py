@@ -7,8 +7,10 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
-from django.db import models
 import datetime
+
+from django.db import models
+
 
 class Service(models.Model):
     name = models.CharField(max_length=200)
@@ -17,11 +19,12 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
+
 class Logline(models.Model):
     service = models.CharField(max_length=200)
     msg = models.TextField()
     msg_id = models.CharField(max_length=200, default="")
-    level = models.CharField(max_length=200, default='debug')
+    level = models.CharField(max_length=200, default="debug")
     time = models.DateTimeField()
 
     def __str__(self):
@@ -30,7 +33,7 @@ class Logline(models.Model):
             logline += "Message ID: {}, ".format(self.msg_id)
         if self.service:
             logline += "Service: {}, ".format(self.service)
-        if self.msg :
+        if self.msg:
             logline += "Message: {}, ".format(self.msg)
         if self.level:
             logline += "Loglevel: {}, ".format(self.level)
@@ -39,9 +42,10 @@ class Logline(models.Model):
         return logline
 
     def is_older(self, timeout_in_seconds):
-        if self.time < datetime.datetime.now()-datetime.timedelta(seconds = timeout_in_seconds):
+        if self.time < datetime.datetime.now() - datetime.timedelta(seconds=timeout_in_seconds):
             return True
         return False
+
 
 class Message(models.Model):
     msg_id = models.CharField(max_length=200, primary_key=True)
@@ -52,6 +56,12 @@ class Message(models.Model):
 
 
 class RoxSession(models.Model):
+    """
+    Table to store GUI sessions.
+
+    A single session documents which services are currently being watched,
+    together with corresponding ROXcomposer IDs and specified timeouts.
+    """
     id = models.CharField(max_length=200, primary_key=True)
     services = models.TextField()
     timeout = models.IntegerField()

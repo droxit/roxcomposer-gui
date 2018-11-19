@@ -41,9 +41,12 @@ SESSION_TIMEOUT = 3600
 # Default services.
 FORBIDDEN_SERVICES = ['basic_reporting']
 
-removed_pipes = []
-
+# Store metadata for current GUI session.
 current_session = None
+
+# Store names of all pipelines removed via GUI.
+# TODO: Workaround because ROXcomposer does not yet support deletion of existing pipelines.
+removed_pipes = []
 
 
 # Error messages.
@@ -438,71 +441,70 @@ def load_session(file_name: str) -> RoxResponse:
         return RoxResponse(True, r.text)
 
 
-def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
+def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
     """
-
-    :param service_names: List of Names of the services to watch
-    :param rox_session: A dictionary with an id, a timeout and a set of services that are being watched.
-    :return: Tuple (bool, str, dict): True if watch service worked, String is message from server and dict the session
+    Add specified services to given sessions watchlist.
+    :param service_names: List of service names which should be watched.
+    :param rox_session: A dictionary with an ID, a timeout and a set of services which are currently watched.
+    :param timeout: Timeout (in seconds) after which given services are no longer watched.
+    :return: RoxResponse instance documenting if services could be added to watchlist.
     """
 
     url = create_rox_connector_url("log_observer")
 
-    # if there is no session yet start new session
     if rox_session is None:
+        # There is no session yet, so start a new one.
+
         rox_session = dict()
         rox_session['services'] = set()
         rox_session['timeout'] = timeout
 
-        # services = ", ".join(service_names)
-        services = service_names
-
-        content = {'lines': 100, 'timeout': timeout, 'services': services}
+        content = {'lines': 100, 'timeout': timeout, 'services': service_names}
 
         try:
             r = requests.put(url, headers=JSON_HEADER, json=content)
-        except requests.exceptions.ConnectionError as e:
-            err = "ERROR: no connection to server - {}".format(e)
-            logging.error(err)
-            return RoxResponse(False, err)
+        except requests.exceptions.ConnectionError as err:
+            error_msg = _create_connection_error(str(err))
+            return RoxResponse(False, error_msg)
 
         if r.status_code != 200:
-            err = 'ERROR: {}'.format(r.text)
-            logging.error(err)
-            return RoxResponse(False, err)
+            error_msg = _create_http_status_error(r.status_code, r.text)
+            return RoxResponse(False, error_msg)
 
         rox_session['id'] = r.json()['sessionid']
 
-        for s in services:
+        for s in service_names:
             rox_session['services'].add(s)
 
         res = RoxResponse(True, r.text)
         res.data = rox_session
         return res
-
     else:
+        # Session already exist, so update it.
+
         unwatched_services = list(rox_session['services'] - set(service_names))
 
         if unwatched_services:
-            # services = ", ".join(unwatched_services)
+            # There are sessions which should be added to watchlist.
+
             content = {'sessionid': rox_session['id'], 'services': unwatched_services}
+
             try:
                 r = requests.post(url, headers=JSON_HEADER, json=content)
-            except requests.exceptions.ConnectionError as e:
-                err = "ERROR: no connection to server - {}".format(e)
-                logging.error(err)
-                res = RoxResponse(False, err)
+            except requests.exceptions.ConnectionError as err:
+                error_msg = _create_connection_error(str(err))
+                res = RoxResponse(False, error_msg)
                 res.data = rox_session
                 return res
 
             if r.status_code != 200:
-                err = 'ERROR: {}'.format(r.text)
-                logging.error(err)
-                res = RoxResponse(False, err)
+                error_msg = _create_http_status_error(r.status_code, r.text)
+                res = RoxResponse(False, error_msg)
                 res.data = rox_session
                 return res
 
             response = r.json()
+
             for s in response['ok']:
                 rox_session['services'].add(s)
 
@@ -510,37 +512,36 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT):
             res.data = rox_session
             return res
         else:
-            return RoxResponse(False, "All services already watched.")
+            # All specified services are already watched.
+            return RoxResponse(False, "All services are already watched.")
+
+
+def unwatch_services() -> RoxResponse:
+    return RoxResponse(False, "Not implemented yet.")
 
 
 def get_service_logs(session=None):
     if session is None:
-        err = 'Trying to get logs, but no session instantiated.'
-        logging.error(err)
-        return RoxResponse(False, err)
+        error_msg = "Trying to get logs, but no session instantiated."
+        return RoxResponse(False, error_msg)
 
     url = create_rox_connector_url("log_observer")
     content = {'sessionid': session['id']}
 
     try:
         r = requests.get(url, headers=JSON_HEADER, json=content)
-    except requests.exceptions.ConnectionError as e:
-        err = "ERROR: no connection to server - {}".format(e)
-        logging.error(err)
-        return RoxResponse(False, err)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
 
     if r.status_code != 200:
-        logging.error(r.text)
-        return RoxResponse(False, r.text)
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
 
     logs = [json.loads(logline) for logline in r.json()['loglines']]
-    response = RoxResponse(True, r.text)
-    response.data = logs
-    return response
-
-
-def unwatch_services():  # TODO
-    pass
+    res = RoxResponse(True, r.text)
+    res.data = logs
+    return res
 
 
 def watch_pipelines():  # TODO
