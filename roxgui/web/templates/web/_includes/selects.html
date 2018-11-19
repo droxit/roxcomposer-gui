@@ -11,7 +11,7 @@
                             <select class="custom-select" name="available_service_names" id="available_service_list"
                                     multiple>
                                 {% for key, value in available_services_dict.items %}
-                                <option value="{{ name }}" title="{{ value }}">{{ key }}</option>
+                                <option value="{{ key }}" title="{{ value }}">{{ key }}</option>
                                 {% endfor %}
                             </select>
                         </form>
