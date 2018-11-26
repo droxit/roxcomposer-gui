@@ -1,15 +1,19 @@
-function addToPipe() {
-    var selectedOpts = $('#running_service_list').val();
-    if (selectedOpts.length >= 1) {
-        for (var i = 0; i < selectedOpts.length; i++) {
-            var opt = selectedOpts[i];
-            $('#piped_service_list').append(new Option(opt, opt));
-        }
-    }
+function addToPipe(elem) {
+    var selected_service = elem.dataset.value_name;
+    var ul = document.getElementById("piped_service_list");
+    var li = document.createElement("li");
+    li.setAttribute("id", "{{ name }}");
+    li.setAttribute("onclick", "removeFromPipe(this)");
+    li.setAttribute("data-value_name", "{{ name }}");
+    li.setAttribute("class", "list-group-item");
+    li.appendChild(document.createTextNode(selected_service));
+    ul.appendChild(li);
 }
 
-function removeFromPipe() {
-    $('#piped_service_list').find('option:selected').remove()
+function removeFromPipe(elem){
+    var selected_service = elem.dataset.value_name;
+    var item = document.getElementById(selected_service);
+    item.parentNode.removeChild(item);
 }
 
 function refresh() {
@@ -19,15 +23,15 @@ function refresh() {
 }
 
 function postPipeOptions() {
-    var pipeline_options = $('#piped_service_list option');
-    var pipeline_name = document.getElementById('pipeline_name').value;
-    var pipeline_services = $.map(pipeline_options, function(option) {
-        return option.value;
-    });
+    var pipeline_name = document.getElementById("pipe_name").value;
+    var pipeline_services = new Array();
+    var pipelines = document.querySelectorAll('#piped_service_list li');
+    for (i = 0; i < pipelines.length; i++) {
+        pipeline_services.push(pipelines[i].innerHTML);
+    }
+    console.log(pipeline_services);
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("create_pipeline", {name: pipeline_name, services: pipeline_services, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload();
-     });
+    $.post("create_pipeline", {name: pipeline_name, services: pipeline_services, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
 }
 
 function watch(elem){
@@ -44,7 +48,6 @@ function watch(elem){
         }
 
     }
-
 }
 
 function unwatch(elem){
@@ -73,12 +76,10 @@ function stop_service(elem){
 }
 
 function show_pipeline(elem){
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     var selected_pipe = elem.dataset.value_name;
     var selected_pipe_services = elem.dataset.value_services;
     var selected_active = elem.dataset.value_active;
-    console.log(selected_active);
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("select_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active:selected_active, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload(); });
-}
+    $.post("select_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active: selected_active, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
 
+}

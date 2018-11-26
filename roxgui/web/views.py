@@ -74,7 +74,7 @@ def main(request):
     save_log(request)
     logs = get_logs()
     logging.info("Logs: "+ str(logs))
-    logging.info("watch list: "+ str(request.session['watch_button_active']))
+    logging.info("watch list: "+ str(request.session.get('watch_button_active', None)))
 
     # Send all data to view.
     context = {"available_services_dict": available_services_json_dict,
@@ -84,7 +84,7 @@ def main(request):
                "selected_pipe": selected_pipe,
                "selected_pipe_services": selected_pipe_data['services'],
                "selected_pipe_active": selected_pipe_data['active'],
-               "watch_active": request.session['watch_button_active']}
+               "watch_active": request.session.get('watch_button_active',None)}
     return render(request, "web/web.html", context)
 
 
@@ -134,6 +134,7 @@ def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.
     service_name_list = request.POST.getlist("available_service_names[]", default=[])
+    logging.info("START: " + str(service_name_list))
     # Get list of corresponding JSON dictionaries.
     res = filesystemIO.convert_to_service_json_list(service_name_list)
     service_json_list = res.data
@@ -205,16 +206,17 @@ def create_pipeline(request):
 @require_http_methods(["POST"])
 def select_pipeline(request):
     """
-    Save a selected pipeline that should be opened in the pipeline editing view to current session
-    :param request: contains 'selected_pipe', the name of the selected pipeline and 'pipe_services',
-    the services of the selected pipeline
-    :return:
+    Decide if new pipeline should be created or selected one should be edited. In either case save
+    corresponding data to current session so that main view is able to render corresonding GUI elements.
+    :param request: Request instance contains boolean flag "is_new_pipe" indicating if new pipeline should be created.
+    If no new pipeline should be created, it also contains "pipe_name", "pipe_services" and "selected_pipe" parameters.
+    :return: Redirect to main page with corresponding data in current session.
     """
     selected_pipeline = request.POST.get('pipe_name', default="")
-    pipe_services = request.POST.get("pipe_services")
-    pipe_services = eval(pipe_services)
-    pipe_active = request.POST.get("selected_active")
-
+    pipe_services = request.POST.get("pipe_services", default="")
+    if pipe_services:
+        pipe_services = eval(pipe_services)
+    pipe_active = request.POST.get("selected_active", default="")
     request.session['selected_pipe_name'] = selected_pipeline
     request.session['selected_pipe_services'] = pipe_services
     request.session['selected_pipe_active'] = pipe_active
@@ -407,7 +409,7 @@ def save_log(request, msg_id=None):
 
 
 def create_new_sess(request):
-    services_to_be_watched = list(request.session['watch_button_active'].keys())
+    services_to_be_watched = list(request.session.get('watch_button_active', {}).keys())
     res = rox_request.watch_services(services_to_be_watched)
     if res.success:
         request.session['current_session'] = res.data['id']
