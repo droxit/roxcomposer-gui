@@ -20,5 +20,5 @@ cd ../roxcomposer/build/roxcomposer-demo-0.4.0
 sleep 2
 
 # Start ROXcomposer-GUI.
-cd $INITIAL_DIR/roxgui
+cd ${INITIAL_DIR}/roxgui
 ./manage.py runserver

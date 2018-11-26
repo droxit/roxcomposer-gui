@@ -9,8 +9,8 @@
 
 import datetime
 import json
-import os
 import logging
+import os
 
 from django.contrib import messages
 from django.http import HttpResponse
@@ -33,7 +33,6 @@ LOG_DELETE = datetime.timedelta(days=1)
 # Logging.
 # ========
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
-
 
 
 @require_http_methods(["GET"])
@@ -232,7 +231,7 @@ def post_to_pipeline(request):
     """Send message to pipeline specified in POST request's metadata."""
     # Get pipeline name.
     pipe_name = request.POST.get("pipe_name", default="")
-    logging.error("POST TO PIPE: "+ str(pipe_name))
+    logging.error("POST TO PIPE: " + str(pipe_name))
     # Get message.
     pipe_message = request.POST.get("pipe_message_text", default="")
     logging.error("MSG: " + str(pipe_message))
