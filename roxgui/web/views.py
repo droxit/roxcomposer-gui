@@ -23,8 +23,8 @@ import filesystemIO
 import rox_request
 from web import views
 from web.models import RoxSession, Logline
+from rox_response import RoxResponse
 
-current_session = None
 removed_pipelines = []
 LOG_RELOAD = 100
 LOG_TIMEOUT = datetime.timedelta(days=10, hours=1, minutes=1, seconds=0, microseconds=0)
@@ -72,7 +72,10 @@ def main(request):
     selected_pipe_data = get_selected_pipe(selected_pipe, pipeline_data_list)
 
     # Get current logs.
+    save_log(request)
     logs = get_logs()
+    logging.info("Logs: "+ str(logs))
+    logging.info("watch list: "+ str(request.session['watch_button_active']))
 
     # Send all data to view.
     context = {"available_services_dict": available_services_json_dict,
@@ -81,7 +84,8 @@ def main(request):
                "logs": logs,
                "selected_pipe": selected_pipe,
                "selected_pipe_services": selected_pipe_data['services'],
-               "selected_pipe_active": selected_pipe_data['active']}
+               "selected_pipe_active": selected_pipe_data['active'],
+               "watch_active": request.session['watch_button_active']}
     return render(request, "web/web.html", context)
 
 
@@ -239,7 +243,8 @@ def post_to_pipeline(request):
     result = rox_request.post_to_pipeline(pipe_name, pipe_message)
     if result.success:
         # Message was sent successfully.
-        save_log(msg_id=result.data)
+        logging.info("Message was sent successfully.")
+        save_log(request, msg_id=result.data)
         messages.success(request, result.message)
         return redirect(views.main)
     else:
@@ -296,25 +301,31 @@ def watch(request):
     service_names = request.POST.get("services")
     #request.session['watch_button_active'] = {}
     request.session['watch_button_active'][service_names] = True
-    logging.info("WATCH BUTTON LIST: "+ str(request.session['watch_button_active']))
+    request.session.modified = True
     service_names = [service_names]
-    logging.info("SERVICE WATCH: "+str(service_names))
-    if rox_request.current_session:
-        db_result = databaseIO.get_session(rox_request.current_session)
+    cur_sess = request.session.get('current_session', None)
+    if cur_sess is not None:
+        db_result = databaseIO.get_session(cur_sess)
         if db_result.success:
             # Current session's metadata could be achieved from database.
             rox_result = rox_request.watch_services(service_names, rox_session=db_result.data)
+            rox_session = rox_result.data
+            s = RoxSession(id=rox_session['id'], services=rox_session['services'], timeout=rox_session['timeout'])
+            s.save()
         else:
             # Current session does not have any previously stored metadata, therefore create it.
             messages.warning(request, db_result.message)
             rox_result = rox_request.watch_services(service_names)
+            request.session['current_session'] = rox_result.data
+            request.session.modified = True
     else:
         rox_result = rox_request.watch_services(service_names)
         rox_session = rox_result.data
         session_services = ", ".join(list(rox_session['services']))
         s = RoxSession(id=rox_session['id'], services=session_services, timeout=rox_session['timeout'])
         s.save()
-        rox_request.current_session = rox_session['id']
+        request.session['current_session'] = rox_session['id']
+        request.session.modified = True
 
     if rox_result.success:
         messages.success(request, rox_result.message)
@@ -327,23 +338,33 @@ def watch(request):
 @require_http_methods(["POST"])
 def unwatch(request):
     """save the session to a json file """
-    service_names = request.POST.getlist("services[]")
-    sess_id = rox_request.current_session
-    rox_session = databaseIO.get_session(sess_id)
-    result = rox_request.unwatch_services(service_names, rox_session=rox_session)
-
-    if result.success:
-        messages.debug(request, result.message)
-        return redirect(views.main)
+    service_names = request.POST.get("services")
+    request.session['watch_button_active'][service_names] = False
+    request.session.modified = True
+    logging.info("UNWATCH: "+ str(service_names)+ str(request.session['watch_button_active']))
+    cur_sess = request.session.get('current_session', None)
+    if cur_sess is not None:
+        logging.info("session: "+ str(cur_sess))
+        dbResult = databaseIO.get_session(cur_sess)
+        if dbResult.success:
+            rox_session = dbResult.data
+            result = rox_request.unwatch_services([service_names], rox_session)
+            if result.success:
+                s = RoxSession(id=rox_session['id'], services=rox_session['services'], timeout=rox_session['timeout'])
+                s.save()
+                messages.debug(request, result.message)
+                return redirect(views.main)
+            else:
+                messages.error(request, "Couldn't unwatch services.")
+                messages.debug(request, result.message)
+                return redirect(views.main)
+        else:
+            messages.error(request, "Could not get session from database.")
+            return redirect(views.main)
     else:
-        messages.error(request, "Couldn't unwatch services.")
-        messages.debug(request, result.message)
+        messages.error(request, "No rox session active.")
         return redirect(views.main)
 
-
-@require_http_methods(["POST"])
-def get_service_logs(request):
-    return redirect(views.main)
 
 
 def get_response_values(request):
@@ -355,17 +376,21 @@ def get_response_values(request):
     return '&'.join(mstring)
 
 
-def save_log(msg_id=None):
+def save_log(request, msg_id=None):
     """
     Get all new log messages from server.
     A log message can either be from watching services #TODO
     :param msg_id: optional, if the log concerns a specific message
     :return:
     """
-    if rox_request.current_session:  # if there is a current session write logs to database
-        db_result = databaseIO.get_session(rox_request.current_session)  # retrieve current session
+    sess = request.session.get('current_session', None)
+    logging.info("Trying to save logs, getting session: "+ str(sess))
+    if sess is not None:  # if there is a current session write logs to database
+        db_result = databaseIO.get_session(sess)  # retrieve current session
+        logging.info("Accessing db with sess id: "+ str(db_result.success) + " msg: "+ str(db_result.message))
         if db_result.success:
-            rox_result = rox_request.get_service_logs(db_result.data)  # get the recent logs
+            rox_result = rox_request.get_service_logs(rox_session = db_result.data)  # get the recent logs
+            logging.info("Getting logs from server: "+ str(rox_result.success) + " \n" + str(rox_result.message))
             if rox_result.success:
                 for log in rox_result.data:  # write each log line separately
                     if msg_id:  # TODO
@@ -374,7 +399,30 @@ def save_log(msg_id=None):
                     else:
                         l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
                     l.save()  # save to DB
+            else: #could not retrieve logs with given session id, delete session
+                create_new_sess(request)
+        else:
+            create_new_sess(request)
+    else:
+        create_new_sess(request)
 
+
+def create_new_sess(request):
+    services_to_be_watched = list(request.session['watch_button_active'].keys())
+    res = rox_request.watch_services(services_to_be_watched)
+    if res.success:
+        request.session['current_session'] = res.data['id']
+        request.session.modified = True
+        logging.info("new sess created")
+        update_session(res.data)
+        messages.debug(request, "Services are being watched.")
+    else:
+        logging.info("haeh")
+        messages.error(request, "Could not create new session.")
+
+def update_session(rox_session):
+    s = RoxSession(id=rox_session['id'], services=rox_session['services'], timeout=rox_session['timeout'])
+    s.save()
 
 def get_logs():
     # Create a datetime object spanning a full day

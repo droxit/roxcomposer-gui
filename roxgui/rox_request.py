@@ -41,9 +41,6 @@ SESSION_TIMEOUT = 3600
 # Default services.
 FORBIDDEN_SERVICES = {'basic_reporting'}
 
-# Store metadata for current GUI session.
-current_session = None
-
 # Store names of all pipelines removed via GUI.
 # TODO: Workaround because ROXcomposer does not yet support deletion of existing pipelines.
 removed_pipes = []
@@ -476,9 +473,9 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> 
         res.data = rox_session
         return res
     else:
-        # Session already exist, so update it.
-
+        # Session already exists, so update it.
         unwatched_services = list(rox_session['services'] - set(service_names))
+        logging.info("Trying to watch services: "+ str(unwatched_services))
 
         if unwatched_services:
             # There are sessions which should be added to watchlist.
@@ -512,17 +509,41 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> 
             return RoxResponse(False, "All services are already watched.")
 
 
-def unwatch_services() -> RoxResponse:
-    return RoxResponse(False, "Not implemented yet.")
+def unwatch_services(service_names, rox_session) -> RoxResponse:
+    if len(service_names) is 0:
+        return RoxResponse(False, "No services specified.")
+
+    if rox_session is None:
+        return RoxResponse(False, "No session specified.")
+
+    s = [x for x in filter(lambda se: se in rox_session['services'], service_names)]
+
+    if len(s) == 0:
+        return RoxResponse(False, "The specified services are not being watched")
+
+    data = {'sessionid': rox_session['id'], 'services': s}
+    try:
+        r = requests.delete(create_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return RoxResponse(False, "ERROR: no connection to server - {}".format(e))
+
+    if r.status_code != 200:
+        return RoxResponse(False, 'ERROR: {}'.format(r.text))
+
+    else:
+        rox_session['services'] = rox_session['services'].difference(set(s))
+        res = RoxResponse(True, "Services no longer watched: {}".format(s))
+        res.data = rox_session
+        return res
 
 
-def get_service_logs(session=None):
-    if session is None:
+def get_service_logs(rox_session=None):
+    if rox_session is None:
         error_msg = "Trying to get logs, but no session instantiated."
         return RoxResponse(False, error_msg)
 
     url = create_rox_connector_url("log_observer")
-    content = {'sessionid': session['id']}
+    content = {'sessionid': rox_session['id']}
 
     try:
         r = requests.get(url, headers=JSON_HEADER, json=content)
@@ -535,6 +556,7 @@ def get_service_logs(session=None):
         return RoxResponse(False, error_msg)
 
     logs = [json.loads(logline) for logline in r.json()['loglines']]
+    logging.info("logs in rox request: " + str(logs))
     res = RoxResponse(True, r.text)
     res.data = logs
     return res
