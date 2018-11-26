@@ -7,14 +7,35 @@
             <div class="card w-auto" style="width: 18rem;height:300px; overflow-y:scroll;">
               <div class="card-body">
                 <h5 class="card-title">Running Services</h5>
-                {% for key, value in running_services_dict.items %}
-                  <div class="card" data-value_info="{{ value }}" style="width: 18rem" >
-                      <div class="card-body">
-                        <h5 class="card-title" >{{ key }}</h5>
+                  <div class="card-columns">
+                    {% for key, value in running_services_dict.items %}
+                      <div class="card" data-value_info="{{ value }}" >
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-7">
+                                    {{ key }}
+                                  </div>
+                                  <div class="col-md-2">
+                                      {% if request.session|get_watch_toggled:key == True %}
+                                          <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-primary focus active" data-toggle="button" aria-pressed="true" autocomplete="off">
+                                              w
+                                           </button>
+                                      {% else %}
+                                            <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                              w
+                                           </button>
+                                      {% endif %}
+                                  </div>
+                                  <div class="col-md-2">
+                                      <button type="button" onclick="stop_service(this)" data-value_name="{{ key }}" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                          x
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
+                    {% endfor %}
                   </div>
-
-                {% endfor %}
               </div>
             </div>
         </div>

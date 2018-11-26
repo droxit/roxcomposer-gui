@@ -131,7 +131,6 @@ def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.
     service_name_list = request.POST.getlist("available_service_names[]", default=[])
-    logging.info("START: "+str(service_name_list))
     # Get list of corresponding JSON dictionaries.
     res = filesystemIO.convert_to_service_json_list(service_name_list)
     service_json_list = res.data
@@ -158,7 +157,7 @@ def start_service(request):
 def stop_service(request):
     """Stop services specified in POST request's metadata."""
     # Get list of service names which should be stopped.
-    service_name_list = request.POST.getlist("running_service_names", default=[])
+    service_name_list = request.POST.getlist("running_service_names[]", default=[])
     # Stop specified services and get list of names
     # corresponding to all services which could not be stopped.
     res = rox_request.shutdown_services(service_name_list)
@@ -294,7 +293,12 @@ def get_message_history(request):
 @require_http_methods(["POST"])
 def watch(request):
     """save the session to a json file """
-    service_names = request.POST.getlist("services[]")
+    service_names = request.POST.get("services")
+    #request.session['watch_button_active'] = {}
+    request.session['watch_button_active'][service_names] = True
+    logging.info("WATCH BUTTON LIST: "+ str(request.session['watch_button_active']))
+    service_names = [service_names]
+    logging.info("SERVICE WATCH: "+str(service_names))
     if rox_request.current_session:
         db_result = databaseIO.get_session(rox_request.current_session)
         if db_result.success:

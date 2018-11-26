@@ -30,11 +30,11 @@ function postPipeOptions() {
      });
 }
 
-function watch(){
-    var options = $('#running_service_list').val();
+function watch(elem){
+    var selected_service = elem.dataset.value_name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    if(options.length >= 1){
-        $.post("watch", {services: options, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+    if(selected_service){
+        $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload();
      });
     }
@@ -56,6 +56,13 @@ function run_service(elem){
     $.post("start_service", {available_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload(); });
 
+}
+
+function stop_service(elem){
+    var selected_service = elem.dataset.value_name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload(); });
 }
 
 function show_pipeline(elem){
