@@ -130,7 +130,8 @@ def create_service(request):
 def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.
-    service_name_list = request.POST.getlist("available_service_names", default=[])
+    service_name_list = request.POST.getlist("available_service_names[]", default=[])
+    logging.info("START: "+str(service_name_list))
     # Get list of corresponding JSON dictionaries.
     res = filesystemIO.convert_to_service_json_list(service_name_list)
     service_json_list = res.data

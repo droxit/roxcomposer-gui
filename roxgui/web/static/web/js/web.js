@@ -50,12 +50,21 @@ function unwatch(){
     }
 }
 
+function run_service(elem){
+    var selected_service = elem.dataset.value_name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("start_service", {available_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        location.reload(); });
+
+}
+
 function show_pipeline(elem){
-    var selected_pipe = elem.dataset.value_name
-    var selected_pipe_services = elem.dataset.value_services
-    var selected_active = elem.dataset.value_active
-    console.log(selected_active)
+    var selected_pipe = elem.dataset.value_name;
+    var selected_pipe_services = elem.dataset.value_services;
+    var selected_active = elem.dataset.value_active;
+    console.log(selected_active);
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("select_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active:selected_active, csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload(); });
 }
+

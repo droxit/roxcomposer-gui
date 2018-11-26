@@ -4,10 +4,17 @@
     <!-- Services -->
     <div class="row">
         <div class="col-md-8">
-            <div class="card w-auto" style="width: 18rem;height:300px">
+            <div class="card w-auto" style="width: 18rem;height:300px; overflow-y:scroll;">
               <div class="card-body">
                 <h5 class="card-title">Running Services</h5>
-                <p class="card-text">service content</p>
+                {% for key, value in running_services_dict.items %}
+                  <div class="card" data-value_info="{{ value }}" style="width: 18rem" >
+                      <div class="card-body">
+                        <h5 class="card-title" >{{ key }}</h5>
+                      </div>
+                  </div>
+
+                {% endfor %}
               </div>
             </div>
         </div>
@@ -16,7 +23,7 @@
               <div class="card-body">
                   <ul class="list-group">
                       {% for key, value in available_services_dict.items %}
-                        <li class="list-group-item border-0" value="{{ key }}" title="{{ value }}">{{ key }}</li>
+                        <li class="list-group-item border-0" onclick="run_service(this)" data-value_name="{{ key }}" value="{{ value }}">{{ key }}</li>
                         
                       {% endfor %}
 
