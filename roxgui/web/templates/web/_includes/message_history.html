@@ -1,0 +1,16 @@
+{% block message_history %}
+
+<div class="row">
+    <div class="col">
+        <form class="form-inline" action="get_message_history" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="msg_id" class="sr-only">Message ID</label>
+                <input type="text" class="form-control" name="pipe_message_id" id="msg_id" placeholder="Message ID">
+            </div>
+            <button type="submit" class="btn btn-primary">Show history</button>
+        </form>
+    </div>
+</div>
+
+{% endblock message_history %}

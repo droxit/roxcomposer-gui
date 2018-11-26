@@ -1,0 +1,35 @@
+{% block pipeline_params %}
+
+<div class="row">
+    <div class="col-md-7">
+        <form action="post_to_pipeline" method="post" id="post_to_pipeline">
+            {% csrf_token %}
+            <input type="text" name="pipe_name" id="pipe_name" value="{{ selected_pipe }}">
+            <ul class="list-group" id="piped_service_list">
+                {% for name in selected_pipe_services %}
+                <li id="{{ name }}" onclick="removeFromPipe(this)" data-value_name="{{ name }}" class="list-group-item">
+                    {{ name }}
+                </li>
+                {% endfor %}
+            </ul>
+        </form>
+        <button onclick="postPipeOptions()" class="btn btn-primary">Update pipeline</button>
+    </div>
+    <div class="col-md-5">
+        <div class="row">
+            <div class="col-lg-9">
+                <label for="msg_text" class="sr-only">Message</label>
+                <input form="post_to_pipeline" type="text" class="form-control"
+                       name="pipe_message_text"
+                       id="msg_text"
+                       placeholder="Message">
+            </div>
+            <div class="col-lg-3">
+                <button type="submit" form="post_to_pipeline" class="btn btn-default">Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock pipeline_params %}
