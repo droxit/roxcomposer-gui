@@ -41,10 +41,6 @@ class Logline(models.Model):
             logline += "Time: {}".format(str(self.time))
         return logline
 
-    def is_older(self, timeout_in_seconds):
-        if self.time < datetime.datetime.now() - datetime.timedelta(seconds=timeout_in_seconds):
-            return True
-        return False
 
 
 class Message(models.Model):

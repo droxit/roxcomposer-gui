@@ -15,9 +15,11 @@
             <div class="card w-auto" style="width: 18rem;height:300px;overflow-y:scroll;">
               <div class="card-body">
                   <ul class="list-group">
-                      {% for name in available_services_dict %}
-                        <li class="list-group-item border-0" value="{{ name }}">{{ name }}</li>
+                      {% for key, value in available_services_dict.items %}
+                        <li class="list-group-item border-0" value="{{ key }}" title="{{ value }}">{{ key }}</li>
+                        
                       {% endfor %}
+
                     </ul>
               </div>
             </div>
@@ -31,9 +33,9 @@
               <div class="card-body">
                   {% if selected_pipe %}
                     {% if selected_pipe_active == True %}
-                        <h5 class="card-title">{{ selected_pipe }} </h5>
+                        <h5 class="card-title">{{ selected_pipe }} <small class="form-text">Active</small></h5>
                     {% else %}
-                         <h5 class="card-title text-muted">{{ selected_pipe }}</h5>
+                         <h5 class="card-title text-muted">{{ selected_pipe }} <small class="form-text text-muted">Inactive</small></h5>
                     {% endif %}
                   <div class="row">
                       <div class="col-md-7">
