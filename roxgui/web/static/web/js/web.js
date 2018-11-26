@@ -31,20 +31,27 @@ function postPipeOptions() {
 }
 
 function watch(elem){
+    if(elem.getAttribute("aria-pressed") == 'true'){
+        unwatch(elem);
+    } else{
+        console.log("Here")
+        var selected_service = elem.dataset.value_name;
+        var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+        if(selected_service){
+            $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+            location.reload();
+         });
+        }
+
+    }
+
+}
+
+function unwatch(elem){
     var selected_service = elem.dataset.value_name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     if(selected_service){
-        $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload();
-     });
-    }
-}
-
-function unwatch(){
-    var options = $('#running_service_list').val();
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    if(options.length >= 1){
-        $.post("unwatch", {services: options, csrfmiddlewaretoken : CSRFtoken}).done(function(){
+        $.post("unwatch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload();
      });
     }

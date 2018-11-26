@@ -1,5 +1,4 @@
 {% block services_and_pipes %}
-
 <div class="container">
     <!-- Services -->
     <div class="row">
@@ -12,23 +11,23 @@
                       <div class="card" data-value_info="{{ value }}" >
                           <div class="card-body">
                               <div class="row">
-                                  <div class="col-md-7">
-                                    {{ key }}
+                                  <div class="col-md-12">
+                                      <small> {{ key }} </small>
                                   </div>
-                                  <div class="col-md-2">
-                                      {% if request.session|get_watch_toggled:key == True %}
-                                          <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-primary focus active" data-toggle="button" aria-pressed="true" autocomplete="off">
-                                              w
+                                  <div class="col-md-2 ml-2">
+                                      {% if watch_active|get_value:key == True %}
+                                          <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-default btn-xs focus active" data-toggle="button" aria-pressed="true" autocomplete="off">
+                                              <span class="fas fa-eye"></span>
                                            </button>
                                       {% else %}
-                                            <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-                                              w
+                                            <button type="button" onclick="watch(this)" data-value_name="{{ key }}" class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                              <span class="fas fa-eye-slash"></span>
                                            </button>
                                       {% endif %}
                                   </div>
-                                  <div class="col-md-2">
-                                      <button type="button" onclick="stop_service(this)" data-value_name="{{ key }}" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-                                          x
+                                  <div class="col-md-2 ml-2">
+                                      <button type="button" onclick="stop_service(this)" data-value_name="{{ key }}" class="btn btn-primary btn-xs" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                          <span class="fas fa-trash-alt"></span>
                                       </button>
                                   </div>
                               </div>
