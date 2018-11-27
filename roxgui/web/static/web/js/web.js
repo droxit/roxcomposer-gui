@@ -1,10 +1,23 @@
 function create_pipeline_service_li_element(text_content){
+    // Top list element.
     var li = document.createElement("li");
-    li.setAttribute("id", "{{ name }}");
-    li.setAttribute("onclick", "remove_from_current_pipe(this)");
-    li.setAttribute("data-name", "{{ name }}");
+    li.setAttribute("id", text_content);
+    li.setAttribute("data-name", text_content);
     li.setAttribute("class", "list-group-item");
+    // Append service name.
     li.appendChild(document.createTextNode(text_content));
+    // Append button with icon.
+    var button = document.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute("onclick", "remove_from_current_pipe(this)");
+    button.setAttribute("data-name", text_content);
+    button.setAttribute("class", "btn btn-default");
+    button.setAttribute("data-toggle", "button");
+    button.setAttribute("aria-pressed", "false");
+    var icon = document.createElement("span");
+    icon.setAttribute("class", "fas fa-trash-alt");
+    button.appendChild(icon);
+    li.appendChild(button);
     return li;
 }
 

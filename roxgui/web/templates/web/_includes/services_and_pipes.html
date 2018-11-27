@@ -18,26 +18,26 @@
                             <div class="row">
                                 <div class="col-md-2">
                                     <button type="button" onclick="add_to_current_pipe(this)" data-name="{{ key }}"
-                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
+                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-arrow-down"></span>
                                     </button>
                                 </div>
                                 <div class="col-md-2">
                                     {% if watch_active|get_value:key == True %}
                                     <button type="button" onclick="watch(this)" data-name="{{ key }}"
-                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="true">
+                                            class="btn btn-default" data-toggle="button" aria-pressed="true">
                                         <span class="fas fa-eye"></span>
                                     </button>
                                     {% else %}
                                     <button type="button" onclick="watch(this)" data-name="{{ key }}"
-                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
+                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-eye-slash"></span>
                                     </button>
                                     {% endif %}
                                 </div>
                                 <div class="col-md-2">
                                     <button type="button" onclick="stop_service(this)" data-name="{{ key }}"
-                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
+                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-trash-alt"></span>
                                     </button>
                                 </div>
@@ -93,7 +93,8 @@
                     {% if data.2 == True %}
                     <li class="list-group-item" onclick="show_pipeline(this)"
                         data-name="{{ data.0 }}" data-services="{{ data.1 }}"
-                        data-active="{{ data.2 }}">{{ data.0 }}
+                        data-active="{{ data.2 }}">
+                        {{ data.0 }}
                     </li>
                     {% else %}
                     <li class="list-group-item text-muted" onclick="show_pipeline(this)"

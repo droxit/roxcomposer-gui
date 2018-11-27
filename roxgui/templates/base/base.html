@@ -27,15 +27,15 @@
 <!-- Main content. -->
 <main>
     {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == 'debug' %}
-                <div class="alert alert-warning">{{ message }}</div>
-            {% elif message.tags == 'error' %}
-                <div class="alert alert-danger">{{ message }}</div>
-            {% else %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endif %}
-        {% endfor %}
+    {% for message in messages %}
+    {% if message.tags == 'debug' %}
+    <div class="alert alert-warning">{{ message }}</div>
+    {% elif message.tags == 'error' %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% else %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
     {% endif %}
     <!-- Include custom body defined in sub-template. -->
     {% block content %} {% endblock content %}
