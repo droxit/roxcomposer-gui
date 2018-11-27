@@ -32,7 +32,7 @@ function show_pipeline(elem){
     var selected_active = elem.dataset.active;
     // Convert pipeline services string to array.
     // Update pipeline name in corresponding text input.
-    document.getElementById("pipe_name").innerHTML = selected_pipe;
+    document.getElementById("pipe_name").value = selected_pipe;
     // Get list of services and remove all items.
     var ul = document.getElementById("piped_service_list");
     while(ul.firstChild){
@@ -67,8 +67,7 @@ function watch(elem){
     if(elem.getAttribute("aria-pressed") == 'true'){
         unwatch(elem);
     } else{
-        console.log("Here")
-        var selected_service = elem.dataset.value_name;
+        var selected_service = elem.dataset.name;
         var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
         if(selected_service){
             $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
@@ -78,7 +77,7 @@ function watch(elem){
 }
 
 function unwatch(elem){
-    var selected_service = elem.dataset.value_name;
+    var selected_service = elem.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     if(selected_service){
         $.post("unwatch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
@@ -95,7 +94,7 @@ function run_service(elem){
 }
 
 function stop_service(elem){
-    var selected_service = elem.dataset.value_name;
+    var selected_service = elem.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload(); });

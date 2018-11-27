@@ -3,9 +3,9 @@
 <!-- Services -->
 <div class="row">
     <div class="col-md-8">
-        <div class="card w-auto" style="width: 18rem;height:300px; overflow-y:scroll;">
+        <div class="card w-auto scrollable">
             <div class="card-body">
-                <h5 class="card-title">Running Services</h5>
+                <h5 class="card-title">Running services</h5>
                 <div class="card-columns">
                     {% for key, value in running_services_dict.items %}
                     <div class="card">
@@ -51,7 +51,7 @@
     </div>
     <!-- Available services. -->
     <div class="col-md-4">
-        <div class="card w-auto" style="width: 18rem;height:300px;overflow-y:scroll;">
+        <div class="card w-auto scrollable">
             <div class="card-body">
                 <ul class="list-group">
                     <li class="list-group-item active" data-toggle="modal" data-target="#service_params">New service
@@ -71,8 +71,9 @@
 <div class="row">
     <!-- Selected pipeline. -->
     <div class="col-md-8">
-        <div class="card w-auto" style="width:18rem;height:300px">
+        <div class="card w-auto scrollable">
             <div class="card-body">
+                <h5 class="card-title">Current pipeline</h5>
                 {% block pipeline_params %}
                 {% include "web/_includes/pipeline_params.html" %}
                 {% endblock pipeline_params %}
@@ -81,7 +82,7 @@
     </div>
     <!-- Available pipelines. -->
     <div class="col-md-4">
-        <div class="card w-auto" style="width:18rem;height:300px;overflow-y:scroll;">
+        <div class="card w-auto scrollable">
             <div class="card-body">
                 <ul class="list-group">
                     <li class="list-group-item active" onclick="show_pipeline(this)"

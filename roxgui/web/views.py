@@ -67,10 +67,6 @@ def main(request):
             data = (key, json.dumps(value["services"]), value["active"])
             pipeline_data_list.append(data)
 
-    # retrieve the data for the selected pipeline
-    selected_pipe = request.session.get('selected_pipe_name', "")
-    selected_pipe_data = get_selected_pipe(selected_pipe, pipeline_data_list)
-
     # Get current logs.
     save_log(request)
     logs = get_logs()
@@ -80,9 +76,6 @@ def main(request):
                "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
                "logs": logs,
-               "selected_pipe": selected_pipe,
-               "selected_pipe_services": selected_pipe_data['services'],
-               "selected_pipe_active": selected_pipe_data['active'],
                "watch_active": request.session.get('watch_button_active', None)}
     return render(request, "web/web.html", context)
 
@@ -199,27 +192,6 @@ def create_pipeline(request):
         messages.add_message(request, messages.ERROR, "Could not create pipeline.")
         response = {'status': 0, 'message': "Your error"}
         return HttpResponse(json.dumps(response), content_type='application/json')
-
-
-@require_http_methods(["POST"])
-def show_pipeline(request):
-    """
-
-    Decide if new pipeline should be created or selected one should be edited. In either case save
-    corresponding data to current session so that main view is able to render corresonding GUI elements.
-    :param request: Request instance contains boolean flag "is_new_pipe" indicating if new pipeline should be created.
-    If no new pipeline should be created, it also contains "pipe_name", "pipe_services" and "selected_pipe" parameters.
-    :return: Redirect to main page with corresponding data in current session.
-    """
-    selected_pipeline = request.POST.get('pipe_name', default="")
-    pipe_services = request.POST.get("pipe_services", default="")
-    if pipe_services:
-        pipe_services = eval(pipe_services)
-    pipe_active = request.POST.get("selected_active", default="")
-    request.session['selected_pipe_name'] = selected_pipeline
-    request.session['selected_pipe_services'] = pipe_services
-    request.session['selected_pipe_active'] = pipe_active
-    return redirect(views.main)
 
 
 @require_http_methods(["POST"])
