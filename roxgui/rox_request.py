@@ -434,7 +434,7 @@ def load_session(file_name: str) -> RoxResponse:
         return RoxResponse(True, r.text)
 
 
-def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
+def watch_services(service_names, rox_session = None, timeout=SESSION_TIMEOUT) -> RoxResponse:
     """
     Add specified services to given sessions watchlist.
     :param service_names: List of service names which should be watched.
@@ -446,40 +446,14 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> 
     url = create_rox_connector_url("log_observer")
 
     if rox_session is None:
-        # There is no session yet, so start a new one.
-
-        rox_session = dict()
-        rox_session['services'] = set()
-        rox_session['timeout'] = timeout
-
-        content = {'lines': 100, 'timeout': timeout, 'services': service_names}
-
-        try:
-            r = requests.put(url, headers=JSON_HEADER, json=content)
-        except requests.exceptions.ConnectionError as err:
-            error_msg = _create_connection_error(str(err))
-            return RoxResponse(False, error_msg)
-
-        if r.status_code != 200:
-            error_msg = _create_http_status_error(r.status_code, r.text)
-            return RoxResponse(False, error_msg)
-
-        rox_session['id'] = r.json()['sessionid']
-
-        for s in service_names:
-            rox_session['services'].add(s)
-
-        res = RoxResponse(True, r.text)
-        res.data = rox_session
-        return res
+        return create_new_sess(service_names, timeout)
     else:
         # Session already exists, so update it.
-        unwatched_services = list(rox_session['services'] - set(service_names))
+        unwatched_services = list(set(service_names) - set(rox_session['services']))
         logging.info("Trying to watch services: "+ str(unwatched_services))
 
         if unwatched_services:
-            # There are sessions which should be added to watchlist.
-
+            # There are services which should be added to watchlist.
             content = {'sessionid': rox_session['id'], 'services': unwatched_services}
 
             try:
@@ -497,16 +471,59 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> 
                 return res
 
             response = r.json()
-
+            rox_session['services'] = set(rox_session['services'])
             for s in response['ok']:
-                rox_session['services'].add(s)
+                rox_session['services'].add(s)  # add the services that could be watched to the session dictionary
+            rox_session['services'] = list(rox_session['services'])
 
             res = RoxResponse(True, r.text)
             res.data = rox_session
-            return res
+            return res  # return the session dictionary
         else:
             # All specified services are already watched.
             return RoxResponse(False, "All services are already watched.")
+
+
+def create_new_sess(services, timeout) -> RoxResponse:
+    """
+    Attempt to start a new log session on the ROXcomposer
+    :param services: list of services that should be watched
+    :param timeout: time after which session expires
+    :return: response with data = session dictionary ('id', 'timeout', 'services')
+    """
+    # There is no session yet, so start a new one.
+    rox_session = dict()
+    rox_session['services'] = set()
+    rox_session['timeout'] = timeout
+
+    content = {'lines': 100, 'timeout': timeout, 'services': services}
+    url = create_rox_connector_url("log_observer")
+
+    try:
+        r = requests.put(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    #request successful, create a session dictionary
+    rox_session['id'] = r.json()['sessionid']
+
+    for s in r.json()['ok']:
+        rox_session['services'].add(s)
+
+    rox_session['services'] = list(rox_session['services']) #convert to list
+
+    res = RoxResponse(True, r.text)
+    res.data = rox_session
+    return res
 
 
 def unwatch_services(service_names, rox_session) -> RoxResponse:
@@ -516,7 +533,7 @@ def unwatch_services(service_names, rox_session) -> RoxResponse:
     if rox_session is None:
         return RoxResponse(False, "No session specified.")
 
-    s = [x for x in filter(lambda se: se in rox_session['services'], service_names)]
+    s = list(filter(lambda s: s in rox_session['services'], service_names))
 
     if len(s) == 0:
         return RoxResponse(False, "The specified services are not being watched")
@@ -531,7 +548,7 @@ def unwatch_services(service_names, rox_session) -> RoxResponse:
         return RoxResponse(False, 'ERROR: {}'.format(r.text))
 
     else:
-        rox_session['services'] = rox_session['services'].difference(set(s))
+        rox_session['services'] = list(set(rox_session['services']).difference(set(s)))
         res = RoxResponse(True, "Services no longer watched: {}".format(s))
         res.data = rox_session
         return res
