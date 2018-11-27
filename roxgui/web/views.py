@@ -11,12 +11,14 @@ import datetime
 import json
 import os
 import logging
+import requests
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+
 
 import databaseIO
 import filesystemIO
@@ -43,9 +45,8 @@ def main(request):
     databaseIO.update_service_db()
 
     #request.session['current_session'] = None
-    #request.session.modified = Tru
-    #
-    update_watch_buttons(request, request.session.get('current_session', None))
+    #request.session.modified = True
+    #update_watch_buttons(request, request.session.get('current_session', None))
 
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
@@ -333,7 +334,7 @@ def watch(request):
         return redirect(views.main)
     else:
         logging.error("Error watching services: "+ res.message)
-        messages.error("Error watching services: "+ res.message)
+        messages.error(request, "Error watching services: "+ res.message)
         return redirect(views.main)
 
 
@@ -347,7 +348,6 @@ def unwatch(request):
         res = rox_request.unwatch_services([service_names], cur_sess)
         if res.success:
             cur_sess = res.data
-            logging.info(res.message)
             messages.debug(request, res.message)
         else:
             messages.error(request, "Couldn't unwatch services.")
@@ -378,37 +378,27 @@ def save_log(request, msg_id=None):
     A log message can either be from watching services #TODO
     :param msg_id: optional, if the log concerns a specific message
     :return:
+    """
 
     sess = request.session.get('current_session', None)
     logging.info("Trying to save logs, getting session: "+ str(sess))
-    if sess is not None:  # if there is a current session write logs to database
-        db_result = databaseIO.get_session(sess)  # retrieve current session
-        logging.info("Accessing db with sess id: "+ str(db_result.success) + " msg: "+ str(db_result.message))
-        if db_result.success:
-            rox_result = rox_request.get_service_logs(rox_session = db_result.data)  # get the recent logs
-            logging.info("Getting logs from server: "+ str(rox_result.success) + " \n" + str(rox_result.message))
-            if rox_result.success:
-                for log in rox_result.data:  # write each log line separately
-                    if msg_id:  # TODO
-                        l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
-                                    time=log['time'])
-                    else:
-                        l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
-                    l.save()  # save to DB
-            else: #could not retrieve logs with given session id, delete session
-                create_new_sess(request)
+
+    if sess is not None:  # if there is a current session write new logs to database
+        rox_result = rox_request.get_service_logs(sess)  # get the recent logs
+        logging.info("Getting logs from server: " + str(rox_result.success) + " \n" + str(rox_result.message))
+        if rox_result.success:
+            for log in rox_result.data:  # write each log line separately
+                if msg_id:  # TODO
+                    l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
+                                time=log['time'])
+                else:
+                    l = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+                l.save()  # save to DB
         else:
-            create_new_sess(request)
-    else:
-        create_new_sess(request)
-    """
-    pass
+            logging.error("Error occurred while retrieving logs from ROXconnector: "+ rox_result.message)
+    else:  # no current session, can't get logs
+        logging.error("Logs could not be retrieved as there is no session running.")
 
-
-
-def update_session(rox_session):
-    s = RoxSession(id=rox_session['id'], services=rox_session['services'], timeout=rox_session['timeout'])
-    s.save()
 
 def get_logs():
     """
@@ -420,7 +410,7 @@ def get_logs():
     dt_del_start = dt_end - LOG_DELETE #logs older than this should be deleted from DB
 
     Logline.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
-    #load logs in a specific time range and then sort by time stamp, load only a certain amount of log lines
+    # load logs in a specific time range and then sort by time stamp, load only a certain amount of log lines
     logs = Logline.objects.filter(time__range=(dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
     return logs
 

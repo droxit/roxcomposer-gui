@@ -554,7 +554,7 @@ def unwatch_services(service_names, rox_session) -> RoxResponse:
         return res
 
 
-def get_service_logs(rox_session=None):
+def get_service_logs(rox_session):
     if rox_session is None:
         error_msg = "Trying to get logs, but no session instantiated."
         return RoxResponse(False, error_msg)
