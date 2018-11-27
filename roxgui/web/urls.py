@@ -24,5 +24,5 @@ urlpatterns = [
     path("delete_pipeline", views.delete_pipeline, name="web_delete_pipeline"),
     path("watch", views.watch, name="web_watch"),
     path("unwatch", views.unwatch, name="web_unwatch"),
-    path("select_pipeline", views.select_pipeline, name="web_select_pipeline")
+    path("select_pipeline", views.show_pipeline, name="web_select_pipeline")
 ]

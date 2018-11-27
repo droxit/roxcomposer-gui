@@ -9,8 +9,8 @@
 
 import datetime
 import json
-import os
 import logging
+import os
 import requests
 
 from django.contrib import messages
@@ -25,7 +25,6 @@ import filesystemIO
 import rox_request
 from web import views
 from web.models import RoxSession, Logline
-from rox_response import RoxResponse
 
 removed_pipelines = []
 LOG_RELOAD = 100 #Show only this many messages in log
@@ -37,16 +36,11 @@ LOG_DELETE = datetime.timedelta(days=1) #Logs older than this will be deleted fr
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 
-
 @require_http_methods(["GET"])
 def main(request):
     """Main page."""
     # Update database concerning available services.
     databaseIO.update_service_db()
-
-    #request.session['current_session'] = None
-    #request.session.modified = True
-    #update_watch_buttons(request, request.session.get('current_session', None))
 
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
@@ -70,13 +64,12 @@ def main(request):
         for key, value in available_pipeline_json_dict.items():
             if key in rox_request.removed_pipes:
                 continue
-            data = (key, value["services"], value["active"])
+            data = (key, json.dumps(value["services"]), value["active"])
             pipeline_data_list.append(data)
 
     # retrieve the data for the selected pipeline
     selected_pipe = request.session.get('selected_pipe_name', "")
     selected_pipe_data = get_selected_pipe(selected_pipe, pipeline_data_list)
-
 
     # Get current logs.
     save_log(request)
@@ -90,7 +83,7 @@ def main(request):
                "selected_pipe": selected_pipe,
                "selected_pipe_services": selected_pipe_data['services'],
                "selected_pipe_active": selected_pipe_data['active'],
-               "watch_active": request.session['watch_button_active']}
+               "watch_active": request.session.get('watch_button_active', None)}
     return render(request, "web/web.html", context)
 
 
@@ -188,7 +181,7 @@ def stop_service(request):
 
 @require_http_methods(["POST"])
 def create_pipeline(request):
-    """Create new pipeline."""
+    """Create or update pipeline."""
     # Get list of service names which should be used for pipeline.
     service_name_list = request.POST.getlist("services[]", default=[])
     # Get pipe name.
@@ -200,27 +193,29 @@ def create_pipeline(request):
     if res.success:
         if pipe_name in rox_request.removed_pipes:
             rox_request.removed_pipes.remove(pipe_name)
-        response = {'status': 1, 'message': ("Ok")}
+        response = {'status': 1, 'message': "Ok"}
         return HttpResponse(json.dumps(response), content_type='application/json')
     else:
         messages.add_message(request, messages.ERROR, "Could not create pipeline.")
-        response = {'status': 0, 'message': ("Your error")}
+        response = {'status': 0, 'message': "Your error"}
         return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 @require_http_methods(["POST"])
-def select_pipeline(request):
+def show_pipeline(request):
     """
-    Save a selected pipeline that should be opened in the pipeline editing view to current session
-    :param request: contains 'selected_pipe', the name of the selected pipeline and 'pipe_services',
-    the services of the selected pipeline
-    :return:
+
+    Decide if new pipeline should be created or selected one should be edited. In either case save
+    corresponding data to current session so that main view is able to render corresonding GUI elements.
+    :param request: Request instance contains boolean flag "is_new_pipe" indicating if new pipeline should be created.
+    If no new pipeline should be created, it also contains "pipe_name", "pipe_services" and "selected_pipe" parameters.
+    :return: Redirect to main page with corresponding data in current session.
     """
     selected_pipeline = request.POST.get('pipe_name', default="")
-    pipe_services = request.POST.get("pipe_services")
-    pipe_services = eval(pipe_services)
-    pipe_active = request.POST.get("selected_active")
-
+    pipe_services = request.POST.get("pipe_services", default="")
+    if pipe_services:
+        pipe_services = eval(pipe_services)
+    pipe_active = request.POST.get("selected_active", default="")
     request.session['selected_pipe_name'] = selected_pipeline
     request.session['selected_pipe_services'] = pipe_services
     request.session['selected_pipe_active'] = pipe_active
@@ -240,7 +235,6 @@ def post_to_pipeline(request):
     """Send message to pipeline specified in POST request's metadata."""
     # Get pipeline name.
     pipe_name = request.POST.get("pipe_name", default="")
-    logging.error("POST TO PIPE: "+ str(pipe_name))
     # Get message.
     pipe_message = request.POST.get("pipe_message_text", default="")
     logging.error("MSG: " + str(pipe_message))
@@ -369,7 +363,6 @@ def get_response_values(request):
         valuelist = request.POST.getlist(key, default=[])
         mstring.extend(['%s=%s' % (key, val) for val in valuelist])
     return '&'.join(mstring)
-
 
 
 def save_log(request, msg_id=None):

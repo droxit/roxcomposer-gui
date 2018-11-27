@@ -15,67 +15,32 @@
 
 <div class="container">
     <div class="row">
-        <div class="mx-sm-3 mb-2">
+        <div class="col">
             <h1>Welcome!</h1>
         </div>
     </div>
 
-    <!-- Message History -->
-    <form class="form-inline" action="get_message_history" method="post">
-        {% csrf_token %}
-        <div class="form-group mr-sm-3 mb-2">
-            <label for="msg_id" class="sr-only">Message ID</label>
-            <input type="text" class="form-control" name="pipe_message_id" id="msg_id" placeholder="Message ID">
-        </div>
-        <button type="submit" class="btn btn-primary mb-2">Show History</button>
-    </form>
-
-    {%block selects%}
-    {% include "web/_includes/selects.html" %}
-    {%endblock%}
+    {% block message_history %}
+    {% include "web/_includes/message_history.html" %}
+    {% endblock message_history %}
 
     {% block services_and_pipes %}
-    {% include "web/_includes/services_and_pipes.html"%}
-    {% endblock %}
-
-    <!--
-    {% if pipeline_data %}
-
-    {% for data in pipeline_data %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12 mb-2">
-                <div class="card">
-                    <div class="card-header">
-                        {% block pipelineheading %}
-                        {% include "web/_includes/pipeline.html" %}
-                        {% endblock %}
-                    </div>
-                    {%block pipeline%}
-                    {%endblock%}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% endfor %}
-
-    {% else %}
-    <p>No pipelines available.</p>
-    {% endif %}
-    -->
-    <br><br>
+    {% include "web/_includes/services_and_pipes.html" %}
+    {% endblock services_and_pipes %}
 
     {% block logs %}
     {% include "web/_includes/logs.html" %}
-    {% endblock %}
+    {% endblock logs %}
 
     {% block session %}
     {% include "web/_includes/session.html" %}
-    {% endblock %}
+    {% endblock session %}
 
+    {% block service_params %}
     {% include "web/_includes/service_params.html" %}
+    {% endblock service_params %}
 </div>
 <script src="{% static 'web/js/web.js'%}"></script>
 <script src="{% static 'web/js/d3.min.js'%}"></script>
+
 {% endblock content %}

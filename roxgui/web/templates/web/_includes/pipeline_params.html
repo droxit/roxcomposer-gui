@@ -1,0 +1,15 @@
+{% block pipeline_params %}
+
+<div class="row">
+    <div class="col-md-7">
+        <input type="text" class="form-control" id="pipe_name" placeholder="Pipeline name">
+        <ul class="list-group" id="piped_service_list"></ul>
+        <button onclick="create_or_update_pipeline()" class="btn btn-primary">Update pipeline</button>
+    </div>
+    <div class="col-md-5">
+        <input type="text" class="form-control" id="pipe_message_text" placeholder="Message">
+        <button onclick="post_message_to_pipeline()" class="btn btn-primary">Send</button>
+    </div>
+</div>
+
+{% endblock pipeline_params %}
