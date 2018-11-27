@@ -17,21 +17,34 @@ function removeFromPipe(elem){
 }
 
 function refresh() {
-    setTimeout(function () {
-        location.reload()
-    }, 100);
+    setTimeout(function () { location.reload() }, 100);
 }
 
-function postPipeOptions() {
+function show_pipeline(elem){
+    var selected_pipe = elem.dataset.value_name;
+    var selected_pipe_services = elem.dataset.value_services;
+    var selected_active = elem.dataset.value_active;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("show_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active: selected_active, csrfmiddlewaretoken: CSRFtoken}).done(function(){
+        location.reload(); });
+}
+
+function create_or_update_pipeline(){
     var pipeline_name = document.getElementById("pipe_name").value;
     var pipeline_services = new Array();
     var pipelines = document.querySelectorAll('#piped_service_list li');
     for (i = 0; i < pipelines.length; i++) {
-        pipeline_services.push(pipelines[i].innerHTML);
+        pipeline_services.push(pipelines[i].innerText);
     }
-    console.log(pipeline_services);
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("create_pipeline", {name: pipeline_name, services: pipeline_services, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
+}
+
+function post_message_to_pipeline(){
+    var pipeline_name = document.getElementById("pipe_name").value;
+    var message = document.getElementById("pipe_message_text").value;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("post_to_pipeline", {pipe_name: pipeline_name, pipe_message_text: message, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
 }
 
 function watch(elem){
@@ -43,10 +56,8 @@ function watch(elem){
         var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
         if(selected_service){
             $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-            location.reload();
-         });
+                location.reload(); });
         }
-
     }
 }
 
@@ -55,8 +66,7 @@ function unwatch(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     if(selected_service){
         $.post("unwatch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload();
-     });
+            location.reload(); });
     }
 }
 
@@ -73,13 +83,4 @@ function stop_service(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload(); });
-}
-
-function show_pipeline(elem){
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    var selected_pipe = elem.dataset.value_name;
-    var selected_pipe_services = elem.dataset.value_services;
-    var selected_active = elem.dataset.value_active;
-    $.post("select_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active: selected_active, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
-
 }

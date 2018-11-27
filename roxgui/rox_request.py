@@ -475,7 +475,7 @@ def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> 
     else:
         # Session already exists, so update it.
         unwatched_services = list(rox_session['services'] - set(service_names))
-        logging.info("Trying to watch services: "+ str(unwatched_services))
+        logging.info("Trying to watch services: " + str(unwatched_services))
 
         if unwatched_services:
             # There are sessions which should be added to watchlist.
