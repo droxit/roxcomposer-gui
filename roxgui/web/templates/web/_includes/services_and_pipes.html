@@ -8,29 +8,36 @@
                 <h5 class="card-title">Running Services</h5>
                 <div class="card-columns">
                     {% for key, value in running_services_dict.items %}
-                    <div class="card" onclick="addToPipe(this)" data-value_name="{{ key }}">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
+                            <div class="row" title="{{ value }}">
+                                <div class="col">
                                     <small>{{ key }}</small>
                                 </div>
-                                <div class="col-md-2 ml-2">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <button type="button" onclick="add_to_current_pipe(this)" data-name="{{ key }}"
+                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
+                                        <span class="fas fa-arrow-down"></span>
+                                    </button>
+                                </div>
+                                <div class="col-md-2">
                                     {% if watch_active|get_value:key == True %}
-                                    <button type="button" onclick="watch(this)" data-value_name="{{ key }}"
-                                            class="btn btn-default btn-xs focus active" data-toggle="button"
-                                            aria-pressed="true">
+                                    <button type="button" onclick="watch(this)" data-name="{{ key }}"
+                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="true">
                                         <span class="fas fa-eye"></span>
                                     </button>
                                     {% else %}
-                                    <button type="button" onclick="watch(this)" data-value_name="{{ key }}"
+                                    <button type="button" onclick="watch(this)" data-name="{{ key }}"
                                             class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-eye-slash"></span>
                                     </button>
                                     {% endif %}
                                 </div>
-                                <div class="col-md-2 ml-2">
-                                    <button type="button" onclick="stop_service(this)" data-value_name="{{ key }}"
-                                            class="btn btn-primary btn-xs" data-toggle="button" aria-pressed="false">
+                                <div class="col-md-2">
+                                    <button type="button" onclick="stop_service(this)" data-name="{{ key }}"
+                                            class="btn btn-default btn-xs" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-trash-alt"></span>
                                     </button>
                                 </div>
@@ -78,19 +85,19 @@
             <div class="card-body">
                 <ul class="list-group">
                     <li class="list-group-item active" onclick="show_pipeline(this)"
-                        data-value_name="" data-value_services=""
-                        data-value_active="">New pipeline
+                        data-name="" data-services=""
+                        data-active="">New pipeline
                     </li>
                     {% for data in pipeline_data %}
                     {% if data.2 == True %}
                     <li class="list-group-item" onclick="show_pipeline(this)"
-                        data-value_name="{{ data.0 }}" data-value_services="{{ data.1 }}"
-                        data-value_active="{{ data.2 }}">{{ data.0 }}
+                        data-name="{{ data.0 }}" data-services="{{ data.1 }}"
+                        data-active="{{ data.2 }}">{{ data.0 }}
                     </li>
                     {% else %}
                     <li class="list-group-item text-muted" onclick="show_pipeline(this)"
-                        data-value_name="{{ data.0 }}" data-value_services="{{ data.1 }}"
-                        data-value_active="{{ data.2 }}">{{ data.0 }}
+                        data-name="{{ data.0 }}" data-services="{{ data.1 }}"
+                        data-active="{{ data.2 }}">{{ data.0 }}
                     </li>
                     {% endif %}
                     {% endfor %}

@@ -1,17 +1,22 @@
-function addToPipe(elem) {
-    var selected_service = elem.dataset.value_name;
-    var ul = document.getElementById("piped_service_list");
+function create_pipeline_service_li_element(text_content){
     var li = document.createElement("li");
     li.setAttribute("id", "{{ name }}");
-    li.setAttribute("onclick", "removeFromPipe(this)");
-    li.setAttribute("data-value_name", "{{ name }}");
+    li.setAttribute("onclick", "remove_from_current_pipe(this)");
+    li.setAttribute("data-name", "{{ name }}");
     li.setAttribute("class", "list-group-item");
-    li.appendChild(document.createTextNode(selected_service));
+    li.appendChild(document.createTextNode(text_content));
+    return li;
+}
+
+function add_to_current_pipe(elem) {
+    var selected_service = elem.dataset.name;
+    var ul = document.getElementById("piped_service_list");
+    var li = create_pipeline_service_li_element(selected_service);
     ul.appendChild(li);
 }
 
-function removeFromPipe(elem){
-    var selected_service = elem.dataset.value_name;
+function remove_from_current_pipe(elem){
+    var selected_service = elem.dataset.name;
     var item = document.getElementById(selected_service);
     item.parentNode.removeChild(item);
 }
@@ -21,12 +26,23 @@ function refresh() {
 }
 
 function show_pipeline(elem){
-    var selected_pipe = elem.dataset.value_name;
-    var selected_pipe_services = elem.dataset.value_services;
-    var selected_active = elem.dataset.value_active;
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("show_pipeline", {pipe_name: selected_pipe, pipe_services: selected_pipe_services, selected_active: selected_active, csrfmiddlewaretoken: CSRFtoken}).done(function(){
-        location.reload(); });
+    // Get data from template.
+    var selected_pipe = elem.dataset.name;
+    var selected_pipe_services = $(elem).data("services");
+    var selected_active = elem.dataset.active;
+    // Convert pipeline services string to array.
+    // Update pipeline name in corresponding text input.
+    document.getElementById("pipe_name").innerHTML = selected_pipe;
+    // Get list of services and remove all items.
+    var ul = document.getElementById("piped_service_list");
+    while(ul.firstChild){
+        ul.removeChild(ul.firstChild);
+    }
+    // Add new items to service list.
+    for (i = 0; i < selected_pipe_services.length; i++) {
+        var li = create_pipeline_service_li_element(selected_pipe_services[i]);
+        ul.appendChild(li);
+    }
 }
 
 function create_or_update_pipeline(){

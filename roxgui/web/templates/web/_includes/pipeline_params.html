@@ -2,14 +2,8 @@
 
 <div class="row">
     <div class="col-md-7">
-        <input type="text" class="form-control" id="pipe_name" value="{{ selected_pipe }}">
-        <ul class="list-group" id="piped_service_list">
-            {% for name in selected_pipe_services %}
-            <li class="list-group-item" id="{{ name }}" onclick="removeFromPipe(this)" data-value_name="{{ name }}">
-                {{ name }}
-            </li>
-            {% endfor %}
-        </ul>
+        <input type="text" class="form-control" id="pipe_name" placeholder="Pipeline name">
+        <ul class="list-group" id="piped_service_list"></ul>
         <button onclick="create_or_update_pipeline()" class="btn btn-primary">Update pipeline</button>
     </div>
     <div class="col-md-5">

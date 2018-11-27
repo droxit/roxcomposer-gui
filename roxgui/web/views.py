@@ -62,7 +62,7 @@ def main(request):
         for key, value in available_pipeline_json_dict.items():
             if key in rox_request.removed_pipes:
                 continue
-            data = (key, value["services"], value["active"])
+            data = (key, json.dumps(value["services"]), value["active"])
             pipeline_data_list.append(data)
 
     # retrieve the data for the selected pipeline
