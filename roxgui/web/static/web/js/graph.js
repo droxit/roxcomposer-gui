@@ -1,16 +1,17 @@
 // Define nodes.
+
+
 var node_data = [
     {"name": "file_writer", "json": {}, "active": true},
     {"name": "html_generator", "json": {}, "active": true},
     {"name": "image_adder", "json": {}, "active": true},
-    {"name": "delay_service", "json": {}, "active": false},
-]
+];
 
 // Define links between nodes.
 var link_data = [
     {"source": "html_generator", "target": "image_adder"},
-    {"source": "image_adder", "target": "file_writer"}
-]
+    {"source": "image_adder", "target": "file_writer"},
+];
 
 // Get D3 graph.
 var svg = d3.select("svg");
@@ -25,8 +26,8 @@ var simulation = d3.forceSimulation().nodes(node_data);
 simulation.force("charge_force", d3.forceManyBody()).force("center_force", d3.forceCenter(width / 2, height / 2));
 
 // Create a force concerning each link and add it to simulation.
-var link_force = d3.forceLink(link_data).id(function(d) { return d.name; })
-simulation.force("links", link_force)
+var link_force = d3.forceLink(link_data).id(function(d) { return d.name; });
+simulation.force("links", link_force);
 
 // Draw a circle for each node.
 var node = svg.append("g")
@@ -47,7 +48,13 @@ var link = svg.append("g")
     .append("line")
     .attr("fill", "red")
     .attr("stroke", "black")
-    .attr("stroke-width", 2)
+    .attr("stroke-width", 2);
+
+    // Start simulation.
+simulation.on("tick", tickActions);
+
+
+
 
 function tickActions() {
     // Update graphical location of nodes after each simulation step.
@@ -62,5 +69,3 @@ function tickActions() {
         .attr("y2", function(d) { return d.target.y; });
 }
 
-// Start simulation.
-simulation.on("tick", tickActions);

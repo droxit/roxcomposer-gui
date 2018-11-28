@@ -4,8 +4,21 @@ function create_pipeline_service_li_element(text_content){
     li.setAttribute("id", text_content);
     li.setAttribute("data-name", text_content);
     li.setAttribute("class", "list-group-item");
+
+    var div0 = document.createElement("div");
+    div0.className = "d-flex";
+    var div1 = document.createElement("div");
+    div1.className = "col-mb-9";
+    var div2 = document.createElement("div");
+    div2.className = "ml-auto";
+
+    li.appendChild(div0);
+    div0.appendChild(div1);
+    div0.appendChild(div2);
+
+
     // Append service name.
-    li.appendChild(document.createTextNode(text_content));
+    div1.appendChild(document.createTextNode(text_content));
     // Append button with icon.
     var button = document.createElement("button");
     button.setAttribute("type", "button");
@@ -17,7 +30,7 @@ function create_pipeline_service_li_element(text_content){
     var icon = document.createElement("span");
     icon.setAttribute("class", "fas fa-trash-alt");
     button.appendChild(icon);
-    li.appendChild(button);
+    div2.appendChild(button);
     return li;
 }
 
