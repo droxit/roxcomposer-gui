@@ -37,3 +37,6 @@ class RoxResponse:
     @error_data.setter
     def error_data(self, new_data):
         self._error_data = new_data
+
+    def __str__(self):
+        return "RoxResponse success: {}, Msg: {}, Data: {} ".format(self.success, self.message, self.data)

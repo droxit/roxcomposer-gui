@@ -42,13 +42,35 @@ class Logline(models.Model):
         return logline
 
 
-
 class Message(models.Model):
-    msg_id = models.CharField(max_length=200, primary_key=True)
+    id = models.CharField(max_length=200, primary_key=True)
     pipeline = models.CharField(max_length=200, default="")
+    time = models.DateTimeField(default=datetime.datetime.now())
+    message = models.TextField(default="")
 
     def __str__(self):
-        return "Message ID: {}, Pipeline: {}".format(self.msg_id, self.pipeline)
+        return "Message ID: {} to pipeline: {}, created at {} \n {}".format(self.id, self.pipeline, self.time, self.message)
+
+
+class MessageStatus(models.Model):
+    msg_id = models.CharField(max_length=200, default="")
+    event = models.CharField(max_length=200, default="")
+    status = models.CharField(max_length=200, default="")
+    time = models.DateTimeField(default=None, null=True)
+    service_name = models.CharField(max_length=200, default="")
+    processing_time = models.TimeField(default=None, null=True)
+    processing_time_long = models.DateTimeField(default=None, null=True)
+    total_processing_time = models.TimeField(default=None, null=True)
+    total_processing_time_long = models.DateTimeField(default=None, null=True)
+
+    def __str__(self):
+        return "Event: {}, Status: {}, Time: {}, Args: " \
+               "Service_Name: {}, Message_ID: {}, Processing Time: {}, " \
+               "Total Processing Time: {}".format(self.event, self.status, str(self.time),
+                                                     self.service_name, self.msg_id,
+                                                  str(self.processing_time), str(self.total_processing_time))
+
+
 
 
 class RoxSession(models.Model):

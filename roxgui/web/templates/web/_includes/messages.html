@@ -1,0 +1,79 @@
+{% block messages %}
+
+<div class="row pb-4">
+    <!-- Messages -->
+    <div class="col-md-4">
+        <h4><strong>Messages</strong></h4>
+        <div class="card w-auto scrollable">
+            <div id="accordion">
+                {% for message, message_status in sent_messages.items %}
+                    <div class="card">
+                        {% if not message_status == None%}
+                            {% if message_status.status == 'processing' %}
+                                <div class="card-header bg-warning text-white" id="heading-message{{ forloop.counter0 }}" data-toggle="collapse" data-target="#message{{ forloop.counter0 }}" aria-expanded="false" aria-controls="message{{ forloop.counter0 }}">
+                            {% elif message_status.status == 'finalized' %}
+                                <div class="card-header bg-success text-white" id="heading-message{{ forloop.counter0 }}" data-toggle="collapse" data-target="#message{{ forloop.counter0 }}" aria-expanded="false" aria-controls="message{{ forloop.counter0 }}">
+                            {% elif message_status.status == 'error'%}
+                                <div class="card-header bg-danger text-white" id="heading-message{{ forloop.counter0 }}" data-toggle="collapse" data-target="#message{{ forloop.counter0 }}" aria-expanded="false" aria-controls="message{{ forloop.counter0 }}">
+                            {% endif %}
+                        {% else %}
+                            <div class="card-header" id="heading-message{{ forloop.counter0 }}" data-toggle="collapse" data-target="#message{{ forloop.counter0 }}" aria-expanded="false" aria-controls="message{{ forloop.counter0 }}">
+                        {% endif %}
+                                <div class="d-flex">
+                                    <div class="col-mb-9">
+                                        {{ message.message }}
+                                    </div>
+                                    <div class="ml-auto">
+                                        {% if not message_status == None and not message_status.status == None %}
+                                            <span style="font-size:0.7em"> {{ message_status.status}} </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div id="message{{ forloop.counter0 }}" class="collapse" aria-labelledby="heading-message{{ forloop.counter0 }}" data-parent="#accordion">
+                            <div class="card-body">
+                                ID: <small> {{ message.id }} </small>
+                                <br>
+                                Pipeline: <small>{{ message.pipeline }}</small>
+                                <br>
+                                {% if not message_status == None %}
+                                    Status: <small> {{message_status.status}} </small>
+                                    <br>
+                                    {% if not message_status.status == 'finalized' %}
+                                        Current service: <small> {{message_status.service_name}} </small>
+                                    <br>
+                                    {% endif %}
+                                    {% if not messages_status.processing_time == None %}
+                                        Processing Time: <small> {{message_status.processing_time}} </small>
+                                        <br>
+                                    {% endif %}
+                                    {% if not messages_status.processing_time_long == None %}
+                                        Processing Time: <small> {{message_status.processing_time_long}} </small>
+                                        <br>
+                                    {% endif %}
+                                    Started at: <small> {{message.time}} </small>
+                                    <br>
+                                    {% if message_status.status == 'finalized' %}
+                                        Finished at: <small>{{message_status.time}}</small>
+                                        <br>
+                                        Total Processing Time: <small>{% if message_status.total_processing_time == None %}
+                                                                        {{message_status.total_processing_time_long}}
+                                                                      {% else %}
+                                                                        {{message_status.total_processing_time}}
+                                                                      {%endif%}
+                                                                </small>
+                                    {% endif %}
+                                {% else %}
+                                    No further information accessible.
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -11,10 +11,10 @@ import datetime
 import json
 import logging
 import os
-import requests
+import time
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
@@ -24,12 +24,14 @@ import databaseIO
 import filesystemIO
 import rox_request
 from web import views
-from web.models import RoxSession, Logline
+from web.models import Message, Logline, MessageStatus
+
 
 removed_pipelines = []
 LOG_RELOAD = 100 #Show only this many messages in log
-LOG_TIMEOUT = datetime.timedelta(days=0, hours=1, minutes=1, seconds=0, microseconds=0) #show only logs up to this time
-LOG_DELETE = datetime.timedelta(days=1) #Logs older than this will be deleted from DB
+LOG_TIMEOUT = datetime.timedelta(days=0, hours=0, minutes=1, seconds=0, microseconds=0) #show only logs up to this time
+LOG_DELETE = datetime.timedelta(hours=1) #Logs older than this will be deleted from DB
+MSG_DELETE = datetime.timedelta(minutes=5)
 
 # Logging.
 # ========
@@ -41,6 +43,11 @@ def main(request):
     """Main page."""
     # Update database concerning available services.
     databaseIO.update_service_db()
+
+    msgs = get_messages()
+
+    message_dict = get_message_statuses(request, msgs)
+    logging.info(message_dict)
 
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
@@ -76,7 +83,8 @@ def main(request):
                "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
                "logs": logs,
-               "watch_active": request.session.get('watch_button_active', None)}
+               "watch_active": request.session.get('watch_button_active', None),
+               "sent_messages": message_dict}
     return render(request, "web/web.html", context)
 
 
@@ -209,11 +217,14 @@ def post_to_pipeline(request):
     pipe_name = request.POST.get("pipe_name", default="")
     # Get message.
     pipe_message = request.POST.get("pipe_message_text", default="")
-    logging.error("MSG: " + str(pipe_message))
+    logging.info("MSG: " + str(pipe_message))
     # Send message and get result.
     result = rox_request.post_to_pipeline(pipe_name, pipe_message)
+    logging.info("Message content: " + str(result.data))
     if result.success:
         # Message was sent successfully.
+        m = Message(id=result.data, pipeline=pipe_name, message=pipe_message, time=datetime.datetime.now())# save message to DB
+        m.save()
         save_log(request, msg_id=result.data)
         messages.success(request, result.message)
         return redirect(views.main)
@@ -337,6 +348,16 @@ def get_response_values(request):
     return '&'.join(mstring)
 
 
+def start_new_session(request):
+    status = request.session.get('watch_button_active', None)
+    if status is not None:
+        services = list(status.keys())
+        res = rox_request.create_new_sess(services)
+        if res.success:
+            new_session = res.data
+            request.session['current_session'] = new_session
+            request.session.modified = True
+
 def save_log(request, msg_id=None):
     """
     Get all new log messages from server.
@@ -346,13 +367,12 @@ def save_log(request, msg_id=None):
     """
 
     sess = request.session.get('current_session', None)
-    logging.info("Trying to save logs, getting session: "+ str(sess))
 
     if sess is not None:  # if there is a current session write new logs to database
         rox_result = rox_request.get_service_logs(sess)  # get the recent logs
-        logging.info("Getting logs from server: " + str(rox_result.success) + " \n" + str(rox_result.message))
         if rox_result.success:
             for log in rox_result.data:  # write each log line separately
+                logging.info("Log info: "+ str(log))
                 if msg_id:  # TODO
                     l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
                                 time=log['time'])
@@ -361,6 +381,7 @@ def save_log(request, msg_id=None):
                 l.save()  # save to DB
         else:
             logging.error("Error occurred while retrieving logs from ROXconnector: "+ rox_result.message)
+            start_new_session(request)
     else:  # no current session, can't get logs
         logging.error("Logs could not be retrieved as there is no session running.")
 
@@ -383,6 +404,61 @@ def get_logs():
 def update_logs():
     pass
     # logs = Logline.objects.filter(time__range=(datetime.datetime.combine(d)))
+
+
+def get_messages():
+    dt_end = timezone.now()
+    dt_del_start = dt_end - MSG_DELETE
+
+    Message.objects.exclude(time__range=(dt_del_start, dt_end)).delete() #delete old entries
+    msgs = Message.objects.all().order_by('-time')
+    return msgs
+
+
+def get_message_statuses(request, messages):
+    last_time = request.session.get('last_message_poll', None)
+    res = rox_request.get_message_status(last_time=last_time)
+    if res.success:
+        tracelines = res.data
+        for line in tracelines:
+            l = json.loads(line)
+            msg_status = MessageStatus(event=l['event'], status=l['status'], time=epoch2dt(l['time']),
+                                       msg_id=l['args']['message_id'], service_name=l['args']['service_name'])
+            if 'processing_time' in l['args']:
+                p_time = epoch2dt(l['args']['processing_time'])
+                if p_time.year == 1970:
+                    msg_status.processing_time = p_time
+                else:
+                    msg_status.processing_time_long = p_time
+            if 'total_processing_time' in l['args']:
+                p_time = epoch2dt(l['args']['total_processing_time'])
+                if p_time.year == 1970:
+                    msg_status.total_processing_time = p_time
+                else:
+                    msg_status.total_processing_time_long = p_time
+
+            msg_status.save()
+
+    request.session['last_message_poll'] = time.time()
+    request.session.modified = True
+
+    dt_end = datetime.datetime.now()
+    dt_del_start = dt_end - MSG_DELETE
+    MessageStatus.objects.exclude(time__range=(dt_del_start, dt_end)).delete() #delete old entries
+
+    # retrieve only latest entries of each message:
+    msg_dict = {}
+
+    for message in messages:
+        if MessageStatus.objects.filter(msg_id=message.id).count() > 0:
+            msg_dict[message] = MessageStatus.objects.filter(msg_id=message.id).latest('time')
+        else:
+            msg_dict[message] = None
+    return msg_dict
+
+
+def epoch2dt(ts_epoch):
+    return datetime.datetime.fromtimestamp(ts_epoch)
 
 
 def get_selected_pipe(pipe_name, pipe_list):

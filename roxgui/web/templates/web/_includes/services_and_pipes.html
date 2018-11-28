@@ -1,7 +1,7 @@
 {% block services_and_pipes %}
 
 <!-- Services -->
-<div class="row">
+<div class="row pb-2">
     <div class="col-md-8">
         <div class="card w-auto scrollable">
             <div class="card-body">
@@ -16,13 +16,13 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <button type="button" onclick="add_to_current_pipe(this)" data-name="{{ key }}"
                                             class="btn btn-default" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-arrow-down"></span>
                                     </button>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     {% if watch_active|get_value:key == True %}
                                     <button type="button" onclick="watch(this)" data-name="{{ key }}"
                                             class="btn btn-default" data-toggle="button" aria-pressed="true">
@@ -35,7 +35,7 @@
                                     </button>
                                     {% endif %}
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <button type="button" onclick="stop_service(this)" data-name="{{ key }}"
                                             class="btn btn-default" data-toggle="button" aria-pressed="false">
                                         <span class="fas fa-trash-alt"></span>
@@ -68,7 +68,7 @@
 </div>
 
 <!-- Pipelines. -->
-<div class="row">
+<div class="row pb-4">
     <!-- Selected pipeline. -->
     <div class="col-md-8">
         <div class="card w-auto scrollable">
