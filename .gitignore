@@ -7,6 +7,9 @@
 # Testing database.
 *.sqlite3
 
+# Local config file.
+/roxgui/config.ini
+
 # PyCache folder.
 **/__pycache__/*
 
@@ -18,4 +21,4 @@
 
 # IDE
 **/.idea/*
-/roxgui/config.ini
+

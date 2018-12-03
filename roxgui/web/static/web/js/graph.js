@@ -1,6 +1,4 @@
 // Define nodes.
-
-
 var node_data = [
     {"name": "file_writer", "json": {}, "active": true},
     {"name": "html_generator", "json": {}, "active": true},
@@ -50,11 +48,8 @@ var link = svg.append("g")
     .attr("stroke", "black")
     .attr("stroke-width", 2);
 
-    // Start simulation.
+// Start simulation.
 simulation.on("tick", tickActions);
-
-
-
 
 function tickActions() {
     // Update graphical location of nodes after each simulation step.
