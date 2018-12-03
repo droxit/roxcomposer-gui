@@ -53,6 +53,17 @@ if tmp_session_dir is not None:
         logger.error("Session directory specified in config file is invalid.")
         exit(1)
 
+# Initialize path to ROXcomposer log file.
+tmp_log_file = config.get("Default", "RoxComposerLogFile", fallback=None)
+if tmp_log_file is not None:
+    # ROXComposer log file is specified.
+    if os.path.isfile(tmp_log_file):
+        # Log file is valid and can be used.
+        ROX_COMPOSER_LOG_FILE = tmp_log_file
+    else:
+        # Exit with error: Log file is invalid.
+        logger.error("Path to ROXcomposer log file is invalid.")
+
 # Initialize ROXconnector connection data as specified in config file.
 tmp_ip = config.get("Default", "RoxConnectorIp", fallback=None)
 if tmp_ip is not None:

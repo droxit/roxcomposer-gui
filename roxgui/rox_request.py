@@ -14,8 +14,7 @@ import os
 import requests
 
 from rox_response import RoxResponse
-from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP
-from user_settings import ROX_LOG_FILE
+from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_LOG_FILE, ROX_CONNECTOR_IP
 
 # Logging.
 # ========
@@ -437,7 +436,7 @@ def load_session(file_name: str) -> RoxResponse:
         return RoxResponse(True, r.text)
 
 
-def watch_services(service_names, rox_session = None, timeout=SESSION_TIMEOUT) -> RoxResponse:
+def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
     """
     Add specified services to given sessions watchlist.
     :param service_names: List of service names which should be watched.
@@ -515,13 +514,13 @@ def create_new_sess(services, timeout=SESSION_TIMEOUT) -> RoxResponse:
         res.data = None
         return res
 
-    #request successful, create a session dictionary
+    # request successful, create a session dictionary
     rox_session['id'] = r.json()['sessionid']
 
     for s in r.json()['ok']:
         rox_session['services'].add(s)
 
-    rox_session['services'] = list(rox_session['services']) #convert to list
+    rox_session['services'] = list(rox_session['services'])  # convert to list
 
     res = RoxResponse(True, r.text)
     res.data = rox_session
@@ -599,14 +598,15 @@ def reset_watchers():  # TODO
 def save_pipeline(file_name):  # TODO
     pass
 
-def get_message_status(last_time = None) -> RoxResponse:
+
+def get_message_status(last_time=None) -> RoxResponse:
     """
     Get the last message status logs from trace log
     :param last_time: the time (in seconds) that the trace was polled from last time
     :return: RoxResponse that with data = log lines in a list
     """
     logs = []
-    logfile = ROX_LOG_FILE
+    logfile = ROX_COMPOSER_LOG_FILE
     try:
         for line in open(logfile, "r"):
             if last_time is None:
@@ -614,7 +614,7 @@ def get_message_status(last_time = None) -> RoxResponse:
             else:
                 line_time = json.loads(line)['time']
                 # add new log lines only if they are newer than the last time logs were updated
-                if line_time >  last_time:
+                if line_time > last_time:
                     logs.append(line)
     except:
         return RoxResponse(False, "Could not open trace file.")
@@ -622,6 +622,7 @@ def get_message_status(last_time = None) -> RoxResponse:
     res = RoxResponse(True, "Message trace read.")
     res.data = logs
     return res
+
 
 def load_and_start_pipeline(pipe_path):
     url = create_rox_connector_url("load_and_start_pipeline")
