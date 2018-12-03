@@ -442,7 +442,7 @@ def get_message_statuses(request, messages):
     request.session['last_message_poll'] = time.time()
     request.session.modified = True
 
-    dt_end = datetime.datetime.now()
+    dt_end = timezone.make_aware(datetime.datetime.now())
     dt_del_start = dt_end - MSG_DELETE
     MessageStatus.objects.exclude(time__range=(dt_del_start, dt_end)).delete() #delete old entries
 
@@ -458,7 +458,7 @@ def get_message_statuses(request, messages):
 
 
 def epoch2dt(ts_epoch):
-    return datetime.datetime.fromtimestamp(ts_epoch)
+    return timezone.make_aware(datetime.datetime.fromtimestamp(ts_epoch))
 
 
 def get_selected_pipe(pipe_name, pipe_list):
