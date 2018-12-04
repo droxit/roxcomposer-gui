@@ -100,7 +100,7 @@ def create_service(request):
             messages.error(request, "Invalid IP address.")
             return redirect(views.main)
     # Get port number.
-    port = request.POST.get("port")
+    port = int(request.POST.get("port"))
     # Get service name.
     name = request.POST.get("name")
     # Get classpath.
