@@ -45,8 +45,10 @@ def main(request):
 
     msgs = get_messages()
 
+    #request.session['watch_button_active'] = None
+    #request.session.modified = True
+
     message_dict = get_message_statuses(request, msgs)
-    logging.info(message_dict)
 
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
@@ -289,6 +291,8 @@ def update_watch_buttons(request, logsession):
         buttons_services = list(buttons_status.keys())  # get all service names of current buttons
         for service in buttons_services:
             request.session['watch_button_active'][service] = False  # set everything to 'unwatched'
+    else:
+        request.session['watch_button_active'] = {}
 
     if logsession is not None:
         for service in logsession['services']:
@@ -457,6 +461,7 @@ def get_message_statuses(request, messages):
         else:
             msg_dict[message] = None
     return msg_dict
+
 
 
 def epoch2dt(ts_epoch):
