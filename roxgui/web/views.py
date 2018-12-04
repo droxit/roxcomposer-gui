@@ -296,6 +296,8 @@ def update_watch_buttons(request, logsession):
     else:
         request.session['watch_button_active'] = {}
 
+    request.session.modified = True
+
     if logsession is not None:
         for service in logsession['services']:
             # for every watched service in session set to watched
