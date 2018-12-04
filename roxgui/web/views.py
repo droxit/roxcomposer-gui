@@ -26,10 +26,14 @@ from web import views
 from web.models import Message, Logline, MessageStatus
 
 removed_pipelines = []
-LOG_RELOAD = 100  # Show only this many messages in log
-LOG_TIMEOUT = datetime.timedelta(days=0, hours=0, minutes=1, seconds=0,
-                                 microseconds=0)  # show only logs up to this time
-LOG_DELETE = datetime.timedelta(hours=1)  # Logs older than this will be deleted from DB
+
+# Only show this number of messages in log.
+LOG_RELOAD = 100
+# Only show logs received within this interval.
+LOG_TIMEOUT = datetime.timedelta(minutes=1)
+# Delete all logs from DB which are older than this interval.
+LOG_DELETE = datetime.timedelta(hours=1)
+# Delete all messages which are older than this interval,
 MSG_DELETE = datetime.timedelta(minutes=5)
 
 # Logging.
@@ -218,14 +222,12 @@ def post_to_pipeline(request):
     pipe_name = request.POST.get("pipe_name", default="")
     # Get message.
     pipe_message = request.POST.get("pipe_message_text", default="")
-    logging.info("MSG: " + str(pipe_message))
     # Send message and get result.
     result = rox_request.post_to_pipeline(pipe_name, pipe_message)
-    logging.info("Message content: " + str(result.data))
     if result.success:
         # Message was sent successfully.
         m = Message(id=result.data, pipeline=pipe_name, message=pipe_message,
-                    time=datetime.datetime.now())  # save message to DB
+                    time=datetime.datetime.now())
         m.save()
         save_log(request, msg_id=result.data)
         messages.success(request, result.message)
@@ -296,8 +298,8 @@ def update_watch_buttons(request, logsession):
 
     if logsession is not None:
         for service in logsession['services']:
-            request.session['watch_button_active'][
-                service] = True  # for every watched service in session set to watched
+            # for every watched service in session set to watched
+            request.session['watch_button_active'][service] = True
 
 
 @require_http_methods(["POST"])
@@ -413,10 +415,12 @@ def update_logs():
 
 
 def get_messages():
+    # Get valid interval for messages.
     dt_end = timezone.now()
     dt_del_start = dt_end - MSG_DELETE
-
-    Message.objects.exclude(time__range=(dt_del_start, dt_end)).delete()  # delete old entries
+    # Delete all messages outside of this interval.
+    Message.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
+    # Get all current messages ordered by time.
     msgs = Message.objects.all().order_by('-time')
     return msgs
 
@@ -461,7 +465,6 @@ def get_message_statuses(request, messages):
         else:
             msg_dict[message] = None
     return msg_dict
-
 
 
 def epoch2dt(ts_epoch):

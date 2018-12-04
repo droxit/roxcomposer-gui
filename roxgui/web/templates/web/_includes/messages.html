@@ -8,7 +8,7 @@
             <div id="accordion">
                 {% for message, message_status in sent_messages.items %}
                     <div class="card">
-                        {% if not message_status == None%}
+                        {% if not message_status == None %}
                             {% if message_status.status == 'processing' %}
                                 <div class="card-header bg-warning text-white" id="heading-message{{ forloop.counter0 }}" data-toggle="collapse" data-target="#message{{ forloop.counter0 }}" aria-expanded="false" aria-controls="message{{ forloop.counter0 }}">
                             {% elif message_status.status == 'finalized' %}
@@ -25,7 +25,7 @@
                                     </div>
                                     <div class="ml-auto">
                                         {% if not message_status == None and not message_status.status == None %}
-                                            <span style="font-size:0.7em"> {{ message_status.status}} </span>
+                                            <span style="font-size:0.7em"> {{ message_status.status }} </span>
                                         {% endif %}
                                     </div>
                                 </div>
