@@ -152,21 +152,27 @@ def get_running_service_jsons() -> RoxResponse:
         return res
 
 
-def create_service(ip: str, port: int, name: str, class_path: str, output_file_path: str = "") -> RoxResponse:
+def create_service(ip: str,
+                   port: int,
+                   name: str,
+                   class_path: str,
+                   optional_param_keys: list = [],
+                   optional_param_values: list = []) -> RoxResponse:
     """
-    Create new service with given metadata and store it as JSON file in services folder.
-    :param ip: IP address of service.
-    :param port: Used port number.
+    Create new service with given parameter and store it as JSON file in service folder.
+    :param ip: IP address.
+    :param port: Port number.
     :param name: Service name.
     :param class_path: Classpath of service implementation.
-    :param output_file_path: Path to output file (default: "").
+    :param optional_param_keys: List of optional parameter keys (default: []).
+    :param optional_param_values: List of optional parameter values (default: []).
     :return: RoxResponse instance documenting if service could be created.
     """
     # Use service name as JSON file name.
     file_name = name + ".json"
-    # Store JSON file to service folder.
+    # Store JSON file in service folder.
     file_path = os.path.join(SERVICE_DIR, file_name)
-    # Create JSON dictionary.
+    # Create JSON with mandatory parameters.
     json_dict = {
         "classpath": class_path,
         "params": {
@@ -175,8 +181,13 @@ def create_service(ip: str, port: int, name: str, class_path: str, output_file_p
             "name": name
         }
     }
-    if output_file_path:
-        json_dict["params"]["filepath"] = output_file_path
+    # Add optional parameters if necessary.
+    for i in range(len(optional_param_keys)):
+        key = optional_param_keys[i]
+        value = optional_param_values[i]
+        if key:
+            json_dict["params"][key] = value
+
     # Write specified dictionary to JSON file.
     try:
         with open(file_path, 'w') as fd:

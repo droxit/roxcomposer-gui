@@ -8,9 +8,10 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
+                <p id="error"></p>
             </div>
             <div class="modal-body">
-                <form action="create_service" method="post" id="create_service_form">
+                <form>
                     {% csrf_token %}
                     <!-- Mandatory fields for service definition. -->
                     <div id="service_mandatory_fields">
@@ -19,7 +20,7 @@
                                 <label for="ip" class="col-form-label">IP:</label>
                             </div>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="ip" id="ip"
+                                <input type="text" class="form-control" id="ip"
                                        placeholder="IP address"
                                        pattern="[0-9]+.[0-9]+.[0-9]+.[0-9]+" required>
                             </div>
@@ -29,7 +30,7 @@
                                 <label for="port" class="col-form-label">Port:</label>
                             </div>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" name="port" id="port" placeholder="Port"
+                                <input type="number" class="form-control" id="port" placeholder="Port"
                                        min="1"
                                        max="65535" required>
                             </div>
@@ -39,7 +40,7 @@
                                 <label for="name" class="col-form-label">Name:</label>
                             </div>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="name" id="name" placeholder="Service name"
+                                <input type="text" class="form-control" id="name" placeholder="Service name"
                                        required>
                             </div>
                         </div>
@@ -48,7 +49,7 @@
                                 <label for="class_path" class="col-form-label">Classpath:</label>
                             </div>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="class_path" id="class_path"
+                                <input type="text" class="form-control" id="class_path"
                                        placeholder="Classpath" required>
                             </div>
                         </div>
@@ -65,11 +66,13 @@
                     </div>
                     <!-- Optional fields for service definition. -->
                     <div id="service_optional_fields"></div>
-                </form>
             </div>
+            </form>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" form="create_service_form" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="send_params()">Save
+                    changes
+                </button>
             </div>
         </div>
     </div>
@@ -77,17 +80,15 @@
 
 <script>
 function add_optional_param() {
+    // Get parent element.
     var parent = document.getElementById("service_optional_fields");
-    var counter = parent.childElementCount;
     // Create key input field.
     var key_div = document.createElement("div");
     key_div.setAttribute("class", "col-sm-4");
     var key_input = document.createElement("input");
     key_input.setAttribute("type", "text");
     key_input.setAttribute("class", "form-control");
-    var key_id = "key_" + counter;
-    key_input.setAttribute("name", key_id);
-    key_input.setAttribute("id", key_id);
+    key_input.setAttribute("id", "key");
     key_input.setAttribute("placeholder", "Key");
     key_div.appendChild(key_input);
     // Create value input field.
@@ -96,9 +97,7 @@ function add_optional_param() {
     var value_input = document.createElement("input");
     value_input.setAttribute("type", "text");
     value_input.setAttribute("class", "form-control");
-    var value_id = "value_" + counter;
-    value_input.setAttribute("name", value_id);
-    value_input.setAttribute("id", value_id);
+    value_input.setAttribute("id", "value");
     value_input.setAttribute("placeholder", "Value");
     value_div.appendChild(value_input);
     // Append both inputs to form group.
@@ -114,6 +113,48 @@ function remove_optional_param() {
     var parent = document.getElementById("service_optional_fields");
     parent.removeChild(parent.lastChild);
 }
+
+function send_params() {
+    // Get mandatory parameters.
+    var ip = document.getElementById("ip").value;
+    var port = document.getElementById("port").value;
+    var name = document.getElementById("name").value;
+    var class_path = document.getElementById("class_path").value;
+    // Get optional parameters.
+    var optional = document.getElementById("service_optional_fields");
+    // Store each optional parameters
+    // as key / value pair in array.
+    var optional_param_keys = [];
+    var optional_param_values = [];
+    var child;
+    var key;
+    var value;
+    for (i = 0; i < optional.childNodes.length; i++) {
+        child = optional.childNodes[i];
+        key = child.querySelector("#key").value;
+        value = child.querySelector("#value").value;
+        optional_param_keys.push(key);
+        optional_param_values.push(value);
+    }
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("create_service", {ip: ip, port: port, name: name, class_path: class_path, optional_param_keys: optional_param_keys, optional_param_values: optional_param_values, csrfmiddlewaretoken: CSRFtoken}).done(function(){
+        location.reload();
+    });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 {% endblock service_params %}
