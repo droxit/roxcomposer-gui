@@ -326,6 +326,7 @@ def unwatch(request):
         res = rox_request.unwatch_services([service_names], cur_sess)
         if res.success:
             cur_sess = res.data
+
             messages.debug(request, res.message)
         else:
             messages.error(request, "Couldn't unwatch services.")
