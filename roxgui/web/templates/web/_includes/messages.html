@@ -48,20 +48,12 @@
                                         Processing Time: <small> {{message_status.processing_time}} </small>
                                         <br>
                                     {% endif %}
-                                    {% if not messages_status.processing_time_long == None %}
-                                        Processing Time: <small> {{message_status.processing_time_long}} </small>
-                                        <br>
-                                    {% endif %}
                                     Started at: <small> {{message.time}} </small>
                                     <br>
                                     {% if message_status.status == 'finalized' %}
                                         Finished at: <small>{{message_status.time}}</small>
                                         <br>
-                                        Total Processing Time: <small>{% if message_status.total_processing_time == None %}
-                                                                        {{message_status.total_processing_time_long}}
-                                                                      {% else %}
-                                                                        {{message_status.total_processing_time}}
-                                                                      {%endif%}
+                                        Total Processing Time: <small>{{message_status.total_processing_time}}
                             </small>
                                     {% endif %}
                                 {% else %}

@@ -14,10 +14,11 @@ import os
 import time
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from django.core import serializers
 
 import databaseIO
 import filesystemIO
@@ -469,9 +470,24 @@ def get_message_statuses(request, messages):
     return msg_dict
 
 
+@require_http_methods(["POST"])
+def msg_status(request):
+    msgs = get_messages()
+    msg_dict = get_message_statuses(request, msgs)
+    msg_dict_str = {}
+    for msg in msg_dict:
+        msg_dict_str[msg.id] = { "message" : msg.to_dict() ,"status": msg_dict[msg].to_dict()}
+
+    return JsonResponse(msg_dict_str)
+
+
 def epoch2dt(ts_epoch):
     return timezone.make_aware(datetime.datetime.fromtimestamp(ts_epoch))
 
+def model2json(model_object):
+    array_result = serializers.serialize('json', [model_object], ensure_ascii=False)
+    just_object_result = array_result[1:-1]
+    return just_object_result
 
 def get_selected_pipe(pipe_name, pipe_list):
     """ convert the pipe list of tuples to a dictionary and get the data for pipe_name"""

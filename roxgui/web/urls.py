@@ -23,5 +23,6 @@ urlpatterns = [
     path("get_message_history", views.get_message_history, name="web_get_message_history"),
     path("delete_pipeline", views.delete_pipeline, name="web_delete_pipeline"),
     path("watch", views.watch, name="web_watch"),
-    path("unwatch", views.unwatch, name="web_unwatch")
+    path("unwatch", views.unwatch, name="web_unwatch"),
+    path("msg_status", views.msg_status, name="web_msg_status")
 ]
