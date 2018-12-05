@@ -121,8 +121,8 @@ def create_service(request):
 
     res = rox_request.create_service(ip, port, name, class_path, optional_param_keys, optional_param_values)
     if res.success:
-        return HttpResponse()
         messages.success(request, "Service created successfully.")
+        return HttpResponse()
     else:
         messages.error(request, "Service could not be created.")
     return redirect(views.main)
