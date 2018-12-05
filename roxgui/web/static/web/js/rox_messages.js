@@ -20,18 +20,19 @@ function get_msg_status(elem){
                 card = document.getElementById("card-" + obj.message.id);
                 if(card.dataset.status != "finalized")
                     card = update_card(card, obj); // if yes and the msg isn't already finalized, update the status
+                //if it's already finalized, don't do anything
             }else{
-                 create_message_card(elem, obj); // no, create a new card for the message
+                 create_message_card(elem, obj); // no message card under that id, create a new card for the message
             }
         }
 
-        check_old_cards(data, document.getElementById("accordion"));
+        check_old_cards(data, document.getElementById("accordion")); //delete all the old cards from accordion
 
 
     });
 }
 
-function check_old_cards(msg_data, accordion){
+function check_old_cards(msg_data, accordion){ // call to delete old cards
     var msg_ids = [];
     for(var msg in msg_data){
         msg_ids.push(msg)
@@ -61,7 +62,7 @@ function update_card(card, obj){
     }
 }
 
-function update_processing(card, obj){
+function update_processing(card, obj){ // call only if the status has changed to processing
     //update current service
     var div_cardbody = card.querySelector("#card-body-"+obj.message.id);
     span_cur_serv = div_cardbody.querySelector("#CurrentService-"+obj.message.id);
@@ -76,7 +77,7 @@ function update_processing(card, obj){
 
 }
 
-function update_finalized(card, obj){
+function update_finalized(card, obj){ // call if the status has changed to finalized
     if(obj.status.status == "finalized"){
         var heading = card.querySelector("#heading-"+obj.message.id);
         heading.className = "card-header bg-success text-white";
@@ -105,9 +106,10 @@ function update_finalized(card, obj){
 }
 
 function update_error(card, obj){
+    //we don't know yet what happens when an error occurs
 }
 
-function update_no_info(card, obj){
+function update_no_info(card, obj){ // call if there is no status information for a message
     var heading = card.querySelector("#heading-"+obj.message.id);
     heading.className = "card-header";
 
@@ -115,7 +117,7 @@ function update_no_info(card, obj){
     div_cardbody.appendChild(document.createTextNode("No further information available"));
 }
 
-function update_status(card, obj){
+function update_status(card, obj){ // call only if the whole status of the message has changed
 
     //update the status in card header (color), card header span and span inside card body
     var heading = card.querySelector("#heading-"+obj.message.id);
@@ -131,8 +133,8 @@ function update_status(card, obj){
     span_status = div_cardbody.querySelector("#Status-"+obj.message.id);
     make_status_text(span_status, "Status", obj.status.status);
 
-    if(obj.status.status == "processing"){
-        heading.className = "card-header bg-warning text-white";
+    if(obj.status.status == "processing"){ // if the status is now processing, change the status info in card body accordingly
+        heading.className = "card-header bg-warning text-white"; // color of the header depends on status
         update_processing(card, obj);
     }else if(obj.status.status == "error"){
         heading.className = "card-header bg-danger text-white";
@@ -145,7 +147,7 @@ function update_status(card, obj){
 }
 
 
-function create_message_card(elem, obj){
+function create_message_card(elem, obj){ //create the whole message card element corresponding to the message in obj
     id = obj.message.id;
 
     var carddiv = document.createElement("div");
