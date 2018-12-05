@@ -3,7 +3,7 @@ setInterval(function() {
 
    //acc.innerHTML = "";
    get_msg_status(acc);
-}, 1000);
+}, 100);
 
 
 function get_msg_status(elem){
@@ -15,130 +15,222 @@ function get_msg_status(elem){
 
 
             var obj = data[msg];
-            console.log(obj["message"]);
-            console.log(obj);
-
-            if(document.getElementById("card-" + obj["message"]["id"]) != null){
-                card = document.getElementById("card-" + obj["message"]["id"]);
-                //update
-                card = update_status(card, obj);
-
-            }else{ //create
-                 create_message_card(elem, obj);
+            //check if card exists
+            if(document.getElementById("card-" + obj.message.id) != null){
+                card = document.getElementById("card-" + obj.message.id);
+                if(card.dataset.status != "finalized")
+                    card = update_card(card, obj); // if yes and the msg isn't already finalized, update the status
+            }else{
+                 create_message_card(elem, obj); // no, create a new card for the message
             }
-
-
         }
+
+        check_old_cards(data, document.getElementById("accordion"));
+
 
     });
 }
 
-function update_status(card, obj){
-    elem = card.querySelector("#heading-"+obj["message"]["id"]);
-    if(obj["status"]["status"] != elem.dataset.status){
-        if(obj["status"]["status"] == "processing"){
-            elem.className = "card-header bg-warning text-white";
-        } else if(obj["status"]["status"] == "finalized"){
-            elem.className = "card-header bg-success text-white";
-        } else if(obj["status"]["status"] == "error"){
-            elem.className = "card-header bg-danger text-white";
-        } else{
-            elem.className = "card-header";
+function check_old_cards(msg_data, accordion){
+    var msg_ids = [];
+    for(var msg in msg_data){
+        msg_ids.push(msg)
+    }
+    var cards = accordion.children;
+
+    for(var i in cards) {
+        if(cards[i].nodeType == 1){
+            var card = cards[i];
+            var card_id = card.id.substring(5, card.id.length);
+            if(!msg_ids.includes(card_id))
+                card.remove()
         }
-        elem.setAttribute("data-status", obj["status"]["status"])
+    }
+
+}
+
+function update_card(card, obj){
+    if(obj.status != null){
+        if(obj.status.status != card.dataset.status){ // if status changed update the status
+            update_status(card, obj);
+        }else{
+            update_processing();
+        }
+    }else{
+        update_no_info(card, obj);
     }
 }
 
+function update_processing(card, obj){
+    //update current service
+    var div_cardbody = card.querySelector("#card-body-"+obj.message.id);
+    span_cur_serv = div_cardbody.querySelector("#CurrentService-"+obj.message.id);
+    make_status_text(span_cur_serv, "Current Service", obj.status.service_name);
+
+    //update processing time
+    if(obj.status.processing_time != null){
+
+        span_processing_time = div_cardbody.querySelector("#ProcessingTime-"+obj.message.id);
+        make_status_text(span_processing_time, "Processing Time", obj.status.processing_time);
+    }
+
+}
+
+function update_finalized(card, obj){
+    if(obj.status.status == "finalized"){
+        var heading = card.querySelector("#heading-"+obj.message.id);
+        heading.className = "card-header bg-success text-white";
+        card.setAttribute("data-status", "finalized");
+
+        //update Finished text
+        var div_cardbody = card.querySelector("#card-body-"+obj.message.id);
+        span_finished = div_cardbody.querySelector("#Finished-"+obj.message.id);
+        make_status_text(span_finished, "Finished at", obj.status.time);
+
+        //update total processing time
+        if(obj.status.total_processing_time != null){
+            span_finished = div_cardbody.querySelector("#TotalProcessingTime-"+obj.message.id);
+            make_status_text(span_finished, "Total Processing Time", obj.status.total_processing_time, obj.message.id);
+        }
+
+        //delete processing time, current service
+        span_cur_serv = div_cardbody.querySelector("#CurrentService-"+obj.message.id);
+        span_cur_serv.innerHTML = "";
+
+        span_processing_time = div_cardbody.querySelector("#ProcessingTime-"+obj.message.id);
+        span_processing_time.innerHTML = "";
+
+    }
+
+}
+
+function update_error(card, obj){
+}
+
+function update_no_info(card, obj){
+    var heading = card.querySelector("#heading-"+obj.message.id);
+    heading.className = "card-header";
+
+    var div_cardbody = card.querySelector("#card-body-"+obj.message.id);
+    div_cardbody.appendChild(document.createTextNode("No further information available"));
+}
+
+function update_status(card, obj){
+
+    //update the status in card header (color), card header span and span inside card body
+    var heading = card.querySelector("#heading-"+obj.message.id);
+    heading.setAttribute("data-status", obj.status.status);
+
+    //update status in the card header
+    var span = card.querySelector("#status-"+obj.message.id);
+    span.innerHTML= "";
+    span.appendChild(document.createTextNode(obj.status.status));
+
+    //update status inside the info card
+    var div_cardbody = card.querySelector("#card-body-"+obj.message.id);
+    span_status = div_cardbody.querySelector("#Status-"+obj.message.id);
+    make_status_text(span_status, "Status", obj.status.status);
+
+    if(obj.status.status == "processing"){
+        heading.className = "card-header bg-warning text-white";
+        update_processing(card, obj);
+    }else if(obj.status.status == "error"){
+        heading.className = "card-header bg-danger text-white";
+        update_error(card, obj);
+    }else if(obj.status.status == "finalized"){
+        heading.className = "card-header bg-success text-white";
+        update_finalized(card, obj);
+    }
+
+}
+
+
 function create_message_card(elem, obj){
+    id = obj.message.id;
+
     var carddiv = document.createElement("div");
     carddiv.className = "card";
-    carddiv.setAttribute("id", "card-"+obj["message"]["id"])
+    carddiv.setAttribute("id", "card-"+id);
+    carddiv.setAttribute("data-status", null);
     elem.appendChild(carddiv);
 
     //<<<<<<<<<<<HEADER>>>>>>>>>>>>>
     var cardheader = document.createElement("div");
-    cardheader.setAttribute("id", "heading-" + obj["message"]["id"]);
+    cardheader.setAttribute("id", "heading-" + id);
     cardheader.setAttribute("data-toggle", "collapse");
-    cardheader.setAttribute("data-target", "#m" + obj["message"]["id"]);
-       cardheader.setAttribute("data-status", "");
+    cardheader.setAttribute("data-target", "#m" + id);
+    cardheader.setAttribute("data-status", null);
     cardheader.setAttribute("aria-expanded", "false");
-    cardheader.setAttribute("aria-controls", "m" + obj["message"]["id"]);
+    cardheader.setAttribute("aria-controls", "m" + id);
+    cardheader.className = "card-header";
 
     carddiv.appendChild(cardheader);
 
-    update_status(carddiv, obj);
-
     var div_flex = document.createElement("div");
     div_flex.setAttribute("class", "d-flex");
-    //div_flex.setAttribute("")
     cardheader.appendChild(div_flex);
 
     var div_col = document.createElement("div");
     div_col.setAttribute("class", "col-mb-9");
-    div_col.appendChild(document.createTextNode(obj["message"]["message"]))
+    div_col.appendChild(document.createTextNode(obj.message.message))
     div_flex.appendChild(div_col);
 
     var div_col1 = document.createElement("div");
     div_col1.setAttribute("class", "ml-auto");
-    if(obj["status"] != "None" && obj["status"]["status"] != "None"){
-        var span = document.createElement("span");
-        span.setAttribute("style", "font-size:0.7em");
-        span.appendChild(document.createTextNode(obj["status"]["status"]));
-        div_col1.appendChild(span);
-    }
+
+    var span = document.createElement("span");
+    span.setAttribute("id", "status-"+id)
+    span.setAttribute("style", "font-size:0.7em");
+    span.setAttribute("data-status", null);
+    div_col1.appendChild(span);
     div_flex.appendChild(div_col1);
     //<<<<<<<<<<<HEADER END>>>>>>>>>>>>>>>>
 
     //<<<<<<<<<<<STATUS DIV>>>>>>>>>>>>>>>>
 
     var div2 = document.createElement("div");
-    div2.setAttribute("id", "m" + obj["message"]["id"]);
-    div2.setAttribute("aria-labelledby", "heading-"+obj["message"]["id"]);
+    div2.setAttribute("id", "m" + id);
+    div2.setAttribute("aria-labelledby", "heading-"+id);
     div2.setAttribute("data-parent", "#accordion")
     div2.setAttribute("class", "collapse")
     carddiv.appendChild(div2);
 
     var div_cardbody = document.createElement("div");
     div_cardbody.setAttribute("class", "card-body");
+    div_cardbody.setAttribute("id", "card-body-"+id);
     div2.appendChild(div_cardbody);
 
     //Text
-    div_cardbody = make_status_text(div_cardbody, "ID", obj["message"]["id"]);
+    var text_arr = ["ID", "Pipeline", "Status", "CurrentService", "ProcessingTime", "Started", "Finished", "TotalProcessingTime"];
 
-    div_cardbody = make_status_text(div_cardbody, "Pipeline", obj["message"]["pipeline"]);
-
-    if(obj["status"] != null){
-        div_cardbody = make_status_text(div_cardbody, "Status", obj["status"]["status"]);
-
-        if(obj["status"]["status"] != "finalized"){
-            div_cardbody = make_status_text(div_cardbody, "Current Service", obj["status"]["service_name"]);
-        }
-        if(obj["status"]["processing_time"] != null){
-            div_cardbody = make_status_text(div_cardbody, "Processing Time", obj["status"]["processing time"]);
-        }
-        div_cardbody = make_status_text(div_cardbody, "Started at", obj["message"]["time"]);
-
-        if(obj["status"]["status"] == "finalized"){
-            div_cardbody = make_status_text(div_cardbody, "Finished at", obj["status"]["time"]);
-
-            if(obj["status"]["total_processing_time"] != null){
-                div_cardbody = make_status_text(div_cardbody, "Total Processing Time", obj["status"]["total_processing_time"]);
-            }
-        }
-
-    }else{
-        div_cardbody.appendChild(document.createTextNode("No further information available"));
+    for(var i in text_arr){
+        let span_text = text_arr[i];
+        var spn = document.createElement("span");
+        spn.setAttribute("id", span_text+"-"+id);
+        div_cardbody.appendChild(spn);
     }
+
+    span_id = div_cardbody.querySelector("#ID-"+id);
+    make_status_text(span_id, "ID", id);
+
+    span_pipe = div_cardbody.querySelector("#Pipeline-"+id);
+    make_status_text(span_pipe, "Pipeline", obj.message.pipeline);
+
+    span_started = div_cardbody.querySelector("#Started-"+id);
+    make_status_text(span_started, "Started at", obj.message.time);
+
+    update_status(carddiv, obj);
+
     return elem;
 }
 
 
 function make_status_text(node, text, obj){
+    node.innerHTML= "";
     var sm = document.createElement("small");
     var br = document.createElement("br");
     node.appendChild(document.createTextNode(text+ ": "));
     node.appendChild(sm);
     sm.appendChild(document.createTextNode(obj));
     node.appendChild(br);
-    return node
 }
