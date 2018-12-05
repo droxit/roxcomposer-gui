@@ -15,7 +15,9 @@ import rox_request
 
 from web.models import Logline
 
-removed_pipelines = []
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
 
 # Only show this number of messages in log.
 LOG_RELOAD = 100
@@ -28,6 +30,11 @@ LOG_DELETE = datetime.timedelta(hours=1)
 # Logging.
 # ========
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
+
+@require_http_methods(["POST"])
+def get_log_json(request):
+    log_dict_str = {}
+    return JsonResponse(log_dict_str)
 
 
 def save_log(request, msg_id=None):
@@ -82,3 +89,4 @@ def start_new_session(request):
             new_session = res.data
             request.session['current_session'] = new_session
             request.session.modified = True
+
