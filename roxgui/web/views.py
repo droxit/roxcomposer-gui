@@ -11,20 +11,19 @@ import datetime
 import json
 import logging
 import os
-import time
 
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
-from django.core import serializers
 
 import databaseIO
 import filesystemIO
 import rox_request
+
 from web import views
-from web.models import Message, Logline, MessageStatus
+from web.models import Message, Logline
 
 removed_pipelines = []
 
@@ -34,8 +33,7 @@ LOG_RELOAD = 100
 LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(hours=1)
-# Delete all messages which are older than this interval,
-MSG_DELETE = datetime.timedelta(minutes=5)
+
 
 # Logging.
 # ========
@@ -47,13 +45,6 @@ def main(request):
     """Main page."""
     # Update database concerning available services.
     databaseIO.update_service_db()
-
-    msgs = get_messages()
-
-    #request.session['watch_button_active'] = None
-    #request.session.modified = True
-
-    message_dict = get_message_statuses(request, msgs)
 
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
@@ -89,8 +80,8 @@ def main(request):
                "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
                "logs": logs,
-               "watch_active": request.session.get('watch_button_active', None),
-               "sent_messages": message_dict}
+               "watch_active": request.session.get('watch_button_active', None)
+               }
     return render(request, "web/web.html", context)
 
 
@@ -416,78 +407,6 @@ def update_logs():
     pass
     # logs = Logline.objects.filter(time__range=(datetime.datetime.combine(d)))
 
-
-def get_messages():
-    # Get valid interval for messages.
-    dt_end = timezone.now()
-    dt_del_start = dt_end - MSG_DELETE
-    # Delete all messages outside of this interval.
-    Message.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
-    # Get all current messages ordered by time.
-    msgs = Message.objects.all().order_by('-time')
-    return msgs
-
-
-def get_message_statuses(request, messages):
-    last_time = request.session.get('last_message_poll', None)
-    res = rox_request.get_message_status(last_time=last_time)
-    if res.success:
-        tracelines = res.data
-        for line in tracelines:
-            l = json.loads(line)
-            msg_status = MessageStatus(event=l['event'], status=l['status'], time=epoch2dt(l['time']),
-                                       msg_id=l['args']['message_id'], service_name=l['args']['service_name'])
-            if 'processing_time' in l['args']:
-                p_time = epoch2dt(l['args']['processing_time'])
-                if p_time.year == 1970:
-                    msg_status.processing_time = p_time
-                else:
-                    msg_status.processing_time_long = p_time
-            if 'total_processing_time' in l['args']:
-                p_time = epoch2dt(l['args']['total_processing_time'])
-                if p_time.year == 1970:
-                    msg_status.total_processing_time = p_time
-                else:
-                    msg_status.total_processing_time_long = p_time
-
-            msg_status.save()
-
-    request.session['last_message_poll'] = time.time()
-    request.session.modified = True
-
-    dt_end = timezone.make_aware(datetime.datetime.now())
-    dt_del_start = dt_end - MSG_DELETE
-    MessageStatus.objects.exclude(time__range=(dt_del_start, dt_end)).delete()  # delete old entries
-
-    # retrieve only latest entries of each message:
-    msg_dict = {}
-
-    for message in messages:
-        if MessageStatus.objects.filter(msg_id=message.id).count() > 0:
-            msg_dict[message] = MessageStatus.objects.filter(msg_id=message.id).latest('time')
-        else:
-            msg_dict[message] = None
-    return msg_dict
-
-
-@require_http_methods(["POST"])
-def msg_status(request):
-    msgs = get_messages()
-    msg_dict = get_message_statuses(request, msgs)
-    msg_dict_str = {}
-    for msg in msg_dict:
-        msg_dict_str[msg.id] = { "message" : msg.to_dict() ,"status": msg_dict[msg].to_dict()}
-
-    return JsonResponse(msg_dict_str)
-
-
-def epoch2dt(ts_epoch):
-    return timezone.make_aware(datetime.datetime.fromtimestamp(ts_epoch))
-
-def model2json(model_object):
-    array_result = serializers.serialize('json', [model_object], ensure_ascii=False)
-    just_object_result = array_result[1:-1]
-    return just_object_result
 
 def get_selected_pipe(pipe_name, pipe_list):
     """ convert the pipe list of tuples to a dictionary and get the data for pipe_name"""
