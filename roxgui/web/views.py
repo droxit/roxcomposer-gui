@@ -15,7 +15,6 @@ import os
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 import databaseIO
@@ -23,7 +22,7 @@ import filesystemIO
 import rox_request
 
 from web import views
-from web import rox_logs, rox_services, rox_watch
+from web import rox_logs
 from web.models import Message
 
 removed_pipelines = []
