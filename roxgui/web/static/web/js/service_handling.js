@@ -6,7 +6,7 @@ function run_service(elem){
     var selected_service = elem.dataset.value_name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("start_service", {available_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(data){
-        // if error show tooltip
+        // TODO: if error show tooltip
         get_services();
          });
 
@@ -17,7 +17,7 @@ function stop_service(elem){
     var selected_service = elem.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(data){
-        // if error show tooltip
+        // TODO: if error show tooltip
         console.log(data);
         get_services();
          });
