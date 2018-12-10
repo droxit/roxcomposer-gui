@@ -38,6 +38,9 @@ def main(request):
     # Update database concerning available services.
     databaseIO.update_service_db()
 
+    #for key in list(request.session.keys()):
+    #    del request.session[key]
+
     # Get JSON data of all available services (excluding forbidden ones).
     file_result = filesystemIO.get_available_service_jsons()
     available_services_json_dict = file_result.data

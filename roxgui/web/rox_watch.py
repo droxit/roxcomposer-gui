@@ -35,7 +35,16 @@ def update_watch_buttons(request, logsession):
 
 @require_http_methods(["POST"])
 def get_watched_status(request):
-    return JsonResponse(request.session.get('watch_button_active', []))
+    check_session(request)
+    return JsonResponse(request.session.get('watch_button_active', {}))
+
+
+def check_session(request):
+    active = request.session.get('watch_button_active', {})
+    if active == {}:
+        logsess = rox_request.create_new_sess([]).data
+        update_watch_buttons(request, logsess)
+        request.session.modified = True
 
 
 @require_http_methods(["POST"])

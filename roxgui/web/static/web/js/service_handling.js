@@ -40,10 +40,12 @@ function update_running_services(win, services, watch_status){
         var service_info = services[service];
         //check if service card already exists and create a new one if not
         if(document.getElementById("runservice-" + service) == null){
+            if(watch_status == null)
+                update_watch_status(false);
+
             if(watch_status[service] != null){
                 create_running_service_card(win, service, service_info, watch_status[service]);
             } else{
-                // start_new_session(); //TODO
                 create_running_service_card(win, service, service_info, false);
             }
         }
