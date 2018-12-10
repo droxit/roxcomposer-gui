@@ -86,7 +86,7 @@ function post_message_to_pipeline(){
     var pipeline_name = document.getElementById("pipe_name").value;
     var message = document.getElementById("pipe_message_text").value;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("post_to_pipeline", {pipe_name: pipeline_name, pipe_message_text: message, csrfmiddlewaretoken: CSRFtoken}).done(function(){ location.reload(); });
+    $.post("post_to_pipeline", {pipe_name: pipeline_name, pipe_message_text: message, csrfmiddlewaretoken: CSRFtoken});
 }
 
 function watch(elem){
