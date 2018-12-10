@@ -168,9 +168,6 @@ def create_service(ip: str,
     :param optional_param_values: List of optional parameter values (default: []).
     :return: RoxResponse instance documenting if service could be created.
     """
-    # Collect all warnings.
-    warnings = []
-
     # Mandatory parameters.
     # =====================
 
@@ -181,8 +178,8 @@ def create_service(ip: str,
 
     # Check if given service already exists.
     if os.path.exists(file_path):
-        name_warning_msg = "Service {} already exists.".format(name)
-        warnings.append(name_warning_msg)
+        error_msg = "Service {} already exists.".format(name)
+        return RoxResponse(False, error_msg)
 
     # Check if given IP is valid.
     ip_parts = ip.split('.')
@@ -216,9 +213,6 @@ def create_service(ip: str,
         else:
             # Key or value of current parameter is empty.
             optional_params_warning = True
-    if optional_params_warning:
-        optional_params_warning_msg = "Skipped invalid optional parameters."
-        warnings.append(optional_params_warning_msg)
 
     # Write specified dictionary to JSON file.
     try:
@@ -229,8 +223,8 @@ def create_service(ip: str,
         return RoxResponse(False, error_msg)
 
     # Return RoxResponse instance with corresponding warnings.
-    if warnings:
-        warning_msg = ' '.join(warnings)
+    if optional_params_warning:
+        warning_msg = "Skipped invalid optional parameters."
         return RoxResponse(True, warning_msg)
     else:
         return RoxResponse(True)
