@@ -1,5 +1,5 @@
 function watch(elem){
-    if(elem.getAttribute("aria-pressed") == 'true'){
+    if(elem.dataset.watched == "true"){
         unwatch(elem);
     } else{
         var selected_service = elem.dataset.name;
@@ -7,7 +7,6 @@ function watch(elem){
         if(selected_service){
             $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(data){
                 //TODO: error handling/tooltips
-                var spn = elem.getElementsByTagName('span')[0];
                 update_watch_buttons();
              });
         }
@@ -34,6 +33,12 @@ function update_watch_buttons(){
             if(running_services[i].nodeType == 1){
                 var serv = running_services[i];
                 var serv_id = serv.id.substring(11, serv.id.length);
+
+                var btn = document.getElementById('watch-button-'+serv_id);
+
+                // update watched status in card
+                if(watch_active[serv_id] != null)
+                    btn.setAttribute("data-watched", watch_active[serv_id]);
 
                 // update watch button for every service
                 var spn = document.getElementById('watch-span-'+serv_id);

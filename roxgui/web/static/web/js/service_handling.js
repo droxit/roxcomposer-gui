@@ -135,14 +135,15 @@ function create_running_service_card(win, service, service_info, watch_active){
 
     var btn_watch = btn.cloneNode();
     btn_watch.setAttribute("onclick", "watch(this)");
+    btn_watch.setAttribute("id", "watch-button-"+service);
     var spn_watch = document.createElement("span");
-    spn_watch.setAttribute("id", "watch-span-"+service)
+    spn_watch.setAttribute("id", "watch-span-"+service);
     if(watch_active){
-        btn_watch.setAttribute("aria-pressed", "true");
         spn_watch.setAttribute("class", "fas fa-eye");
+        btn_watch.setAttribute("data-watched", "true");
     } else{
-        btn_watch.setAttribute("aria-pressed", "false");
         spn_watch.setAttribute("class", "fas fa-eye-slash");
+        btn_watch.setAttribute("data-watched", "false");
     }
     col2.appendChild(btn_watch);
     btn_watch.appendChild(spn_watch);
