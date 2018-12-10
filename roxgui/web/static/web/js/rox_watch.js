@@ -35,9 +35,8 @@ function update_watch_buttons(){
                 var serv = running_services[i];
                 var serv_id = serv.id.substring(11, serv.id.length);
 
-                console.log(serv);
                 // update watch button for every service
-                var spn = serv.getElementsByTagName('span')[0];
+                var spn = document.getElementById('watch-span-'+serv_id);
                 if(watch_active[serv_id]){
                     spn.setAttribute("class", "fas fa-eye");
                 }else{
