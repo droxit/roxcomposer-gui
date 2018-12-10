@@ -25,13 +25,14 @@ def get_services(request):
     running_services_json_dict = rox_result.data
     # Only consider services which are currently not running as available.
     tmp_dict = {}
-    for key, value in available_services_json_dict.items():
-        if key not in running_services_json_dict:
-            tmp_dict[key] = value
+    for service_name, service_info in available_services_json_dict.items():
+        if service_name not in running_services_json_dict:
+            tmp_dict[service_name] = service_info
     available_services_json_dict = tmp_dict
 
-    context = {"available_services_dict": available_services_json_dict,
-               "running_services_dict": running_services_json_dict
+    context = {"available_services": available_services_json_dict,
+               "running_services": running_services_json_dict,
+               "watch_active": request.session.get('watch_button_active', None)
                }
     return JsonResponse(context)
 
