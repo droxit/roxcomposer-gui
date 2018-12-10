@@ -51,6 +51,8 @@ class Message(models.Model):
     def __str__(self):
         return "Message ID: {} to pipeline: {}, created at {} \n {}".format(self.id, self.pipeline, self.time, self.message)
 
+    def to_dict(self):
+        return {"id":self.id, "pipeline":self.pipeline, "time":self.time.strftime("%B %d, %Y %H:%M"), "message":self.message}
 
 class MessageStatus(models.Model):
     msg_id = models.CharField(max_length=200, default="")
@@ -59,9 +61,7 @@ class MessageStatus(models.Model):
     time = models.DateTimeField(default=None, null=True)
     service_name = models.CharField(max_length=200, default="")
     processing_time = models.TimeField(default=None, null=True)
-    processing_time_long = models.DateTimeField(default=None, null=True)
     total_processing_time = models.TimeField(default=None, null=True)
-    total_processing_time_long = models.DateTimeField(default=None, null=True)
 
     def __str__(self):
         return "Event: {}, Status: {}, Time: {}, Args: " \
@@ -70,7 +70,9 @@ class MessageStatus(models.Model):
                                                      self.service_name, self.msg_id,
                                                   str(self.processing_time), str(self.total_processing_time))
 
-
+    def to_dict(self):
+        return {"msg_id" : self.msg_id, "event": self.event, "status":self.status, "time":self.time.strftime("%B %d, %Y %H:%M"),
+                "service_name":self.service_name, "processing_time":self.processing_time, "total_processing_time":self.total_processing_time}
 
 
 class RoxSession(models.Model):
