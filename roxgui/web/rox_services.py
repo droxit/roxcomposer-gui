@@ -1,19 +1,10 @@
-import datetime
-import json
-import logging
-import os
-
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 
 import filesystemIO
 import rox_request
-
-from web import views
-
 
 @require_http_methods(["POST"])
 def get_services(request):
