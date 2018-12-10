@@ -1,11 +1,13 @@
+{% load static %}
+
 <div class="row pb-4">
     <!-- Messages -->
     <div class="col-md-4 scrollable-parent">
         <h4><strong>Messages</strong></h4>
         <div class="card w-auto" style="overflow-x:hidden;height:300px">
-            <div id="accordion">
-
-            </div>
+            <div id="accordion"></div>
         </div>
     </div>
 </div>
+
+<script src="{% static 'web/js/rox_messages.js'%}"></script>

@@ -8,9 +8,9 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="alert alert-danger" id="error"></div>
             </div>
             <div class="modal-body">
+                <div id="service_params_message"></div>
                 <form>
                     {% csrf_token %}
                     <!-- Mandatory fields for service definition. -->
@@ -66,15 +66,15 @@
                     </div>
                     <!-- Optional fields for service definition. -->
                     <div id="service_optional_fields"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="send_params()">Save
-                    changes
-                </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="send_params()">
+                            Save changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-<script src="{% static 'web/js/service_params.js'%}"></script>
+    <script src="{% static 'web/js/service_params.js'%}"></script>

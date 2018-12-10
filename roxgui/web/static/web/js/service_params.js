@@ -33,6 +33,32 @@ function remove_optional_param() {
     parent.removeChild(parent.lastChild);
 }
 
+function create_result_message(data) {
+    var result_msg = document.createElement("div");
+    if (data.success) {
+        if (data.message) {
+            // Request successful but with warnings.
+            result_msg.setAttribute("class", "alert alert-warning");
+            result_msg.innerHTML = data.message;
+        } else {
+            // Request successful without any warnings.
+            result_msg.setAttribute("class", "alert alert-success");
+            result_msg.innerHTML = "Success.";
+        }
+    } else {
+        if (data.message) {
+            // Request failed with error message.
+            result_msg.setAttribute("class", "alert alert-danger");
+            result_msg.innerHTML = data.message;
+        } else {
+            // Request failed without error message.
+            result_msg.setAttribute("class", "alert alert-danger");
+            result_msg.innerHTML = "Failure.";
+        }
+    }
+    return result_msg;
+}
+
 function send_params() {
     // Get mandatory parameters.
     var ip = document.getElementById("ip").value;
@@ -56,9 +82,30 @@ function send_params() {
     }
     // Create CSRF token.
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    // Create service parameter dictionary.
+    params = {
+        ip: ip,
+        port: port,
+        name: name,
+        class_path: class_path,
+        optional_param_keys: optional_param_keys,
+        optional_param_values: optional_param_values,
+        csrfmiddlewaretoken: CSRFtoken
+    };
     // Create service with specified parameters.
-    $.post("create_service", {ip: ip, port: port, name: name, class_path: class_path, optional_param_keys: optional_param_keys, optional_param_values: optional_param_values, csrfmiddlewaretoken: CSRFtoken}).done(function(){
-        location.reload();
+    $.post("create_service", params).done(function(data) {
+        // Get element which should contain result messages.
+        var msg_div = document.getElementById("service_params_message");
+        // Create result message.
+        var result_msg = create_result_message(data);
+        // Add result message to corresponding parent element.
+        msg_div.appendChild(result_msg);
+        // Remove error message after a few seconds.
+        setTimeout(
+            function() {
+                result_msg.remove();
+            },
+            5000
+        );
     });
-
 }

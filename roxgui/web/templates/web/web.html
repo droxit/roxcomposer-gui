@@ -13,30 +13,26 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h1>Welcome!</h1>
-        </div>
+<div class="row">
+    <div class="col">
+        <h1>Welcome!</h1>
     </div>
-
-    {% include "web/_includes/message_history.html" %}
-
-    {% include "web/_includes/services_and_pipes.html" %}
-
-    {% include "web/_includes/service_graph.html" %}
-
-    {% include "web/_includes/logs.html" %}
-
-    {% include "web/_includes/messages.html" %}
-
-    {% include "web/_includes/session.html" %}
-
-    {% include "web/_includes/service_params.html" %}
-
 </div>
 
+{% include "web/_includes/message_history.html" %}
+
+{% include "web/_includes/services_and_pipes.html" %}
+
+{% include "web/_includes/service_graph.html" %}
+
+{% include "web/_includes/logs.html" %}
+
+{% include "web/_includes/messages.html" %}
+
+{% include "web/_includes/session.html" %}
+
+{% include "web/_includes/service_params.html" %}
+
 <script src="{% static 'web/js/web.js'%}"></script>
-<script src="{% static 'web/js/rox_messages.js'%}"></script>
 
 {% endblock content %}

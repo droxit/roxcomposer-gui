@@ -10,10 +10,9 @@
 import datetime
 import json
 import logging
-import os
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
@@ -21,7 +20,6 @@ from django.views.decorators.http import require_http_methods
 import databaseIO
 import filesystemIO
 import rox_request
-
 from web import views
 from web.models import Message, Logline
 
@@ -33,7 +31,6 @@ LOG_RELOAD = 100
 LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(hours=1)
-
 
 # Logging.
 # ========
@@ -93,12 +90,6 @@ def create_service(request):
 
     # Get IP address.
     ip = request.POST.get("ip")
-    # Check if given IP is valid.
-    ip_parts = ip.split('.')
-    for part in ip_parts:
-        part = int(part)
-        if not (0 <= part <= 255):
-            return HttpResponse("Invalid IP address: {}.".format(ip))
     # Get port number.
     port = int(request.POST.get("port"))
     # Get service name.
@@ -113,12 +104,8 @@ def create_service(request):
     optional_param_values = request.POST.getlist("optional_param_values[]", default=[])
 
     res = rox_request.create_service(ip, port, name, class_path, optional_param_keys, optional_param_values)
-    if res.success:
-        messages.success(request, "Service created successfully.")
-        return HttpResponse()
-    else:
-        messages.error(request, "Service could not be created.")
-    return redirect(views.main)
+    res_json = res.convert_to_json()
+    return JsonResponse(res_json)
 
 
 @require_http_methods(["POST"])

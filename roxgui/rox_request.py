@@ -156,8 +156,8 @@ def create_service(ip: str,
                    port: int,
                    name: str,
                    class_path: str,
-                   optional_param_keys: list = [],
-                   optional_param_values: list = []) -> RoxResponse:
+                   optional_param_keys: list,
+                   optional_param_values: list) -> RoxResponse:
     """
     Create new service with given parameter and store it as JSON file in service folder.
     :param ip: IP address.
@@ -168,10 +168,30 @@ def create_service(ip: str,
     :param optional_param_values: List of optional parameter values (default: []).
     :return: RoxResponse instance documenting if service could be created.
     """
+    # Collect all warnings.
+    warnings = []
+
+    # Mandatory parameters.
+    # =====================
+
     # Use service name as JSON file name.
     file_name = name + ".json"
     # Store JSON file in service folder.
     file_path = os.path.join(SERVICE_DIR, file_name)
+
+    # Check if given service already exists.
+    if os.path.exists(file_path):
+        name_warning_msg = "Service {} already exists.".format(name)
+        warnings.append(name_warning_msg)
+
+    # Check if given IP is valid.
+    ip_parts = ip.split('.')
+    for part in ip_parts:
+        part = int(part)
+        if not (0 <= part <= 255):
+            error_msg = "Invalid IP address: {}.".format(ip)
+            return RoxResponse(False, error_msg)
+
     # Create JSON with mandatory parameters.
     json_dict = {
         "classpath": class_path,
@@ -181,12 +201,24 @@ def create_service(ip: str,
             "name": name
         }
     }
-    # Add optional parameters if necessary.
+
+    # Optional parameters.
+    # ====================
+
+    # Add optional parameters ignoring missing or invalid ones.
+    optional_params_warning = False
     for i in range(len(optional_param_keys)):
         key = optional_param_keys[i]
         value = optional_param_values[i]
-        if key:
+        if key and value:
+            # Key and value of current parameter is not empty.
             json_dict["params"][key] = value
+        else:
+            # Key or value of current parameter is empty.
+            optional_params_warning = True
+    if optional_params_warning:
+        optional_params_warning_msg = "Skipped invalid optional parameters."
+        warnings.append(optional_params_warning_msg)
 
     # Write specified dictionary to JSON file.
     try:
@@ -195,7 +227,13 @@ def create_service(ip: str,
     except OSError as err:
         error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
-    return RoxResponse(True)
+
+    # Return RoxResponse instance with corresponding warnings.
+    if warnings:
+        warning_msg = ' '.join(warnings)
+        return RoxResponse(True, warning_msg)
+    else:
+        return RoxResponse(True)
 
 
 def start_service(service_json: dict) -> RoxResponse:

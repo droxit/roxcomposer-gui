@@ -26,21 +26,25 @@
 </header>
 
 <!-- Main content. -->
-<main>
-    {% if messages %}
-    {% for message in messages %}
-    {% if message.tags == 'debug' %}
-    <div class="alert alert-warning">{{ message }}</div>
-    {% elif message.tags == 'error' %}
-    <div class="alert alert-danger">{{ message }}</div>
-    {% else %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    <!-- Include custom body defined in sub-template. -->
-    {% block content %} {% endblock content %}
-</main>
+<div class="main">
+    <div class="container">
+        {% if messages %}
+        <div class="row">
+            {% for message in messages %}
+            {% if message.tags == 'debug' %}
+            <div class="alert alert-warning">{{ message }}</div>
+            {% elif message.tags == 'error' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Include custom body defined in sub-template. -->
+        {% block content %} {% endblock content %}
+    </div>
+</div>
 
 <!-- Footer. -->
 <footer>
@@ -48,10 +52,10 @@
 </footer>
 
 <!-- Basic JavaScript. -->
-<script src="{% static 'base/js/jquery/jquery.min.js'%}"></script>
-<script src="{% static 'base/js/fontawesome/all.min.js'%}"></script>
-<script src="{% static 'base/js/bootstrap/bootstrap.min.js'%}"></script>
-<script src="{% static 'base/js/base.js'%}"></script>
+<script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'base/js/fontawesome/all.min.js' %}"></script>
+<script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'base/js/base.js' %}"></script>
 </body>
 
 </html>
