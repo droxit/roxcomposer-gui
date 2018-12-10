@@ -33,6 +33,10 @@ def update_watch_buttons(request, logsession):
             # for every watched service in session set to watched
             request.session['watch_button_active'][service] = True
 
+@require_http_methods(["POST"])
+def get_watched_status(request):
+    return JsonResponse(request.session.get('watch_button_active', []))
+
 
 @require_http_methods(["POST"])
 def watch(request):
@@ -47,11 +51,10 @@ def watch(request):
 
         messages.success(request, res.message)
         logging.info("Success watching: " + res.message)
-        return redirect(views.main)
     else:
         logging.error("Error watching services: " + res.message)
         messages.error(request, "Error watching services: " + res.message)
-        return redirect(views.main)
+    return JsonResponse(res.convert_to_json())
 
 
 @require_http_methods(["POST"])
@@ -75,4 +78,4 @@ def unwatch(request):
     update_watch_buttons(request, cur_sess)
     request.session.modified = True
 
-    return redirect(views.main)
+    return JsonResponse(res.convert_to_json())
