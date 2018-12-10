@@ -1,5 +1,5 @@
 // Update services windows
-get_services()
+get_services();
 
 
 function run_service(elem){
@@ -7,6 +7,7 @@ function run_service(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("start_service", {available_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(data){
         // if error show tooltip
+        get_services();
          });
 
 }
@@ -17,6 +18,8 @@ function stop_service(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(data){
         // if error show tooltip
+        console.log(data);
+        get_services();
          });
 }
 
@@ -154,8 +157,6 @@ function create_running_service_card(win, service, service_info, watch_active){
     spn_del.setAttribute("class", "fas fa-trash-alt");
     col3.appendChild(btn_del);
     btn_del.appendChild(spn_del);
-
-    console.log(service);
 }
 
 function create_available_service_card(win, service, service_info){

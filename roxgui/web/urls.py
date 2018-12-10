@@ -26,5 +26,7 @@ urlpatterns = [
     path("unwatch", views.unwatch, name="web_unwatch"),
     path("msg_status", rox_message.msg_status, name="web_msg_status"),
     path("get_log_json", rox_logs.get_log_json, name="web_get_log_json"),
-    path("get_services", rox_services.get_services, name="web_get_services")
+    path("get_services", rox_services.get_services, name="web_get_services"),
+    path("start_service", rox_services.start_service, name="web_start_service"),
+    path("stop_service", rox_services.stop_service, name="web_stop_service")
 ]

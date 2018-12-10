@@ -74,15 +74,15 @@ def stop_service(request):
     res = rox_request.shutdown_services(service_name_list)
     if res.success:
         # All services could be stopped.
-        return redirect(views.main)
+        return JsonResponse(res.convert_to_json())
     else:
         # Some services could not be stopped.
         if not res.error_data:
             # No services were specified.
             messages.error(request, res.message)
-            return redirect(views.main)
+            return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be stopped.
             services_not_stopped = ", ".join(res.error_data)
             messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
-            return redirect(views.main)
+            return JsonResponse(res.convert_to_json())
