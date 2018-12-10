@@ -43,7 +43,7 @@ function update_running_services(win, services, watch_status){
             if(watch_status[service] != null){
                 create_running_service_card(win, service, service_info, watch_status[service]);
             } else{
-                // start_new_session();
+                // start_new_session(); //TODO
                 // create_running_service_card(win, service, service_info, watch_status[service]);
             }
         }
