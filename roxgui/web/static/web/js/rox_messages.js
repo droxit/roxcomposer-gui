@@ -1,16 +1,9 @@
-acc = document.getElementById("accordion");
-setInterval(function() {
 
-   //acc.innerHTML = "";
-   get_msg_status(acc);
-}, 100);
 
 
 function get_msg_status(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("msg_status", {csrfmiddlewaretoken : CSRFtoken}).done(function(data){
-
-        var count = 0;
         for(var msg in data) { //for every message append a card to accordion
 
 

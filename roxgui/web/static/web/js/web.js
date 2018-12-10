@@ -126,3 +126,11 @@ function stop_service(elem){
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
         location.reload(); });
 }
+
+//This updates the constantly reloaded elements (messages, logs)
+acc = document.getElementById("accordion");
+log_win = document.getElementById("log");
+setInterval(function() {
+   get_msg_status(acc);
+   update_log(log_win);
+}, 100);

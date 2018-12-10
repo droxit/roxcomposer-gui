@@ -33,8 +33,16 @@ logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 @require_http_methods(["POST"])
 def get_log_json(request):
+
+    # Get current logs.
+    save_log(request)
+    logs = get_logs()
+
+    # Convert to dictionary of logs ({id: logline})
     log_dict_str = {}
-    return JsonResponse(log_dict_str)
+    for logline in logs:
+        log_dict_str[logline.id] = logline.to_dict()
+    return JsonResponse(log_dict_str) # send as JsonResponse Object
 
 
 def save_log(request, msg_id=None):
