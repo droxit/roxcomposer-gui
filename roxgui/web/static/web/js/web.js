@@ -89,28 +89,6 @@ function post_message_to_pipeline(){
     $.post("post_to_pipeline", {pipe_name: pipeline_name, pipe_message_text: message, csrfmiddlewaretoken: CSRFtoken});
 }
 
-function watch(elem){
-    if(elem.getAttribute("aria-pressed") == 'true'){
-        unwatch(elem);
-    } else{
-        var selected_service = elem.dataset.name;
-        var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-        if(selected_service){
-            $.post("watch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-                location.reload(); });
-        }
-    }
-}
-
-function unwatch(elem){
-    var selected_service = elem.dataset.name;
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    if(selected_service){
-        $.post("unwatch", {services: selected_service, csrfmiddlewaretoken : CSRFtoken}).done(function(){
-            location.reload(); });
-    }
-}
-
 //This updates the constantly reloaded elements (messages, logs)
 acc = document.getElementById("accordion");
 log_win = document.getElementById("log");
