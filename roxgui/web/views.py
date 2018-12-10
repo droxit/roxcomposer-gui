@@ -72,15 +72,10 @@ def main(request):
             data = (key, json.dumps(value["services"]), value["active"])
             pipeline_data_list.append(data)
 
-    # Get current logs.
-    rox_logs.save_log(request)
-    logs = rox_logs.get_logs()
-
     # Send all data to view.
     context = {"available_services_dict": available_services_json_dict,
                "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
-               "logs": logs,
                "watch_active": request.session.get('watch_button_active', None)
                }
     return render(request, "web/web.html", context)
