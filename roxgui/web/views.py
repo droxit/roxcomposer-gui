@@ -73,6 +73,45 @@ def main(request):
     return render(request, "web/web.html", context)
 
 
+@require_http_methods(["POST"])
+def create_service(request):
+    """Create service specified in POST request's metadata."""
+    # Get IP address.
+    ip = request.POST.get("ip")
+    # Check if given IP is valid.
+    ip_parts = ip.split('.')
+    for part in ip_parts:
+        part = int(part)
+        if not (0 <= part <= 255):
+            messages.error(request, "Invalid IP address.")
+            return redirect(views.main)
+    # Get port number.
+    port = int(request.POST.get("port"))
+    # Get service name.
+    name = request.POST.get("name")
+    # Get classpath.
+    class_path = request.POST.get("class_path")
+    # Get path to output file.
+    output_file_path = request.POST.get("output_file_path", "")
+    if output_file_path:
+        # Output file is specified. It does not
+        # need to exist yet, but its directory should.
+        if os.path.isdir(os.path.dirname(output_file_path)):
+            # Output file path is valid.
+            res = rox_request.create_service(ip, port, name, class_path, output_file_path)
+        else:
+            # Redirect with error.
+            messages.error(request, "Path to output file invalid.")
+            return redirect(views.main)
+    else:
+        # Output file is not specified.
+        res = rox_request.create_service(ip, port, name, class_path)
+
+    if res.success:
+        messages.success(request, "Service created successfully.")
+    else:
+        messages.error(request, "Service could not be created.")
+    return redirect(views.main)
 
 @require_http_methods(["POST"])
 def create_pipeline(request):
