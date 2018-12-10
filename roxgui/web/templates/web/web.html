@@ -28,10 +28,6 @@
     {% include "web/_includes/services_and_pipes.html" %}
     {% endblock services_and_pipes %}
 
-    {% block service_graph %}
-    {% include "web/_includes/service_graph.html" %}
-    {% endblock service_graph %}
-
     {% block logs %}
     {% include "web/_includes/logs.html" %}
     {% endblock logs %}
@@ -47,6 +43,11 @@
     {% block service_params %}
     {% include "web/_includes/service_params.html" %}
     {% endblock service_params %}
+
+    {% block service_graph %}
+    {% include "web/_includes/service_graph.html" %}
+    {% endblock service_graph %}
+
 </div>
 
 <script src="{% static 'web/js/d3/d3.min.js'%}"></script>
