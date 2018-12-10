@@ -16,6 +16,27 @@ from web import views
 
 
 @require_http_methods(["POST"])
+def get_services(request):
+    # Get JSON data of all available services (excluding forbidden ones).
+    file_result = filesystemIO.get_available_service_jsons()
+    available_services_json_dict = file_result.data
+    # Get JSON data of all running services (excluding forbidden ones).
+    rox_result = rox_request.get_running_service_jsons()
+    running_services_json_dict = rox_result.data
+    # Only consider services which are currently not running as available.
+    tmp_dict = {}
+    for key, value in available_services_json_dict.items():
+        if key not in running_services_json_dict:
+            tmp_dict[key] = value
+    available_services_json_dict = tmp_dict
+
+    context = {"available_services_dict": available_services_json_dict,
+               "running_services_dict": running_services_json_dict
+               }
+    return JsonResponse(context)
+
+
+@require_http_methods(["POST"])
 def start_service(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.
@@ -28,18 +49,18 @@ def start_service(request):
     result = rox_request.start_services(service_json_list)
     if result.success:
         # All services could be started.
-        return redirect(views.main)
+        return JsonResponse(res.convert_to_json())
     else:
         # Some services could not be started.
         if not result.error_data:
             # No services were specified.
             messages.error(request, result.message)
-            return redirect(views.main)
+            return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be started.
             services_not_started = ", ".join(result.error_data)
             messages.error(request, "Unable to start service: {}.".format(services_not_started))
-            return redirect(views.main)
+            return JsonResponse(res.convert_to_json())
 
 
 @require_http_methods(["POST"])

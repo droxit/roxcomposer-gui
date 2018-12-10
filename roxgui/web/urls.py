@@ -11,7 +11,7 @@ from django.urls import path
 
 from web import views
 from web import rox_message
-from web import rox_logs
+from web import rox_logs, rox_services
 
 urlpatterns = [
     path('', views.main, name="web_main"),
@@ -27,5 +27,6 @@ urlpatterns = [
     path("watch", views.watch, name="web_watch"),
     path("unwatch", views.unwatch, name="web_unwatch"),
     path("msg_status", rox_message.msg_status, name="web_msg_status"),
-    path("get_log_json", rox_logs.get_log_json, name="web_get_log_json")
+    path("get_log_json", rox_logs.get_log_json, name="web_get_log_json"),
+    path("get_services", rox_services.get_services, name="web_get_services")
 ]

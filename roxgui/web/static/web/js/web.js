@@ -111,22 +111,6 @@ function unwatch(elem){
     }
 }
 
-function run_service(elem){
-    var selected_service = elem.dataset.value_name;
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("start_service", {available_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload();
-         });
-
-}
-
-function stop_service(elem){
-    var selected_service = elem.dataset.name;
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(){
-        location.reload(); });
-}
-
 //This updates the constantly reloaded elements (messages, logs)
 acc = document.getElementById("accordion");
 log_win = document.getElementById("log");
