@@ -69,6 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
         removeItem(e);
       }
     });
+    gridElement2.addEventListener('click', function (e) {
+      if (elementMatches(e.target, '.mcard-remove, .mcard-remove i')) {
+        removeItem(e);
+      }
+    });
 
   }
 
@@ -101,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
         docElem.classList.remove('dragging');
       }
     })
-    .on('move', updateIndices(this))
-    .on('sort', updateIndices(this));
+    .on('move', updateIndices)
+    .on('sort', updateIndices);
 
   }
 
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var dragCounter = 0;
 
     grid = new Muuri(gridElement, {
-      items: generateElements(20),
+      items: generateElements(5),
       layoutDuration: 400,
       layoutEasing: 'ease',
       dragEnabled: true,
@@ -135,8 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
         docElem.classList.remove('dragging');
       }
     })
-    .on('move', updateIndices(this))
-    .on('sort', updateIndices(this));
+    .on('move', updateIndices)
+    .on('sort', updateIndices);
 
   }
 
@@ -174,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     // Update indices and active sort value.
-    updateIndices(grid);
+    updateIndices();
     sortFieldValue = currentSort;
 
   }
@@ -194,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var newItems = grid.add(newElems);
 
     // Update UI indices.
-    updateIndices(grid);
+    updateIndices();
 
     // Sort the items only if the drag sorting is not active.
     if (sortFieldValue !== 'order') {
@@ -220,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
     }});
-    updateIndices(grid);
+    updateIndices();
 
   }
 
@@ -274,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function getAllGrids(){
-    return [grid1, grid2];
+    return [grid, grid2];
   }
 
   function getRandomFloat(wordlength) {
@@ -313,11 +318,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   }
 
-  function updateIndices(some_grid) {
+  function updateIndices() {
 
-    some_grid.getItems().forEach(function (item, i) {
-      item.getElement().setAttribute('data-id', i + 1);
-      item.getElement().querySelector('.mcard-id').innerHTML = i + 1;
+    var grids = getAllGrids();
+    grids.forEach(function(grid_elem, j){
+        grid_elem.getItems().forEach(function (item, i) {
+          item.getElement().setAttribute('data-id', i + 1);
+          item.getElement().querySelector('.mcard-id').innerHTML = i + 1;
+        });
     });
 
   }

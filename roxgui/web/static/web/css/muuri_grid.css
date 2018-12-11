@@ -48,6 +48,14 @@
   -webkit-box-sizing: content-box;
   box-sizing: content-box;
 }
+.grid2 {
+  position: relative;
+  max-width: 960px;
+  margin: 0 -10px;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
 .item {
   position: absolute;
   width: 100px;
