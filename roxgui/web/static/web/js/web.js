@@ -95,4 +95,4 @@ log_win = document.getElementById("log");
 setInterval(function() {
    get_msg_status(acc);
    update_log(log_win);
-}, 100);
+}, 10000);

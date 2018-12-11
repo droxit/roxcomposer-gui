@@ -9,6 +9,7 @@
 {% block title %}
 <title>ROXcomposer</title>
 <link rel="stylesheet" type="text/css" href="{% static 'web/css/web.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/muuri_grid.css' %}">
 {% endblock title %}
 
 {% block content %}
@@ -19,6 +20,10 @@
             <h1>Welcome!</h1>
         </div>
     </div>
+
+    {% block muuri_grid %}
+    {% include "web/_includes/muuri_grid.html" %}
+    {% endblock %}
 
     {% block message_history %}
     {% include "web/_includes/message_history.html" %}
@@ -57,5 +62,6 @@
 <script src="{% static 'web/js/rox_logs.js'%}"></script>
 <script src="{% static 'web/js/service_handling.js'%}"></script>
 <script src="{% static 'web/js/rox_watch.js'%}"></script>
+<script src="{% static 'web/js/muuri_grid.js'%}"></script>
 
 {% endblock content %}
