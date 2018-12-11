@@ -14,10 +14,13 @@
     <!-- Include custom header defined in sub-template. -->
     {% block title %} {% endblock title %}
 
-    <!-- Basic CSS stylesheets. -->
+    <!-- CSS stylesheets. -->
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/fontawesome/all.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
+
+    <!-- JQuery. -->
+    <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
 </head>
 
 <body>
@@ -52,8 +55,7 @@
     <p>droxIT GmbH</p>
 </footer>
 
-<!-- Basic JavaScript. -->
-<script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+<!-- JavaScript. -->
 <script src="{% static 'base/js/fontawesome/all.min.js' %}"></script>
 <script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
 <script src="{% static 'base/js/base.js' %}"></script>
