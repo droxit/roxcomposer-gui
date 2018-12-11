@@ -1,14 +1,8 @@
-import json
-import logging
-
-from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 import rox_request
 
-from web import views
 
 def update_watch_buttons(request, logsession):
     """
@@ -32,6 +26,7 @@ def update_watch_buttons(request, logsession):
         for service in logsession['services']:
             # for every watched service in session set to watched
             request.session['watch_button_active'][service] = True
+
 
 @require_http_methods(["POST"])
 def get_watched_status(request):
@@ -57,12 +52,6 @@ def watch(request):
         request.session['current_session'] = new_sess
         update_watch_buttons(request, new_sess)  # update the buttons to watched/unwatched
         request.session.modified = True
-
-        messages.success(request, res.message)
-        logging.info("Success watching: " + res.message)
-    else:
-        logging.error("Error watching services: " + res.message)
-        messages.error(request, "Error watching services: " + res.message)
     return JsonResponse(res.convert_to_json())
 
 
@@ -71,20 +60,9 @@ def unwatch(request):
     """save the session to a json file """
     service_names = request.POST.get("services")
     cur_sess = request.session.get('current_session', None)
-
-    if cur_sess is not None:
-        res = rox_request.unwatch_services([service_names], cur_sess)
-        if res.success:
-            cur_sess = res.data
-
-            messages.debug(request, res.message)
-        else:
-            messages.error(request, "Couldn't unwatch services.")
-            messages.debug(request, res.message)
-    else:
-        messages.error(request, "No rox session active.")
-
+    res = rox_request.unwatch_services([service_names], cur_sess)
+    if res.success:
+        cur_sess = res.data
     update_watch_buttons(request, cur_sess)
     request.session.modified = True
-
     return JsonResponse(res.convert_to_json())

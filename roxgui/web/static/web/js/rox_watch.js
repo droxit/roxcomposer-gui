@@ -63,7 +63,6 @@ function update_watch_status(update_buttons) {
 	$.post("get_watched_status", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(watch_active) {
-		console.log(watch_active)
 		if (update_buttons)
 			update_watch_buttons(watch_active);
 	});
