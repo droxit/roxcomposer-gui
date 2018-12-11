@@ -1,11 +1,9 @@
 function get_msg_status(elem) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("msg_status", {
+	$.post("get_msg_status", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 		for (var msg in data) { //for every message append a card to accordion
-
-
 			var obj = data[msg];
 			//check if card exists
 			if (document.getElementById("card-" + obj.message.id) != null) {
@@ -181,7 +179,6 @@ function create_message_card(elem, obj) { //create the whole message card elemen
 	//<<<<<<<<<<<HEADER END>>>>>>>>>>>>>>>>
 
 	//<<<<<<<<<<<STATUS DIV>>>>>>>>>>>>>>>>
-
 	var div2 = document.createElement("div");
 	div2.setAttribute("id", "m" + id);
 	div2.setAttribute("aria-labelledby", "heading-" + id);

@@ -1,6 +1,6 @@
 function update_log(log_win) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("get_log_json", {
+	$.post("get_watch_logs", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 		for (var log in data) { //for every log append a log line to log window
