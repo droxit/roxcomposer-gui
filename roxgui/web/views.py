@@ -20,7 +20,7 @@ from django.views.decorators.http import require_http_methods
 import databaseIO
 import filesystemIO
 import rox_request
-from web import rox_logs
+from web import log_views
 from web import views
 from web.models import Message
 
@@ -159,7 +159,7 @@ def post_to_pipeline(request):
         m = Message(id=result.data, pipeline=pipe_name, message=pipe_message,
                     time=datetime.datetime.now())
         m.save()
-        rox_logs.save_log(request, msg_id=result.data)
+        log_views.update_logs(request, msg_id=result.data)
         messages.success(request, result.message)
         return redirect(views.main)
     else:

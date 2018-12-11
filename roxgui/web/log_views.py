@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Define web views.
+# Define HTTP responses concerning logs.
 #
 # devs@droxit.de
 #
@@ -10,14 +10,12 @@
 import datetime
 import logging
 
-from django.utils import timezone
-import rox_request
-
-from web.models import Logline
-
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
+import rox_request
+from web.models import Logline
 
 # Only show this number of messages in log.
 LOG_RELOAD = 100
@@ -26,41 +24,36 @@ LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(hours=1)
 
-
 # Logging.
 # ========
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
-@require_http_methods(["POST"])
-def get_log_json(request):
 
+@require_http_methods(["POST"])
+def get_watch_logs(request):
     # Get current logs.
-    save_log(request)
-    logs = get_logs()
+    update_logs(request)
+    logs = get_current_watch_logs()
 
     # Convert to dictionary of logs ({id: logline})
     log_dict_str = {}
-    for logline in logs:
-        log_dict_str[logline.id] = logline.to_dict()
-    return JsonResponse(log_dict_str) # send as JsonResponse Object
+    for log_line in logs:
+        log_dict_str[log_line.id] = log_line.to_dict()
+    return JsonResponse(log_dict_str)  # send as JsonResponse Object
 
 
-def save_log(request, msg_id=None):
+def update_logs(request, msg_id=None):
     """
-    Get all new log messages from server.
-    A log message can either be from watching services #TODO
-    :param msg_id: optional, if the log concerns a specific message
-    :return:
+    Get new log messages from ROXcomposer and save them to database.
+    :param request: Current request.
+    :param msg_id: Specific message ID (default: None).
     """
-
     sess = request.session.get('current_session', None)
-
     if sess is not None:  # if there is a current session write new logs to database
         rox_result = rox_request.get_service_logs(sess)  # get the recent logs
         if rox_result.success:
             for log in rox_result.data:  # write each log line separately
-                logging.info("Log info: " + str(log))
-                if msg_id:  # TODO
+                if msg_id:
                     l = Logline(msg_id=msg_id, service=log['service'], level=log['level'], msg=log['msg'],
                                 time=log['time'])
                 else:
@@ -73,15 +66,14 @@ def save_log(request, msg_id=None):
         logging.error("Logs could not be retrieved as there is no session running.")
 
 
-def get_logs():
+def get_current_watch_logs():
     """
-    Load n log lines sorted by timestamp and delete old logs if necessary
-    :return: a QuerySet object containing Logline objects
+    Get recent log lines sorted by timestamp. Delete older logs if necessary.
+    :return: QuerySet instance containing Logline objects.
     """
     dt_end = timezone.now()  # from now
     dt_start = dt_end - LOG_TIMEOUT  # till the time when the log messages time out
     dt_del_start = dt_end - LOG_DELETE  # logs older than this should be deleted from DB
-
     Logline.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
     # load logs in a specific time range and then sort by time stamp, load only a certain amount of log lines
     logs = Logline.objects.filter(time__range=(dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
@@ -97,4 +89,3 @@ def start_new_session(request):
             new_session = res.data
             request.session['current_session'] = new_session
             request.session.modified = True
-

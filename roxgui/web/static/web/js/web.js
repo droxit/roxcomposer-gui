@@ -101,10 +101,10 @@ function post_message_to_pipeline() {
 	});
 }
 
-//This updates the constantly reloaded elements (messages, logs)
+// Update constantly reloaded elements.
 acc = document.getElementById("accordion");
 log_win = document.getElementById("log");
 setInterval(function() {
 	get_msg_status(acc);
 	update_log(log_win);
-}, 60000);
+}, 6000);

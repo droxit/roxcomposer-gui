@@ -10,16 +10,14 @@
 # Local config file.
 /roxgui/config.ini
 
+# Local static root folder.
+/roxgui/static_root/**
+
 # PyCache folder.
 **/__pycache__/*
 
 # Migrations.
 **/migrations/*
 
-# Local static root folder.
-/roxgui/static_root/**
-
 # IDE
 **/.idea/*
-
-/config.ini

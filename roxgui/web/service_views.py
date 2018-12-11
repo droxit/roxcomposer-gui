@@ -1,3 +1,12 @@
+# encoding: utf-8
+#
+# Define HTTP responses concerning service handling.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
