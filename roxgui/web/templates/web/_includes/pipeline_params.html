@@ -1,11 +1,14 @@
+{% load static %}
+
 <div class="row mb-2">
     <div class="col-md-6">
         <div class="row mb-2">
             <div class="col-md-10" style="padding:0">
                 <input type="text" style="border:0" class="form-control" id="pipe_name" placeholder="Pipeline name">
             </div>
-            <div class="col-md-2" >
-                <button onclick="create_or_update_pipeline()" class="btn btn-primary"><span class="fas fa-plus"></span></button>
+            <div class="col-md-2">
+                <button onclick="create_or_update_pipeline()" class="btn btn-primary"><span class="fas fa-plus"></span>
+                </button>
             </div>
         </div>
         <div class="row mb-2">
@@ -20,9 +23,16 @@
             <div class="col-md-10" style="padding:0">
                 <input type="text" class="form-control" id="pipe_message_text" placeholder="Message">
             </div>
-            <div class="col-md-2" >
-                <button onclick="post_message_to_pipeline()" class="btn btn-primary"><span class="fas fa-paper-plane"></span></button>
+            <div class="col-md-2">
+                <button onclick="post_message_to_pipeline()" class="btn btn-primary"><span
+                        class="fas fa-paper-plane"></span></button>
             </div>
         </div>
     </div>
 </div>
+
+<script src="{% static 'web/js/pipeline_params.js'%}"></script>
+<script>
+    // Extract cookies when page is loaded.
+    read_active_pipeline_from_cookies();
+</script>

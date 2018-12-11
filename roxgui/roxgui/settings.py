@@ -196,8 +196,5 @@ STATICFILES_DIRS = [
 # Directory in which all files from static folders will be copied.
 STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
 
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
+# Message storage.
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

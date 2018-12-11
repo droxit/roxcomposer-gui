@@ -68,7 +68,7 @@ def main(request):
     context = {"available_services_dict": available_services_json_dict,
                "running_services_dict": running_services_json_dict,
                "pipeline_data": pipeline_data_list,
-               "watch_active": request.session.get('watch_button_active', None)
+               "watch_active": request.session.get('watch_button_active', None),
                }
     return render(request, "web/web.html", context)
 
