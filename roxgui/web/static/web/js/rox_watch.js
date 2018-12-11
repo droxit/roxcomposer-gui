@@ -24,7 +24,7 @@ function unwatch(elem){
     }
 }
 
-function update_watch_buttons(){
+function update_watch_buttons(watch_active){
 
     //get the running services
     var running_services = document.getElementById('running_services').children;
