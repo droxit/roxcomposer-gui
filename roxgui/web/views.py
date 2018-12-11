@@ -20,9 +20,8 @@ from django.views.decorators.http import require_http_methods
 import databaseIO
 import filesystemIO
 import rox_request
-
-from web import views
 from web import rox_logs
+from web import views
 from web.models import Message
 
 removed_pipelines = []
@@ -38,7 +37,7 @@ def main(request):
     # Update database concerning available services.
     databaseIO.update_service_db()
 
-    #for key in list(request.session.keys()):
+    # for key in list(request.session.keys()):
     #    del request.session[key]
 
     # Get JSON data of all available services (excluding forbidden ones).
@@ -114,6 +113,7 @@ def create_service(request):
     else:
         messages.error(request, "Service could not be created.")
     return redirect(views.main)
+
 
 @require_http_methods(["POST"])
 def create_pipeline(request):
@@ -208,7 +208,6 @@ def get_message_history(request):
     else:
         messages.error(request, result.message)
         return redirect(views.main)
-
 
 
 def get_response_values(request):

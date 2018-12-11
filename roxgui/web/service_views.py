@@ -2,9 +2,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
-
 import filesystemIO
 import rox_request
+
 
 @require_http_methods(["POST"])
 def get_services(request):
@@ -20,7 +20,6 @@ def get_services(request):
         if service_name not in running_services_json_dict:
             tmp_dict[service_name] = service_info
     available_services_json_dict = tmp_dict
-
     context = {"available_services": available_services_json_dict,
                "running_services": running_services_json_dict,
                "watch_active": request.session.get('watch_button_active', None)

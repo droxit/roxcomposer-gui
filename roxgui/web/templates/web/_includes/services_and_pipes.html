@@ -2,12 +2,12 @@
 
 <!-- Services -->
 <div class="row pb-2">
+    <!-- Running services. -->
     <div class="col-md-8 scrollable-parent">
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
                 <h5 class="card-title">Running services</h5>
-                <div class="card-columns" id="running_services">
-                </div>
+                <div class="card-columns" id="running_services"></div>
             </div>
         </div>
     </div>
@@ -16,7 +16,8 @@
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
                 <ul class="list-group" id="available_services">
-                    <li id="new_service" class="list-group-item active" data-toggle="modal" data-target="#service_params">New service
+                    <li id="new_service" class="list-group-item active" data-toggle="modal"
+                        data-target="#service_params">New service
                     </li>
                 </ul>
             </div>
@@ -31,7 +32,7 @@
         <div class="card w-auto border-0" style="overflow-x:hidden;height:400px">
             <div class="card-body">
                 <h5 class="card-title">
-                        Current Pipeline
+                    Current Pipeline
                 </h5>
                 {% block pipeline_params %}
                 {% include "web/_includes/pipeline_params.html" %}

@@ -9,9 +9,9 @@
 
 from django.urls import path
 
-from web import views
+from web import rox_logs, service_views, rox_watch
 from web import rox_message
-from web import rox_logs, rox_services, rox_watch
+from web import views
 
 urlpatterns = [
     path('', views.main, name="web_main"),
@@ -27,8 +27,7 @@ urlpatterns = [
     path("get_watched_status", rox_watch.get_watched_status, name="web_get_watched_status"),
     path("msg_status", rox_message.msg_status, name="web_msg_status"),
     path("get_log_json", rox_logs.get_log_json, name="web_get_log_json"),
-    path("get_services", rox_services.get_services, name="web_get_services"),
-    path("start_service", rox_services.start_service, name="web_start_service"),
-    path("stop_service", rox_services.stop_service, name="web_stop_service"),
-
+    path("get_services", service_views.get_services, name="web_get_services"),
+    path("start_service", service_views.start_service, name="web_start_service"),
+    path("stop_service", service_views.stop_service, name="web_stop_service"),
 ]
