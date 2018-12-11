@@ -1,49 +1,11 @@
 <!-- Services -->
 <div class="row pb-2">
+    <!-- Running services. -->
     <div class="col-md-8 scrollable-parent">
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
                 <h5 class="card-title">Running services</h5>
-                <div class="card-columns">
-                    {% for key, value in running_services_dict.items %}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row" title="{{ value }}">
-                                <div class="col">
-                                    <small>{{ key }}</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <button type="button" onclick="add_to_current_pipe(this)" data-name="{{ key }}"
-                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
-                                        <span class="fas fa-arrow-down"></span>
-                                    </button>
-                                </div>
-                                <div class="col-md-3">
-                                    {% if watch_active|get_value:key == True %}
-                                    <button type="button" onclick="watch(this)" data-name="{{ key }}"
-                                            class="btn btn-default" data-toggle="button" aria-pressed="true">
-                                        <span class="fas fa-eye"></span>
-                                    </button>
-                                    {% else %}
-                                    <button type="button" onclick="watch(this)" data-name="{{ key }}"
-                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
-                                        <span class="fas fa-eye-slash"></span>
-                                    </button>
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="button" onclick="stop_service(this)" data-name="{{ key }}"
-                                            class="btn btn-default" data-toggle="button" aria-pressed="false">
-                                        <span class="fas fa-trash-alt"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+                <div class="card-columns" id="running_services"></div>
             </div>
         </div>
     </div>
@@ -51,14 +13,10 @@
     <div class="col-md-4 scrollable-parent">
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
-                <ul class="list-group">
-                    <li class="list-group-item active" data-toggle="modal" data-target="#service_params">New service
+                <ul class="list-group" id="available_services">
+                    <li id="new_service" class="list-group-item active" data-toggle="modal"
+                        data-target="#service_params">New service
                     </li>
-                    {% for key, value in available_services_dict.items %}
-                    <li class="list-group-item" onclick="run_service(this)" data-value_name="{{ key }}"
-                        value="{{ value }}">{{ key }}
-                    </li>
-                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -72,7 +30,7 @@
         <div class="card w-auto border-0" style="overflow-x:hidden;height:400px">
             <div class="card-body">
                 <h5 class="card-title">
-                        Current Pipeline
+                    Current Pipeline
                 </h5>
                 {% block pipeline_params %}
                 {% include "web/_includes/pipeline_params.html" %}

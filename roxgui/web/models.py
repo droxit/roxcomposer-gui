@@ -29,6 +29,8 @@ class Logline(models.Model):
 
     def __str__(self):
         logline = ""
+        if self.time:
+            logline += "{} ".format(str(self.time))
         if self.msg_id:
             logline += "Message ID: {}, ".format(self.msg_id)
         if self.service:
@@ -37,9 +39,10 @@ class Logline(models.Model):
             logline += "Message: {}, ".format(self.msg)
         if self.level:
             logline += "Loglevel: {}, ".format(self.level)
-        if self.time:
-            logline += "Time: {}".format(str(self.time))
         return logline
+
+    def to_dict(self):
+        return {"id":self.id, "service":self.service, "msg":self.msg, "level":self.level, "time":self.time.strftime("%B %d, %Y %H:%M"), "text": str(self)}
 
 
 class Message(models.Model):

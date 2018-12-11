@@ -571,29 +571,30 @@ def create_new_sess(services, timeout=SESSION_TIMEOUT) -> RoxResponse:
 
 
 def unwatch_services(service_names, rox_session) -> RoxResponse:
-    if len(service_names) is 0:
+    if len(service_names) < 1:
         return RoxResponse(False, "No services specified.")
 
     if rox_session is None:
         return RoxResponse(False, "No session specified.")
 
-    s = list(filter(lambda s: s in rox_session['services'], service_names))
+    s = list(filter(lambda service: service in rox_session['services'], service_names))
 
     if len(s) == 0:
-        return RoxResponse(False, "The specified services are not being watched")
+        return RoxResponse(False, "The specified services are not being watched.")
 
     data = {'sessionid': rox_session['id'], 'services': s}
     try:
         r = requests.delete(create_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
-    except requests.exceptions.ConnectionError as e:
-        return RoxResponse(False, "ERROR: no connection to server - {}".format(e))
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
 
     if r.status_code != 200:
-        return RoxResponse(False, 'ERROR: {}'.format(r.text))
-
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
     else:
         rox_session['services'] = list(set(rox_session['services']).difference(set(s)))
-        res = RoxResponse(True, "Services no longer watched: {}".format(s))
+        res = RoxResponse(True, "Services no longer watched: {}.".format(s))
         res.data = rox_session
         return res
 

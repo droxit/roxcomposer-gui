@@ -1,17 +1,17 @@
 import datetime
 import json
 import time
-import rox_request
-
 
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
+import rox_request
 from web.models import Message, MessageStatus
 
 # Delete all messages which are older than this interval,
 MSG_DELETE = datetime.timedelta(minutes=5)
+
 
 def get_messages():
     # Get valid interval for messages.
@@ -67,12 +67,12 @@ def get_message_statuses(request, messages):
 
 
 @require_http_methods(["POST"])
-def msg_status(request):
+def get_msg_status(request):
     msgs = get_messages()
     msg_dict = get_message_statuses(request, msgs)
     msg_dict_str = {}
     for msg in msg_dict:
-        msg_dict_str[msg.id] = { "message" : msg.to_dict() ,"status": msg_dict[msg].to_dict()}
+        msg_dict_str[msg.id] = {"message": msg.to_dict(), "status": msg_dict[msg].to_dict()}
 
     return JsonResponse(msg_dict_str)
 
