@@ -18,7 +18,6 @@ function stop_service(elem){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("stop_service", {running_service_names:  [selected_service], csrfmiddlewaretoken : CSRFtoken}).done(function(data){
         // TODO: if error show tooltip
-        console.log(data);
         get_services();
          });
 }
