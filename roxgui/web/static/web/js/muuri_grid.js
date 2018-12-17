@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var searchFieldValue;
 
   var grid2 = null;
+  var grid2Hash = {};
   var demo2 = document.querySelector('.grid-demo2');
   var gridElement2 = demo2.querySelector('.grid2');
 
@@ -107,9 +108,33 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
     .on('move', updateIndices)
-    .on('sort', updateIndices);
+    .on('sort', updateIndices)
+    .on('receive', function (data) {
+      grid2Hash[data.item._id] = function (item) {
+        if (item === data.item) {
+          var clone = cloneElem(data.item.getElement());
+          data.fromGrid.add(clone, {index: data.fromIndex});
+          data.fromGrid.show(clone);
+        }
+      };
+      grid2.once('dragReleaseStart', grid2Hash[data.item._id]);
+    })
+    .on('send', function (data) {
+      var listener = grid2Hash[data.item._id];
+      if (listener) {
+        grid2.off('dragReleaseStart', listener);
+      }
+    });
 
   }
+
+  function cloneElem(elem) {
+      var clone = elem.cloneNode(true);
+      //clone.setAttribute('style', 'display:none;');
+      //clone.setAttribute('class', 'item');
+      //clone.children[0].setAttribute('style', '');
+      return clone;
+    }
 
   function initGrid() {
 
