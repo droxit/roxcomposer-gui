@@ -149,7 +149,6 @@ def stop_service(request):
             messages.error(request, "Unable to stop service: {}.".format(services_not_stopped))
             return redirect(views.main)
 
-
 @require_http_methods(["POST"])
 def create_pipeline(request):
     """Create or update pipeline."""
@@ -243,6 +242,7 @@ def get_message_history(request):
     else:
         messages.error(request, result.message)
         return redirect(views.main)
+
 
 
 def get_response_values(request):
