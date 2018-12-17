@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       };
       grid2.once('dragReleaseStart', grid2Hash[data.item._id]);
-      //elem2to1(data);
     })
     .on('send', function (data) {
       var listener = grid2Hash[data.item._id];
@@ -132,26 +131,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   }
 
-  function elem2to1(data){
-      var cl = data.item.getElement().getAttribute('class');
-      var new_str = cl.replaceAt(5, 'h1');
-      data.item.getElement().setAttribute('class', new_str);
-  }
-
   function cloneElem(elem) {
       var clone = elem.cloneNode(true);
-      var cl = elem.getAttribute('class');
-      var new_str = cl.replaceAt(5, 'h1');
-      elem.setAttribute('class', new_str);
       //clone.setAttribute('style', 'display:none;');
       //clone.setAttribute('class', 'item');
       //clone.children[0].setAttribute('style', '');
       return clone;
     }
-
-  String.prototype.replaceAt=function(index, replacement) {
-    return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-  }
 
   function initGrid() {
 
