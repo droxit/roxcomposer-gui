@@ -13,11 +13,14 @@
     <div class="col-md-4 scrollable-parent">
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
-                <ul class="list-group" id="available_services">
-                    <li id="new_service" class="list-group-item active" data-toggle="modal"
-                        data-target="#service_params">New service
-                    </li>
-                </ul>
+                <h5 class="card-title">
+                    Available services
+                </h5>
+                <button type="button" class="btn btn-default" id="new_service" data-toggle="modal"
+                        data-target="#service_params">
+                    <span class="fas fa-plus"></span>
+                </button>
+                <ul class="list-group" id="available_services"></ul>
             </div>
         </div>
     </div>
@@ -30,7 +33,7 @@
         <div class="card w-auto border-0" style="overflow-x:hidden;height:400px">
             <div class="card-body">
                 <h5 class="card-title">
-                    Current Pipeline
+                    Current pipeline
                 </h5>
                 {% block pipeline_params %}
                 {% include "web/_includes/pipeline_params.html" %}
@@ -42,11 +45,14 @@
     <div class="col-md-4 scrollable-parent">
         <div class="card w-auto border-0" style="height:400px">
             <div class="card-body">
+                <h5 class="card-title">
+                    Available pipelines
+                </h5>
+                <button type="button" class="btn btn-default" onclick="show_pipeline(this)"
+                        data-name="" data-services="" data-active="">
+                    <span class="fas fa-plus"></span>
+                </button>
                 <ul class="list-group">
-                    <li class="list-group-item active" onclick="show_pipeline(this)"
-                        data-name="" data-services=""
-                        data-active="">New pipeline
-                    </li>
                     {% for data in pipeline_data %}
                     {% if data.2 == True %}
                     <li class="list-group-item" onclick="show_pipeline(this)"

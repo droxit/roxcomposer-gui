@@ -91,51 +91,21 @@ function update_available_services(win, services) {
 }
 
 function create_running_service_card(win, service, service_info, watch_active) {
-	var card = document.createElement("div");
-	card.setAttribute("class", "card");
-	card.setAttribute("id", "runservice-" + service)
-	win.appendChild(card);
-
-	var card_body = document.createElement("div");
-	card_body.setAttribute("class", "card-body");
-	card.appendChild(card_body);
-
-	var row = document.createElement("div");
-	row.setAttribute("class", "row");
-	card_body.appendChild(row);
-
-	var col = document.createElement("div");
-	col.setAttribute("class", "col");
-	row.appendChild(col);
-
-	var sm = document.createElement("small");
-	col.appendChild(sm);
-	sm.appendChild(document.createTextNode(service));
-
-	var row1 = row.cloneNode()
-	card_body.appendChild(row1);
-
-	var col1 = document.createElement("div");
-	col1.setAttribute("class", "col-md-3");
-	row1.appendChild(col1);
-
+	// Basic button.
 	var btn = document.createElement("button");
 	btn.setAttribute("type", "button");
 	btn.setAttribute("data-name", service);
-	btn.setAttribute("class", "btn btn-default");
+	btn.setAttribute("class", "btn btn-default float-right");
 	btn.setAttribute("data-toggle", "button");
 
+	// Button to add service to pipeline.
 	var btn_down = btn.cloneNode();
 	btn_down.setAttribute("onclick", "add_to_current_pipe(this)");
-	col1.appendChild(btn_down);
-
 	var spn_down = document.createElement("span");
 	spn_down.setAttribute("class", "fas fa-arrow-down");
 	btn_down.appendChild(spn_down);
 
-	var col2 = col1.cloneNode();
-	row1.appendChild(col2);
-
+	// Button to watch / unwatch service.
 	var btn_watch = btn.cloneNode();
 	btn_watch.setAttribute("onclick", "watch(this)");
 	btn_watch.setAttribute("id", "watch-button-" + service);
@@ -148,18 +118,36 @@ function create_running_service_card(win, service, service_info, watch_active) {
 		spn_watch.setAttribute("class", "fas fa-eye-slash");
 		btn_watch.setAttribute("data-watched", "false");
 	}
-	col2.appendChild(btn_watch);
 	btn_watch.appendChild(spn_watch);
 
-	var col3 = col1.cloneNode();
-	row1.appendChild(col3);
-
+	// Button to stop service.
 	var btn_del = btn.cloneNode();
 	btn_del.setAttribute("onclick", "stop_service(this)");
 	var spn_del = document.createElement("span");
 	spn_del.setAttribute("class", "fas fa-trash-alt");
-	col3.appendChild(btn_del);
 	btn_del.appendChild(spn_del);
+
+	// Card header with buttons.
+	var card_header = document.createElement("div");
+	card_header.setAttribute("class", "card-header");
+	card_header.appendChild(btn_del);
+	card_header.appendChild(btn_watch);
+	card_header.appendChild(btn_down);
+
+	// Card body with service name.
+	var card_body = document.createElement("div");
+	card_body.setAttribute("class", "card-body");
+	card_body.appendChild(document.createTextNode(service));
+
+	// Card with header and body.
+	var card = document.createElement("div");
+	card.setAttribute("class", "card");
+	card.setAttribute("id", "runservice-" + service)
+	card.appendChild(card_header);
+	card.appendChild(card_body);
+
+	// Add card to parent element.
+	win.appendChild(card);
 }
 
 function create_available_service_card(win, service, service_info) {
@@ -170,7 +158,6 @@ function create_available_service_card(win, service, service_info) {
 	li.setAttribute("data-value_name", service);
 	li.setAttribute("value", JSON.stringify(service_info));
 	win.appendChild(li);
-
 	var span = document.createElement("span");
 	span.appendChild(document.createTextNode(service));
 	li.appendChild(span);
