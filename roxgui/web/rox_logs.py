@@ -10,14 +10,12 @@
 import datetime
 import logging
 
-from django.utils import timezone
-import rox_request
-
-from web.models import Logline
-
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
+import rox_request
+from web.models import Logline
 
 # Only show this number of messages in log.
 LOG_RELOAD = 100
@@ -26,14 +24,13 @@ LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(hours=1)
 
-
 # Logging.
 # ========
 logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
+
 @require_http_methods(["POST"])
 def get_log_json(request):
-
     # Get current logs.
     save_log(request)
     logs = get_logs()
@@ -42,7 +39,7 @@ def get_log_json(request):
     log_dict_str = {}
     for logline in logs:
         log_dict_str[logline.id] = logline.to_dict()
-    return JsonResponse(log_dict_str) # send as JsonResponse Object
+    return JsonResponse(log_dict_str)  # send as JsonResponse Object
 
 
 def save_log(request, msg_id=None):
@@ -97,4 +94,3 @@ def start_new_session(request):
             new_session = res.data
             request.session['current_session'] = new_session
             request.session.modified = True
-

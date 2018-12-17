@@ -1,79 +1,59 @@
-{% block muuri_grid %}
-<!-- 由官方 Demo 中抽取出  -->
-<!-- https://haltu.github.io/muuri/ -->
+{% load static %}
 
+<!-- https://haltu.github.io/muuri/ -->
 <section class="grid-demo">
 
-      <h2 class="section-title"><span>Grid Demo</span></h2>
+    <h2 class="section-title"><span>Grid Demo</span></h2>
 
-      <div class="controls cf">
+    <div class="controls cf">
         <div class="control search">
-          <div class="control-icon">
-            <i class="material-icons">&#xE8B6;</i>
-          </div>
-          <input class="control-field search-field form-control " type="text" name="search" placeholder="Search..." />
+            <input class="control-field search-field" type="text" name="search" placeholder="Search..."/>
         </div>
         <div class="control filter">
-          <div class="control-icon">
-            <i class="material-icons">&#xE152;</i>
-          </div>
-          <div class="select-arrow">
-            <i class="material-icons">&#xE313;</i>
-          </div>
-          <select class="control-field filter-field form-control">
-            <option value="" selected>All</option>
-            <option value="red">Red</option>
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-          </select>
+            <select class="control-field filter-field">
+                <option value="" selected>All</option>
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            </select>
         </div>
         <div class="control sort">
-          <div class="control-icon">
-            <i class="material-icons">&#xE164;</i>
-          </div>
-          <div class="select-arrow">
-            <i class="material-icons">&#xE313;</i>
-          </div>
-          <select class="control-field sort-field form-control">
-            <option value="order" selected>Drag</option>
-            <option value="title">Title (drag disabled)</option>
-            <option value="color">Color (drag disabled)</option>
-          </select>
+            <select class="control-field sort-field">
+                <option value="order" selected>Drag</option>
+                <option value="title">Title (drag disabled)</option>
+                <option value="color">Color (drag disabled)</option>
+            </select>
         </div>
         <div class="control layout">
-          <div class="control-icon">
-            <i class="material-icons">&#xE871;</i>
-          </div>
-          <div class="select-arrow">
-            <i class="material-icons">&#xE313;</i>
-          </div>
-          <select class="control-field layout-field form-control">
-            <option value="left-top" selected>Left Top</option>
-            <option value="left-top-fillgaps">Left Top (fill gaps)</option>
-            <option value="right-top">Right Top</option>
-            <option value="right-top-fillgaps">Right Top (fill gaps)</option>
-            <option value="left-bottom">Left Bottom</option>
-            <option value="left-bottom-fillgaps">Left Bottom (fill gaps)</option>
-            <option value="right-bottom">Right Bottom</option>
-            <option value="right-bottom-fillgaps">Right Bottom (fill gaps)</option>
-          </select>
+            <select class="control-field layout-field">
+                <option value="left-top" selected>Left Top</option>
+                <option value="left-top-fillgaps">Left Top (fill gaps)</option>
+                <option value="right-top">Right Top</option>
+                <option value="right-top-fillgaps">Right Top (fill gaps)</option>
+                <option value="left-bottom">Left Bottom</option>
+                <option value="left-bottom-fillgaps">Left Bottom (fill gaps)</option>
+                <option value="right-bottom">Right Bottom</option>
+                <option value="right-bottom-fillgaps">Right Bottom (fill gaps)</option>
+            </select>
         </div>
-      </div>
+    </div>
 
-      <div class="grid"></div>
+    <div class="grid"></div>
 
-      <div class="grid-footer">
-        <button class="add-more-items btn btn-primary"><i class="material-icons">&#xE145;</i>Add more items</button>
-      </div>
+    <div class="grid-footer">
+        <button class="add-more-items btn btn-primary">Add more items</button>
+    </div>
 
 </section>
 
 <section class="grid-demo2">
 
-      <h2 class="section-title"><span>Grid Demo2</span></h2>
+    <h2 class="section-title"><span>Grid Demo2</span></h2>
 
-      <div class="grid2"></div>
+    <div class="grid2"></div>
 
 </section>
 
-{% endblock %}
+<script src="{% static 'web/js/muuri/hammer.min.js' %}"></script>
+<script src="{% static 'web/js/muuri/muuri.min.js' %}"></script>
+<script src="{% static 'web/js/muuri_grid.js'%}"></script>

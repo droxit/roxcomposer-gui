@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //
   // Initialize stuff
-  // 初始化物件，宣告一堆變數。
   //
 
   var grid = null;
