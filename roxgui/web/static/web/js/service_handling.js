@@ -127,7 +127,6 @@ function create_running_service_card(win, service, service_info, watch_active) {
 
 	var btn_down = btn.cloneNode();
 	btn_down.setAttribute("onclick", "add_to_current_pipe(this)");
-	btn_down.setAttribute("aria-pressed", "false");
 	col1.appendChild(btn_down);
 
 	var spn_down = document.createElement("span");
@@ -158,7 +157,6 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	var btn_del = btn.cloneNode();
 	btn_del.setAttribute("onclick", "stop_service(this)");
 	var spn_del = document.createElement("span");
-	btn_del.setAttribute("aria-pressed", "false");
 	spn_del.setAttribute("class", "fas fa-trash-alt");
 	col3.appendChild(btn_del);
 	btn_del.appendChild(spn_del);
