@@ -1,9 +1,12 @@
 {% load static %}
 
 <!-- https://haltu.github.io/muuri/ -->
-<section class="grid-demo">
 
-    <h2 class="section-title"><span>Grid Demo</span></h2>
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/muuri_grid.css' %}">
+
+<div class="grid-demo">
+
+    <h2>Grid Demo</h2>
 
     <div class="controls cf">
         <div class="control search">
@@ -44,15 +47,15 @@
         <button class="add-more-items btn btn-primary">Add more items</button>
     </div>
 
-</section>
+</div>
 
-<section class="grid-demo2">
+<div class="grid-demo2">
 
-    <h2 class="section-title"><span>Grid Demo2</span></h2>
+    <h2>Grid Demo2</h2>
 
     <div class="grid2"></div>
 
-</section>
+</div>
 
 <script src="{% static 'web/js/muuri/hammer.min.js' %}"></script>
 <script src="{% static 'web/js/muuri/muuri.min.js' %}"></script>
