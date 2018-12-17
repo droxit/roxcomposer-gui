@@ -107,7 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
         docElem.classList.remove('dragging');
       }
     })
-    .on('move', updateIndices)
+    .on('move', function () {
+        updateIndices();
+        saveLayout(grid);
+    })
     .on('sort', updateIndices)
     .on('receive', function (data) {
       grid2Hash[data.item._id] = function (item) {
@@ -179,10 +182,63 @@ document.addEventListener('DOMContentLoaded', function () {
         docElem.classList.remove('dragging');
       }
     })
-    .on('move', updateIndices)
+    .on('move', function () {
+        updateIndices();
+        saveLayout();
+    })
     .on('sort', updateIndices);
 
+    var layout = window.localStorage.getItem('layout');
+    if (layout) {
+        loadLayout(layout);
+    } else {
+        grid.layout(true);
+    }
+
   }
+
+    function serializeLayout() {
+        grids = getAllGrids();
+        stringified_grids = [];
+        grids.forEach(function(grid_item){
+            var itemIds = grid_item.getItems().map(function (item) {
+                return item.getElement().getAttribute('data-id');
+            });
+            var grid_id = grid_item._id
+            var val = JSON.stringify(itemIds);
+            stringified_grids[grid_id] = val;
+        });
+        return stringified_grids;
+    }
+
+    function saveLayout() {
+        var layout = serializeLayout();
+        window.localStorage.setItem('layout', layout);
+    }
+
+    function loadLayout(serializedLayouts) {
+        //var layouts = JSON.parse(serializedLayout);
+        serializedLayouts.forEach(function(layout){
+            var grid_item = JSON.parse(layout);
+            var currentItems = grid_item.getItems();
+            var currentItemIds = currentItems.map(function (item) {
+                return item.getElement().getAttribute('data-id');
+            });
+            var newItems = [];
+            var itemId;
+            var itemIndex;
+
+            for (var i = 0; i < layout.length; i++) {
+                itemId = layout[i];
+                itemIndex = currentItemIds.indexOf(itemId);
+                if (itemIndex > -1) {
+                  newItems.push(currentItems[itemIndex])
+                }
+            }
+
+            grid_item.sort(newItems, {layout: 'instant'});
+        });
+    }
 
   function filter() {
 
