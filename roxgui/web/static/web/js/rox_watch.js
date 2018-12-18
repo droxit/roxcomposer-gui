@@ -48,9 +48,9 @@ function update_watch_buttons(watch_active) {
 			// update watch button for every service
 			var spn = document.getElementById('watch-span-' + serv_id);
 			if (watch_active[serv_id]) {
-				spn.setAttribute("class", "fas fa-eye");
+				spn.setAttribute("class", "fas fa-eye fa-xs");
 			} else {
-				spn.setAttribute("class", "fas fa-eye-slash");
+				spn.setAttribute("class", "fas fa-eye-slash fa-xs");
 			}
 		}
 	}
