@@ -90,6 +90,16 @@ function update_available_services(win, services) {
 	}
 }
 
+function parse_service_info(service_info) {
+    // Extract classpath as string.
+    var classpath = service_info.classpath;
+    // Extract parameters as string.
+    var params = JSON.stringify(service_info.params);
+    // Concatenate both strings.
+    return classpath + "\n\n" + params;
+}
+
+
 function create_running_service_card(win, service, service_info, watch_active) {
 	// Basic button.
 	var btn = document.createElement("button");
@@ -101,6 +111,7 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	// Button to add service to pipeline.
 	var btn_down = btn.cloneNode();
 	btn_down.setAttribute("onclick", "add_to_current_pipe(this)");
+	btn_down.setAttribute("title", "Add service to current pipeline.");
 	var spn_down = document.createElement("span");
 	spn_down.setAttribute("class", "fas fa-arrow-down fa-xs");
 	btn_down.appendChild(spn_down);
@@ -114,15 +125,18 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	if (watch_active) {
 		spn_watch.setAttribute("class", "fas fa-eye fa-xs");
 		btn_watch.setAttribute("data-watched", "true");
+		btn_watch.setAttribute("title", "Watch / unwatch service.");
 	} else {
 		spn_watch.setAttribute("class", "fas fa-eye-slash fa-xs");
 		btn_watch.setAttribute("data-watched", "false");
+		btn_watch.setAttribute("title", "Watch / unwatch service.");
 	}
 	btn_watch.appendChild(spn_watch);
 
 	// Button to stop service.
 	var btn_del = btn.cloneNode();
 	btn_del.setAttribute("onclick", "stop_service(this)");
+	btn_del.setAttribute("title", "Stop service.");
 	var spn_del = document.createElement("span");
 	spn_del.setAttribute("class", "fas fa-trash-alt fa-xs");
 	btn_del.appendChild(spn_del);
@@ -137,6 +151,7 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	// Card body with service name.
 	var card_body = document.createElement("div");
 	card_body.setAttribute("class", "card-body");
+	card_body.setAttribute("title", parse_service_info(service_info));
 	card_body.appendChild(document.createTextNode(service));
 
 	// Card with header and body.
@@ -156,9 +171,7 @@ function create_available_service_card(win, service, service_info) {
 	li.setAttribute("class", "list-group-item");
 	li.setAttribute("onclick", "run_service(this)");
 	li.setAttribute("data-value_name", service);
-	li.setAttribute("value", JSON.stringify(service_info));
+	li.setAttribute("title", parse_service_info(service_info));
+	li.appendChild(document.createTextNode(service));
 	win.appendChild(li);
-	var span = document.createElement("span");
-	span.appendChild(document.createTextNode(service));
-	li.appendChild(span);
 }
