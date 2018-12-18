@@ -95,14 +95,14 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	var btn = document.createElement("button");
 	btn.setAttribute("type", "button");
 	btn.setAttribute("data-name", service);
-	btn.setAttribute("class", "btn btn-default float-right");
+	btn.setAttribute("class", "btn btn-round float-right");
 	btn.setAttribute("data-toggle", "button");
 
 	// Button to add service to pipeline.
 	var btn_down = btn.cloneNode();
 	btn_down.setAttribute("onclick", "add_to_current_pipe(this)");
 	var spn_down = document.createElement("span");
-	spn_down.setAttribute("class", "fas fa-arrow-down");
+	spn_down.setAttribute("class", "fas fa-arrow-down fa-xs");
 	btn_down.appendChild(spn_down);
 
 	// Button to watch / unwatch service.
@@ -112,10 +112,10 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	var spn_watch = document.createElement("span");
 	spn_watch.setAttribute("id", "watch-span-" + service);
 	if (watch_active) {
-		spn_watch.setAttribute("class", "fas fa-eye");
+		spn_watch.setAttribute("class", "fas fa-eye fa-xs");
 		btn_watch.setAttribute("data-watched", "true");
 	} else {
-		spn_watch.setAttribute("class", "fas fa-eye-slash");
+		spn_watch.setAttribute("class", "fas fa-eye-slash fa-xs");
 		btn_watch.setAttribute("data-watched", "false");
 	}
 	btn_watch.appendChild(spn_watch);
@@ -124,7 +124,7 @@ function create_running_service_card(win, service, service_info, watch_active) {
 	var btn_del = btn.cloneNode();
 	btn_del.setAttribute("onclick", "stop_service(this)");
 	var spn_del = document.createElement("span");
-	spn_del.setAttribute("class", "fas fa-trash-alt");
+	spn_del.setAttribute("class", "fas fa-trash-alt fa-xs");
 	btn_del.appendChild(spn_del);
 
 	// Card header with buttons.

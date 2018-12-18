@@ -13,13 +13,17 @@
     <div class="col-md-4 scrollable-parent">
         <div class="card w-auto border-0" style="overflow-x:hidden;height:300px">
             <div class="card-body">
-                <h5 class="card-title">
-                    Available services
-                </h5>
-                <button type="button" class="btn btn-default" id="new_service" data-toggle="modal"
-                        data-target="#service_params">
-                    <span class="fas fa-plus"></span>
-                </button>
+                <div class="row">
+                    <div class="col-10">
+                        <h5>Available services</h5>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-default" id="new_service" data-toggle="modal"
+                                data-target="#service_params">
+                            <span class="fas fa-plus"></span>
+                        </button>
+                    </div>
+                </div>
                 <ul class="list-group" id="available_services"></ul>
             </div>
         </div>
@@ -45,13 +49,17 @@
     <div class="col-md-4 scrollable-parent">
         <div class="card w-auto border-0" style="height:400px">
             <div class="card-body">
-                <h5 class="card-title">
-                    Available pipelines
-                </h5>
-                <button type="button" class="btn btn-default" onclick="show_pipeline(this)"
-                        data-name="" data-services="" data-active="">
-                    <span class="fas fa-plus"></span>
-                </button>
+                <div class="row">
+                    <div class="col-10">
+                        <h5>Available pipelines</h5>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-default float-right" onclick="show_pipeline(this)"
+                                data-name="" data-services="" data-active="">
+                            <span class="fas fa-plus"></span>
+                        </button>
+                    </div>
+                </div>
                 <ul class="list-group">
                     {% for data in pipeline_data %}
                     {% if data.2 == True %}
