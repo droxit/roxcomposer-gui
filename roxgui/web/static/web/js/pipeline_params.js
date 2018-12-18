@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 // Execute on startup.
 document.getElementById("pipe_name").addEventListener("change", write_active_pipeline_to_cookies);
 document.getElementById("piped_service_list").addEventListener("click", write_active_pipeline_to_cookies);

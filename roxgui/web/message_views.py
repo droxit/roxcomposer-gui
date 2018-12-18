@@ -1,3 +1,12 @@
+# encoding: utf-8
+#
+# Define HTTP Responses concering messages sent to the ROXconnector and their status.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
 import datetime
 import json
 import time

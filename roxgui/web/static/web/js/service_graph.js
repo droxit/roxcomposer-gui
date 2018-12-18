@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 // Define nodes.
 var node_data = [
     {"name": "file_writer", "json": {}, "active": true},

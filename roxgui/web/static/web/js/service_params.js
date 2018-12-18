@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 function add_optional_param() {
     // Get parent element.
     var parent = document.getElementById("service_optional_fields");

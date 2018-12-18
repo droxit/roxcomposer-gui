@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 document.addEventListener('DOMContentLoaded', function () {
 
   //

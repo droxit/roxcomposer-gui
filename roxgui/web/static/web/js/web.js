@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Main loop.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 function refresh() {
 	setTimeout(function() {
 		location.reload()

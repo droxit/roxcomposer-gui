@@ -1,3 +1,14 @@
+/*
+# encoding: utf-8
+#
+# Define web views.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+*/
+
 function update_log(log_win) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_watch_logs", {
