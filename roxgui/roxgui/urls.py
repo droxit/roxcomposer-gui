@@ -1,3 +1,12 @@
+# encoding: utf-8
+#
+# Define URL patterns for whole project.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+
 """roxgui URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -14,8 +23,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
+    # Include web app's URL configuration.
+    path('', include("web.urls")),
+    # Include admin site's URL configuration.
     path('admin/', admin.site.urls),
 ]

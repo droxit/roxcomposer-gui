@@ -1,0 +1,21 @@
+{% load static %}
+
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block title %} {% endblock title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
+    <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+</head>
+
+<body>
+{% block content %} {% endblock content %}
+<script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'base/js/base.js' %}"></script>
+</body>
+
+</html>
