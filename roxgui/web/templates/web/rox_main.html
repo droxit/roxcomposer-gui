@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block title %}
+<title>ROXcomposer - Main</title>
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>ROXcomposer</h1>
+    </div>
+    <div class="row">
+        <p>This is droxits microservice framework repository. It yields a python framework to set up microservices
+            easily.</p>
+    </div>
+    <div class="row">
+        <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="{% static 'media/video/example_video.mp4' %}"
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+    <div class="row">
+        <img src="{% static 'media/img/droxit_logo.jpg' %}" class="img-fluid" alt="Responsive image">
+    </div>
+</div>
+{% endblock content %}
