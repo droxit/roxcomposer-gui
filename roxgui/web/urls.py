@@ -12,5 +12,5 @@ from django.urls import path
 from web import views
 
 urlpatterns = [
-    path('', views.main, name="web_main"),
+    path('', views.rox_main, name="rox_main"),
 ]
