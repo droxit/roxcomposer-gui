@@ -8,10 +8,11 @@
   background-color: #111;
   overflow-x: hidden;
   padding-top: 20px;
+  padding-left: 10px;
 }
 
 .sidenav a {
-  padding: 6px 8px 6px 16px;
+  padding: 16px 10px 16px 16px;
   text-decoration: none;
   font-size: 25px;
   color: #818181;
