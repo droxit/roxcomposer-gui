@@ -1,5 +1,5 @@
 """
-WSGI config for roxgui project.
+WSGI config.ini for roxgui project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

@@ -2,13 +2,12 @@
 #
 # encoding: utf-8
 #
-# Main entry point for Django backend.
+# Entry point to Django backend.
 #
 # devs@droxit.de
 #
-# Copyright (c) 2019 droxIT GmbH
+# Copyright (c) 2018 droxIT GmbH
 #
-
 import os
 import sys
 
