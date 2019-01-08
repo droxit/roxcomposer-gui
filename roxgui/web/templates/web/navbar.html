@@ -1,9 +1,15 @@
+
 {% load static %}
 
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/navbar.css' %}">
 
 {% block content %}
 
-
+<div class="sidenav">
+  <a href="#main"><span></span></a>
+  <a href="#clients">Clients</a>
+  <a href="#contact">Contact</a>
+</div>
 
 <script src="{% static 'web/js/navbar.js'%}"></script>
 {% endblock content %}
