@@ -16,3 +16,36 @@ def main(request):
     """Main page."""
     context = {}
     return render(request, "web/web.html", context)
+
+
+@require_http_methods(["GET"])
+def rox_graph(request):
+    """Graph page"""
+    context = {}
+    return render(request, "web/rox_graph.html", context)
+
+
+@require_http_methods(["GET"])
+def rox_messages(request):
+    """Messages page."""
+    context = {}
+    return render(request, "web/rox_messages.html", context)
+
+
+@require_http_methods(["GET"])
+def rox_logs(request):
+    """Logs page."""
+    context = {}
+    return render(request, "web/rox_logs.html", context)
+
+@require_http_methods(["GET"])
+def rox_pipelines(request):
+    """Pipelines page."""
+    context = {}
+    return render(request, "web/rox_pipelines.html", context)
+
+@require_http_methods(["GET"])
+def rox_services(request):
+    """Services page."""
+    context = {}
+    return render(request, "web/rox_services.html", context)
