@@ -10,22 +10,47 @@
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/fontawesome/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'web/css/navbar.css' %}">
+
     <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+
 </head>
 
 <body>
 
 <div class="container">
-    {% include "web/navbar.html" %}
+
+
+<div class="sidenav">
+    <div data-toggle="tooltip" data-placement="right" title="Home"><a href="#main" ><i class="fas fa-home"></i></a></div>
+  <a href="#graph" data-toggle="tooltip" data-placement="right" title="Graph"><i class="fas fa-share-alt"></i></a>
+  <a href="#messages" data-toggle="tooltip" data-placement="right" title="Messages"><i class="fas fa-envelope-open"></i></a>
+  <a href="#logs" data-toggle="tooltip" data-placement="right" title="Logs"><i class="fas fa-archive"></i></a>
+  <a href="#pipelines" data-toggle="tooltip" data-placement="right" title="Pipelines"><i class="fas fa-retweet"></i></a>
+  <a href="#services" data-toggle="tooltip" data-placement="right" title="Services"><i class="fas fa-cogs"></i></a>
+  <div class="a-bottom">
+    <a href="https://github.com/droxit/ROXcomposer-gui/wiki" data-toggle="tooltip" data-placement="right" title="Documentation"><i class="fas fa-book"></i></a>
+    <a href="http://www.droxit.de" data-toggle="tooltip" data-placement="right" title="Droxit Website">D</a>
+  </div>
+</div>
+
+
+
 
     <div class="container">
         {% block content %} {% endblock content %}
     </div>
 </div>
 
+
+</body>
+
+<script src="{% static 'web/js/navbar.js' %}"></script>
+
+
 <script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
 <script src="{% static 'base/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+
 <script src="{% static 'base/js/base.js' %}"></script>
-</body>
 
 </html>

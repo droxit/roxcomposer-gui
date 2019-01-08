@@ -6,7 +6,6 @@
   top: 0;
   left: 0;
   background-color: #111;
-  overflow-x: hidden;
   padding-top: 20px;
   padding-left: 10px;
 }
@@ -22,6 +21,7 @@
   position: absolute;
   bottom: 0;
 }
+
 
 .sidenav a:hover {
   color: #f1f1f1;
