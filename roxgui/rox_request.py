@@ -637,26 +637,6 @@ def get_service_logs(rox_session: dict):
     return res
 
 
-def watch_pipelines():  # TODO
-    pass
-
-
-def unwatch_pipelines():  # TODO
-    pass
-
-
-def watch_all():  # TODO
-    pass
-
-
-def reset_watchers():  # TODO
-    pass
-
-
-def save_pipeline(file_name):  # TODO
-    pass
-
-
 def get_message_status(last_time: int = None) -> RoxResponse:
     """
     Get the last message status logs from trace log. These logs indicate where a message that was sent to a pipeline
@@ -683,14 +663,23 @@ def get_message_status(last_time: int = None) -> RoxResponse:
     return res
 
 
-def load_and_start_pipeline(pipe_path):
-    url = create_rox_connector_url("load_and_start_pipeline")
-    content = {'pipe_path': pipe_path}
-    r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
-    if r.status_code == 200:
-        msg = r.text
-        logging.info(msg)
-        return RoxResponse(True, msg)
-    else:
-        err = 'ERROR: {} - {}'.format(r.status_code, r.text)
-        return RoxResponse(False, err)
+def watch_pipelines():  # TODO
+    pass
+
+
+def unwatch_pipelines():  # TODO
+    pass
+
+
+def watch_all():  # TODO
+    pass
+
+
+def reset_watchers():  # TODO
+    pass
+
+
+def save_pipeline(file_name):  # TODO
+    pass
+
+
