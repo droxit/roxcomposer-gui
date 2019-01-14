@@ -7,41 +7,44 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block title %} {% endblock title %}
+    {% block header %} {% endblock header %}
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/fontawesome/all.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/navbar.css' %}">
     <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
-
 </head>
 
 <body>
-
-<div class="sidenav">
-    <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i class="fas fa-home"></i></a>
-    <a href="graph" data-toggle="tooltip" data-placement="right" title="Graph"><i class="fas fa-share-alt"></i></a>
-    <a href="messages" data-toggle="tooltip" data-placement="right" title="Messages"><i
-            class="fas fa-envelope-open"></i></a>
-    <a href="logs" data-toggle="tooltip" data-placement="right" title="Logs"><i class="fas fa-archive"></i></a>
-    <a href="pipelines" data-toggle="tooltip" data-placement="right" title="Pipelines"><i
-            class="fas fa-retweet"></i></a>
-    <a href="services" data-toggle="tooltip" data-placement="right" title="Services"><i
-            class="fas fa-cogs"></i></a>
-    <div class="a-bottom">
-        <a href="https://github.com/droxit/roxcomposer-doc" data-toggle="tooltip" data-placement="right"
-           title="Documentation"><i class="fas fa-book"></i></a>
-        <a href="http://www.droxit.de" data-toggle="tooltip" data-placement="right" title="Droxit Website"
-           style="padding-left:0px"><img src="{% static 'media/img/droxit_thumbnail.png' %}" class="img-fluid"
-                                         alt="D" style="width:50px;height: auto;padding-left:10px"></a>
+<div class="row">
+    <div id="navigation" class="col-1">
+        <div class="sidenav">
+            <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i class="fas fa-home"></i></a>
+            <a href="graph" data-toggle="tooltip" data-placement="right" title="Graph"><i class="fas fa-share-alt"></i></a>
+            <a href="messages" data-toggle="tooltip" data-placement="right" title="Messages"><i
+                    class="fas fa-envelope-open"></i></a>
+            <a href="logs" data-toggle="tooltip" data-placement="right" title="Logs"><i class="fas fa-archive"></i></a>
+            <a href="pipelines" data-toggle="tooltip" data-placement="right" title="Pipelines"><i
+                    class="fas fa-retweet"></i></a>
+            <a href="services" data-toggle="tooltip" data-placement="right" title="Services"><i class="fas fa-cogs"></i></a>
+            <a href="tests" data-toggle="tooltip" data-placement="right" title="Tests"><i class="fas fa-check"></i></a>
+            <a href="https://github.com/droxit/roxcomposer-doc" target="_blank" data-toggle="tooltip"
+               data-placement="right" title="Documentation"><i class="fas fa-book"></i></a>
+            <a href="http://www.droxit.de" target="_blank" data-toggle="tooltip" data-placement="right"
+               title="Droxit website" style="padding-left:0px"><img src="{% static 'media/img/droxit_thumbnail.png' %}"
+                                                                    class="img-fluid" alt="D"
+                                                                    style="width:50px;height: auto;padding-left:10px"></a>
+        </div>
+    </div>
+    <div id="content" class="col-11">
+        {% block content %} {% endblock content %}
     </div>
 </div>
-
-{% block content %} {% endblock content %}
-
-</body>
 
 <script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
 <script src="{% static 'base/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'base/js/base.js' %}"></script>
 <script src="{% static 'base/js/navbar.js' %}"></script>
+</body>
+
 </html>

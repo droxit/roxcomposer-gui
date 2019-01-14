@@ -18,4 +18,5 @@ urlpatterns = [
     path('logs', views.rox_logs, name="rox_logs"),
     path('pipelines', views.rox_pipelines, name="rox_pipelines"),
     path('services', views.rox_services, name="rox_services"),
+    path('tests', views.rox_tests, name="rox_tests"),
 ]

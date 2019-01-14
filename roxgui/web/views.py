@@ -51,3 +51,10 @@ def rox_services(request):
     """Services page."""
     context = {}
     return render(request, "web/pages/services/rox_services.html", context)
+
+
+@require_http_methods(["GET"])
+def rox_tests(request):
+    """Testing page."""
+    context = {}
+    return render(request, "web_tests/rox_tests.html", context)

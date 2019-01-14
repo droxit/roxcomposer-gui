@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Define unit tests.
+# Define unit base_tests.
 #
 # devs@droxit.de
 #
@@ -9,4 +9,4 @@
 
 from django.test import TestCase
 
-# Create your tests here.
+# Create your base_tests here.
