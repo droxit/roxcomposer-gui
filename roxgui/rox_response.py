@@ -47,3 +47,15 @@ class RoxResponse:
     def __str__(self):
         return "RoxResponse status: {}, Msg: {}, Data: {} ".format(self.success, self.message, self.data)
 
+    def convert_to_json(self) -> dict:
+        """
+        Convert current instance to JSON dictionary.
+        :return: Current instance as JSON dictionary.
+        """
+        json_dict = {
+            "success": self.success,
+            "message": self.message,
+            "data": self.data,
+            "error_data": self.error_data
+        }
+        return json_dict
