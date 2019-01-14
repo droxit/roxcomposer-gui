@@ -12,7 +12,7 @@ from django.urls import path
 from web import views
 
 urlpatterns = [
-    path('', views.rox_main, name="rox_main"),
+    path('', views.rox_home, name="rox_home"),
     path('graph', views.rox_graph, name="rox_graph"),
     path('messages', views.rox_messages, name="rox_messages"),
     path('logs', views.rox_logs, name="rox_logs"),
