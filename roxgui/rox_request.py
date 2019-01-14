@@ -4,7 +4,7 @@
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
 
 import json
@@ -12,7 +12,6 @@ import logging
 import os
 
 import requests
-
 from rox_response import RoxResponse
 from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_LOG_FILE, ROX_CONNECTOR_IP
 
@@ -357,7 +356,7 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
         return res
 
 
-def remove_pipeline() -> RoxResponse: #TODO after functionality has been implemented in ROXcomposer
+def remove_pipeline() -> RoxResponse:  # TODO after functionality has been implemented in ROXcomposer
     raise NotImplementedError
 
 
@@ -681,5 +680,3 @@ def reset_watchers():  # TODO
 
 def save_pipeline(file_name):  # TODO
     pass
-
-

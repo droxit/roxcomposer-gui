@@ -85,12 +85,12 @@ if tmp_ip is not None:
     except requests.exceptions.ConnectionError:
         # Exit with error: ROXconnector is not running.
         logger.error("ROXconnector is not running.")
-        #exit(1)
+        # TODO: Uncomment for production.
+        # exit(1)
 else:
     # Exit with error: ROXconnector connection data is not specified.
     logger.error("ROXconnector connection data specified in config file is invalid.")
     exit(1)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/

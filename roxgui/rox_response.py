@@ -4,7 +4,7 @@
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
 
 
@@ -20,9 +20,9 @@ class RoxResponse:
     def __init__(self, success: bool, message: str = ""):
         self.success = success
         self.message = message
-        # (Optional) Provided data concerning successful request.
+        # (Optional) data concerning successful request.
         self._data = []
-        # (Optional) Provided data concerning failed request.
+        # (Optional) data concerning failed request.
         self._error_data = []
 
     # Getter and setter.
