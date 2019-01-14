@@ -479,7 +479,7 @@ def load_session(file_name: str) -> RoxResponse:
         return RoxResponse(True, r.text)
 
 
-def watch_services(service_names: list, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
+def watch_services(service_names: list, rox_session: dict = None, timeout: int = SESSION_TIMEOUT) -> RoxResponse:
     """
     Add specified services to given sessions watchlist.
     :param service_names: List of service names which should be watched.
@@ -528,7 +528,7 @@ def watch_services(service_names: list, rox_session=None, timeout=SESSION_TIMEOU
             return RoxResponse(False, "All services are already watched.")
 
 
-def create_new_sess(services, timeout=SESSION_TIMEOUT) -> RoxResponse:
+def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxResponse:
     """
     Attempt to start a new log session on the ROXcomposer
     :param services: list of services that should be watched
@@ -570,7 +570,7 @@ def create_new_sess(services, timeout=SESSION_TIMEOUT) -> RoxResponse:
     return res
 
 
-def unwatch_services(service_names, rox_session) -> RoxResponse:
+def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
     """
     The specified services are removed from the watchlist and logs concerning these services
     will no longer be sent from the server.
@@ -606,7 +606,12 @@ def unwatch_services(service_names, rox_session) -> RoxResponse:
         return res
 
 
-def get_service_logs(rox_session):
+def get_service_logs(rox_session: dict):
+    """
+
+    :param rox_session:
+    :return:
+    """
     if rox_session is None:
         error_msg = "Trying to get logs, but no session instantiated."
         return RoxResponse(False, error_msg)
