@@ -479,7 +479,7 @@ def load_session(file_name: str) -> RoxResponse:
         return RoxResponse(True, r.text)
 
 
-def watch_services(service_names, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
+def watch_services(service_names: list, rox_session=None, timeout=SESSION_TIMEOUT) -> RoxResponse:
     """
     Add specified services to given sessions watchlist.
     :param service_names: List of service names which should be watched.
@@ -571,6 +571,13 @@ def create_new_sess(services, timeout=SESSION_TIMEOUT) -> RoxResponse:
 
 
 def unwatch_services(service_names, rox_session) -> RoxResponse:
+    """
+    The specified services are removed from the watchlist and logs concerning these services
+    will no longer be sent from the server.
+    :param service_names: a list of service names of services that should no longer be watched
+    :param rox_session: the
+    :return:
+    """
     if len(service_names) < 1:
         return RoxResponse(False, "No services specified.")
 
