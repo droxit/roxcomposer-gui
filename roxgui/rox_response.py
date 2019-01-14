@@ -12,7 +12,9 @@ class RoxResponse:
     """
     Class encapsulating ROXconnector response.
     Each response has to have a status indicating whether the communication and
-    requested operation has been successful.
+    requested operation has been successful and a message that is sent by the ROXconnector.
+    Optional parameters are data in case information has been requested from the server
+    and error data that can be provided if an error has occured.
     """
 
     def __init__(self, success: bool, message: str = ""):
