@@ -657,11 +657,12 @@ def save_pipeline(file_name):  # TODO
     pass
 
 
-def get_message_status(last_time=None) -> RoxResponse:
+def get_message_status(last_time: int = None) -> RoxResponse:
     """
-    Get the last message status logs from trace log
-    :param last_time: the time (in seconds) that the trace was polled from last time
-    :return: RoxResponse that with data = log lines in a list
+    Get the last message status logs from trace log. These logs indicate where a message that was sent to a pipeline
+    currently is (which service is processing it).
+    :param last_time: the time (in seconds) that the trace was polled last time
+    :return: RoxResponse where the data contains a list of log lines, each element being one log line
     """
     logs = []
     logfile = ROX_COMPOSER_LOG_FILE
