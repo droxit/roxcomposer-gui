@@ -17,9 +17,12 @@
   color: #818181;
   display: block;
 }
+
 .a-bottom {
   position: absolute;
   bottom: 0;
+  padding: 0;
+  margin: 0;
 }
 
 
