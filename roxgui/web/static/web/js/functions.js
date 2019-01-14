@@ -1,24 +1,41 @@
-function filter(filterList, condition) {
-    return filterList.filter(condition);
-}
-
-function sort(sortList, condition) {
-    return sortList.sort(condition);
+function custom_filter(filterList, condition) {
+	if (filterList != null && condition != null) {
+		return filterList.filter(condition);
+	} else {
+		return [];
+	}
 }
 
 function search(searchList, item) {
-    // returns a list of elements matching the item
-    return filter(searchList, function(itemInList){
-        return itemInList.includes(item);
-    });
-
+	if (searchList != null && item != null && item != "") {
+		return custom_filter(searchList, function(itemInList) {
+			return itemInList.includes(item);
+		});
+	} else {
+		return [];
+	}
 }
 
-function sortByAlphabet(sortList){
-    return sort(sortList, function(a, b){
-        if(a < b) {return -1; }
-        if(a > b) {return 1; }
-        return 0;
-    });
+function sort(sortList, condition) {
+	if (sortList != null && condition != null) {
+		return sortList.sort(condition);
+	} else {
+		return [];
+	}
 }
 
+function alphabetical_sort(sortList) {
+	if (sortList != null) {
+		return sort(sortList, function(a, b) {
+			if (a < b) {
+				return -1;
+			}
+			if (a > b) {
+				return 1;
+			}
+			return 0;
+		});
+	} else {
+		return [];
+	}
+}
