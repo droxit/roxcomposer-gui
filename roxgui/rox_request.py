@@ -575,8 +575,9 @@ def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
     The specified services are removed from the watchlist and logs concerning these services
     will no longer be sent from the server.
     :param service_names: a list of service names of services that should no longer be watched
-    :param rox_session: the
-    :return:
+    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+            for instance the session ID, or which services are being watched.
+    :return: RoxResponse with the new or updated session dict as data
     """
     if len(service_names) < 1:
         return RoxResponse(False, "No services specified.")
@@ -608,9 +609,10 @@ def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
 
 def get_service_logs(rox_session: dict):
     """
-
-    :param rox_session:
-    :return:
+    Retrieve the newest log data from the ROXcomposer.
+    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+            for instance the session ID, or which services are being watched.
+    :return: RoxResponse with a list of the newest log lines as data, where each line is an element of the list
     """
     if rox_session is None:
         error_msg = "Trying to get logs, but no session instantiated."
