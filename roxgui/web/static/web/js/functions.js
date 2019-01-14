@@ -12,3 +12,5 @@ function search(searchList, item) {
         return item == itemInList;
     });
 }
+
+console.log(search(['bla','blub'], 'bla'))
