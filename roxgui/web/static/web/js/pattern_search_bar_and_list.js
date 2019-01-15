@@ -36,11 +36,11 @@ function add_data_entry(data_name, data_info) {
 }
 
 function add_data_entries(name_info_list) {
-	name_info_list.forEach(function(container) {
-		var name = container[0];
-		var info = container[1];
+	for (name_info in name_info_list) {
+		var name = name_info[0];
+		var info = name_info[1];
 		add_data_entry(name, info);
-	});
+	}
 }
 
 function remove_data_entry(data_name) {
@@ -128,6 +128,3 @@ function search_data_list() {
 		set_single_hidden_status(name, false);
 	});
 }
-
-add_data_entry("Test 1", "Info");
-add_data_entry("Nochwas", "Mir egal");

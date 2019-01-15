@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Define web views.
+# Define HTTP responses with HTML data.
 #
 # devs@droxit.de
 #
