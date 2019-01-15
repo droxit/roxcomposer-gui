@@ -1,4 +1,4 @@
-{% extends "web/pattern/detail_view_and_item_list.html" %}
+{% extends "web/pattern/layout_detail_view_and_list.html" %}
 
 {% block title %}
 <title>ROXcomposer - Services</title>
@@ -12,8 +12,8 @@
 <p>Detail view</p>
 {% endblock detail_view %}
 
-{% block item_list %}
+{% block list %}
 
-{% include 'web/pattern/search_list.html' %}
+{% include 'web/pattern/pattern_search_bar_and_list.html' %}
 
-{% endblock item_list %}
+{% endblock list %}
