@@ -1,6 +1,5 @@
 function get_services() {
-    //add_data_entries([('1','gsdghsgh'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd') ,('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd')]);
-	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_services", {
 	    csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
@@ -9,7 +8,7 @@ function get_services() {
 	    // Create list to store converted data.
 	    name_info_list = [];
 	    // Convert JSON data to string.
-	    for (var i = 1; i < tmp.length; i++) {
+	    for (var i = 0; i < tmp.length; i++) {
 	        var name = tmp[i][0];
 	        var json = JSON.stringify(tmp[i][1]);
 	        name_info_list.push([name, json]);

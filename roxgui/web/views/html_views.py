@@ -49,7 +49,10 @@ def rox_pipelines(request):
 @require_http_methods(["GET"])
 def rox_services(request):
     """Services page."""
-    context = {}
+    context = {
+        "search_bar_text": "Search services",
+        "headline": "Services"
+    }
     return render(request, "web/pages/services/rox_services.html", context)
 
 

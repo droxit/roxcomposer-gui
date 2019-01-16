@@ -36,9 +36,9 @@ function add_data_entry(data_name, data_info) {
 }
 
 function add_data_entries(name_info_list) {
-	for (name_info in name_info_list) {
-		var name = name_info[0];
-		var info = name_info[1];
+	for (var i = 0; i < name_info_list.length; i++) {
+		var name = name_info_list[i][0];
+		var info = name_info_list[i][1];
 		add_data_entry(name, info);
 	}
 }
