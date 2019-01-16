@@ -1,5 +1,9 @@
 function get_services() {
-	$.post("get_services").done(function(data) {
+    //add_data_entries([('1','gsdghsgh'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd') ,('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd'), ('2','dsgfgsgd')]);
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("get_services", {
+	    csrfmiddlewaretoken: CSRFtoken,
+	}).done(function(data) {
 	    // Get list mapping service name to its JSON data.
 	    tmp = data['local_services'];
 	    // Create list to store converted data.
