@@ -1,10 +1,10 @@
 {% load static %}
-{% csrf_token %}
+
 <div class="card border-0">
     <div class="card-body">
         <div class="row">
-            <input id="search_field" class="form-control" type="text" onkeydown="search_data_list()"
-                   list="data_name_list" placeholder="Search">
+            <input id="search_field" class="form-control" type="text" onchange="search_data_list()"
+                   list="data_name_list" placeholder="{{ search_bar_text }}">
             <datalist id="data_name_list"></datalist>
         </div>
     </div>
@@ -12,18 +12,18 @@
 <div class="card">
     <div class="card-header">
         <div class="row">
-            <div class="col-9">
-                <h5>Data</h5>
+            <div class="col">
+                <h4>{{ headline }}</h4>
             </div>
-            <div class="col-3">
-                <button type="button" class="btn btn-primary">
+            <div class="col">
+                <button type="button" class="btn btn-primary float-right">
                     <span class="fas fa-plus"></span>
                 </button>
             </div>
         </div>
     </div>
     <div class="card_body">
-        <ul id="data_info_list" class="list-group list-group-flush"></ul>
+        <ul id="data_info_list" class="list-group list-group-flush" style="height: 400px; overflow-y: scroll;"></ul>
     </div>
 </div>
 <script src="{% static 'web/js/pattern_search_bar_and_list.js' %}"></script>
