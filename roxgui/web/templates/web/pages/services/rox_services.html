@@ -15,11 +15,8 @@
 {% endblock detail_view %}
 
 {% block list %}
-
 {% csrf_token %}
-
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
-
 <script src="{% static 'web/js/rox_services.js' %}"></script>
 <script>get_services();</script>
 {% endblock list %}

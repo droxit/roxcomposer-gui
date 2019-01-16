@@ -4,3 +4,8 @@
   text-decoration: none;
   color: black;
 }
+
+/* ===== Buttons. ===== */
+.btn-round {
+    border-radius: 100%;
+}

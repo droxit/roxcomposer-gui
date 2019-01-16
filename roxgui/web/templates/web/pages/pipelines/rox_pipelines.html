@@ -13,5 +13,6 @@
 {% endblock detail_view %}
 
 {% block list %}
-<p>Item list</p>
+{% csrf_token %}
+{% include 'web/pattern/pattern_search_bar_and_list.html' %}
 {% endblock list %}
