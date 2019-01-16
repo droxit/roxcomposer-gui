@@ -9,14 +9,17 @@ html, body {
 
 .sidenav {
   height: 100%;
-  width: 120px;
-  position: absolute;
+  width: 5%;
+  min-width: 60px;
+  max-width: 120px;
+  position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
   background-color: #111;
-  padding: 25% 25% 25% 25%;
-  box-sizing: border-box;
+  padding-left: 1%;
+  padding-top: 1%;
+  padding-right: 1%;
   margin-bottom: -9999px;
   padding-bottom: 9999px;
 }
@@ -39,7 +42,7 @@ html, body {
   padding: 0px 10px;
 }
 
-.bs-tooltip-right { margin-left: 40px; }
+.bs-tooltip-right { margin-left: 20px; }
 
 
 @media screen and (max-height: 450px) {
