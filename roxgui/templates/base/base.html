@@ -17,34 +17,35 @@
 
 <body>
 
-<div class="container-fluid fill" >
-<div class="row">
-    <div id="navigation" class="col-1">
-        <div class="sidenav">
-            <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i class="fas fa-home"></i></a>
-            <a class="non-active" data-toggle="tooltip" data-placement="right" title="Graph"><i
-                    class="fas fa-share-alt"></i></a>
-            <a class="non-active" data-toggle="tooltip" data-placement="right" title="Messages"><i
-                    class="fas fa-envelope-open"></i></a>
-            <a class="non-active" data-toggle="tooltip" data-placement="right" title="Logs"><i class="fas fa-archive"></i></a>
-            <a class="non-active" data-toggle="tooltip" data-placement="right" title="Pipelines"><i
-                    class="fas fa-retweet"></i></a>
-            <a href="services" data-toggle="tooltip" data-placement="right" title="Services"><i
-                    class="fas fa-cogs"></i></a>
-            <a href="tests" data-toggle="tooltip" data-placement="right" title="Tests"><i class="fas fa-check"></i></a>
-            <a href="https://github.com/droxit/roxcomposer-doc" target="_blank" data-toggle="tooltip"
-               data-placement="right" title="Documentation"><i class="fas fa-book"></i></a>
-            <a href="http://www.droxit.de" target="_blank" data-toggle="tooltip" data-placement="right"
-               title="Droxit website" style="padding-left:0px; text-align:center"><img
-                    src="{% static 'media/img/droxit_thumbnail.png' %}"
-                    class="img" alt="D"
-                    style="width:40px;height:auto;padding-left:0px"></a>
+<div class="container-fluid fill">
+    <div class="row">
+        <div id="navigation" class="col-1">
+            <div class="sidenav">
+                <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i class="fas fa-home"></i></a>
+                <a class="non-active" data-toggle="tooltip" data-placement="right" title="Graph"><i
+                        class="fas fa-share-alt"></i></a>
+                <a class="non-active" data-toggle="tooltip" data-placement="right" title="Messages"><i
+                        class="fas fa-envelope-open"></i></a>
+                <a class="non-active" data-toggle="tooltip" data-placement="right" title="Logs"><i
+                        class="fas fa-archive"></i></a>
+                <a href="pipelines" data-toggle="tooltip" data-placement="right" title="Pipelines"><i
+                        class="fas fa-retweet"></i></a>
+                <a href="services" data-toggle="tooltip" data-placement="right" title="Services"><i
+                        class="fas fa-cogs"></i></a>
+                <a href="tests" data-toggle="tooltip" data-placement="right" title="Tests"><i class="fas fa-check"></i></a>
+                <a href="https://github.com/droxit/roxcomposer-doc" target="_blank" data-toggle="tooltip"
+                   data-placement="right" title="Documentation"><i class="fas fa-book"></i></a>
+                <a href="http://www.droxit.de" target="_blank" data-toggle="tooltip" data-placement="right"
+                   title="Droxit website" style="padding-left:0px; text-align:center"><img
+                        src="{% static 'media/img/droxit_thumbnail.png' %}"
+                        class="img" alt="D"
+                        style="width:40px;height:auto;padding-left:0px"></a>
+            </div>
+        </div>
+        <div id="content" class="col-11">
+            {% block content %} {% endblock content %}
         </div>
     </div>
-    <div id="content" class="col-11">
-        {% block content %} {% endblock content %}
-    </div>
-</div>
 </div>
 <script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
 <script src="{% static 'base/js/bootstrap/bootstrap.bundle.min.js' %}"></script>

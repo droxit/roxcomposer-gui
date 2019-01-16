@@ -42,7 +42,10 @@ def rox_logs(request):
 @require_http_methods(["GET"])
 def rox_pipelines(request):
     """Pipelines page."""
-    context = {}
+    context = {
+        "search_bar_text": "Search pipelines",
+        "headline": "Pipelines"
+    }
     return render(request, "web/pages/pipelines/rox_pipelines.html", context)
 
 
@@ -60,4 +63,4 @@ def rox_services(request):
 def rox_tests(request):
     """Testing page."""
     context = {}
-    return render(request, "web_tests/rox_tests.html", context)
+    return render(request, "web/pages/tests/rox_tests.html", context)
