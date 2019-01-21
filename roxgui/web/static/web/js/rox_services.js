@@ -17,3 +17,9 @@ function get_services() {
 	    add_data_entries(name_info_list);
 	});
 }
+
+function show_empty_detail_view(){
+    var detail_win = document.querySelector("")
+
+
+}

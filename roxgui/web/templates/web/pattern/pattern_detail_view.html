@@ -1,0 +1,22 @@
+{% load static %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col">
+                <h4>{{ headline_detail }}</h4>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-primary btn-round float-right disabled">
+                    <span class="fas fa-plus"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="container">
+            <div id="data_detail_list" class="row" style="height: 400px; overflow-y: scroll;"></div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'web/js/pattern_search_bar_and_list.js' %}"></script>
