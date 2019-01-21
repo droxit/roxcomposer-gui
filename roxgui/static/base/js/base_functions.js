@@ -43,8 +43,6 @@ function alphabetical_sort(sort_list) {
 
 /* Convert JSON instance to properly formatted string. */
 function convert_to_json_string(json_instance) {
-    console.log(json_instance)
     json_string = JSON.stringify(json_instance, null, '\t');
-    console.log(json_string)
     return json_string;
 }
