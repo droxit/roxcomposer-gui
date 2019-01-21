@@ -1,5 +1,18 @@
+function create_headline(name){
+    var headline = document.createElement("div");
+    headline.setAttribute("id", "headline_detail");
+    headline.setAttribute("onclick", "edit_detail_headline()");
+
+    var header = document.createElement("h4");
+    header.appendChild(document.createTextNode(name));
+    headline.appendChild(header);
+    return headline;
+}
+
 function set_detail_headline(val){
-    $("#headline_detail").html("<h4>"+val+"</h4>")
+    var headline = $("#headline_detail");
+    var new_headline = create_headline(val);
+    headline.replaceWith(new_headline);
 }
 
 function set_info(elem_name){
@@ -12,7 +25,7 @@ function edit_detail_headline(){
 
     var current_name = detail_info.dataset.name;
     var new_info_container = document.createElement("h4");
-    create_input_field(headline, current_name, new_info_container); //in pattern_input_field
+    create_input_field(headline, current_name, create_headline); //in pattern_input_field
 }
 
 function enable_detail_headline_btns(){

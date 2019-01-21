@@ -1,4 +1,4 @@
-function create_input_field(text_node, placeholder, new_info_container){
+function create_input_field(text_node, placeholder, change_text_node){
     //text_node is the place where the input field should reside (the text that gets replaced)
     //placeholder is the text that was in the textnode first
     //new_info_container is an html element with the correct format for the new output
@@ -11,8 +11,8 @@ function create_input_field(text_node, placeholder, new_info_container){
         e.preventDefault();
         if(e.keyCode == 13){
             var new_info = input_field.value;
-            new_info_container.appendChild(document.createTextNode(new_info));
-            input_field.replaceWith(new_info_container);
+            var new_text_node = change_text_node(new_info);
+            input_field.replaceWith(new_text_node);
         }
     });
 
