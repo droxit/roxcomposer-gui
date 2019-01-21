@@ -31,6 +31,8 @@ function add_data_entry(data_name, data_info) {
 	li.setAttribute("id", create_info_id(data_name));
 	li.setAttribute("class", "list-group-item");
 	li.setAttribute("title", data_info);
+	li.setAttribute("data-name", data_name);
+	li.setAttribute("onclick", "go_to_detail_view(this)");
 	li.appendChild(document.createTextNode(data_name));
 	document.getElementById('data_info_list').appendChild(li);
 }

@@ -19,7 +19,10 @@ function get_services() {
 }
 
 function show_empty_detail_view(){
-    var detail_win = document.querySelector("")
+    $("#data_detail_list").html("");
+    var detail_headline = $("#headline_detail");
+
+    detail_headline.html("<h4>Select a service.</h4>");
 
 
 }
