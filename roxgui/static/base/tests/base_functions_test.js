@@ -35,25 +35,29 @@ describe('search_and_sort', function() {
 
 	// Search for keywords in custom data structure.
 	it('custom_keyword_search', function() {
-	    // Sample input.
+		// Sample input.
 		input = [
-		    ['delay_service', 'etwas Info'],
-		    ['generator_service', 'nur zum Generieren'],
+			['delay_service', 'etwas Info'],
+			['generator_service', 'nur zum Generieren'],
 		];
 
 		// Sample search functions.
 		function search_first(elem, pattern) {
-	        var text = elem[0];
-	        return text.includes(pattern);
-	    }
-	    function search_second(elem, pattern) {
-	        var text = elem[1];
-	        return text.includes(pattern);
-	    }
+			var text = elem[0];
+			return text.includes(pattern);
+		}
+
+		function search_second(elem, pattern) {
+			var text = elem[1];
+			return text.includes(pattern);
+		}
 
 		// Search for "service".
 		pattern = 'service';
-		output = [['delay_service', 'etwas Info'], ['generator_service', 'nur zum Generieren']];
+		output = [
+			['delay_service', 'etwas Info'],
+			['generator_service', 'nur zum Generieren']
+		];
 		expect(custom_keyword_search(input, pattern, search_first)).toEqual(output);
 		expect(keyword_search(input, pattern, search_second)).toEqual([]);
 		pattern = 'Service';
@@ -62,7 +66,9 @@ describe('search_and_sort', function() {
 
 		// Search for "Generieren".
 		pattern = 'Generieren'
-		output = [['generator_service', 'nur zum Generieren']];
+		output = [
+			['generator_service', 'nur zum Generieren']
+		];
 		expect(custom_keyword_search(input, pattern, search_first)).toEqual([]);
 		expect(custom_keyword_search(input, pattern, search_second)).toEqual(output);
 		pattern = 'generieren';
@@ -102,6 +108,19 @@ describe('search_and_sort', function() {
 		// Test empty arrays and null values.
 		expect(alphabetical_sort([])).toEqual([]);
 		expect(alphabetical_sort(null)).toEqual([]);
+	});
+
+});
+
+describe('string_formatting', function() {
+
+	it('json_strings', function() {
+		json_instance = {
+			"service": ["image_adder"],
+			"active": true
+		};
+		json_string = '{&quot;services&quot;:[&quot;image_adder&quot;],&quot;active&quot;:true}'
+		expect(convert_to_json_string(json_instance)).toEqual(json_string);
 	});
 
 });

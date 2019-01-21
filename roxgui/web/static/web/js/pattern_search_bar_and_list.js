@@ -56,14 +56,13 @@ function add_data_entries_from_remote(relative_url) {
 	    // Convert JSON data to string.
 	    for (var i = 0; i < tmp.length; i++) {
 	        var name = tmp[i][0];
-	        var json = JSON.stringify(tmp[i][1]);
+	        var json = convert_to_json_string(tmp[i][1]);
 	        name_info_list.push([name, json]);
 	    }
 	    // Add service data to list.
 	    add_data_entries(name_info_list);
 	});
 }
-
 
 function remove_data_entry(data_name) {
 	// Remove entry from data name list.
