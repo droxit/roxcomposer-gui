@@ -1,4 +1,7 @@
 function create_headline(name){
+    var detail_info = $("#detail_info")[0];
+    detail_info.dataset.name = name;
+
     var headline = document.createElement("div");
     headline.setAttribute("id", "headline_detail");
     headline.setAttribute("onclick", "edit_detail_headline()");
@@ -13,6 +16,9 @@ function set_detail_headline(val){
     var headline = $("#headline_detail");
     var new_headline = create_headline(val);
     headline.replaceWith(new_headline);
+
+    var detail_info = $("#detail_info")[0];
+    detail_info.dataset.name = val;
 }
 
 function set_info(elem_name){
