@@ -18,10 +18,10 @@ function create_input_field(text_node, placeholder, change_text_node){
 
     input_field.addEventListener("focusout", function(e){
         e.preventDefault();
-        input_save(input_field, placeholder, change_text_node);
+        if(input_field){
+            input_save(input_field, placeholder, change_text_node);
+        }
     });
-
-
 
     text_node.replaceWith(input_field);
 }
