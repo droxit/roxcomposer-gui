@@ -12,8 +12,8 @@ import logging
 import os
 
 import requests
-from rox_response import RoxResponse
 from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_LOG_FILE, ROX_CONNECTOR_IP
+from web.local_request.rox_response import RoxResponse
 
 # Logging.
 # ========
@@ -99,6 +99,37 @@ def create_rox_connector_url(relative_path: str = "") -> str:
 
 # Requests to ROXconnector.
 # =========================
+
+def get_pipelines() -> RoxResponse:
+    """
+    Get metadata of each available pipeline, i.e. pipeline name, involved services and current status.
+    :returns: oxResponse instance containing a list of tuples
+        mapping each pipeline name to its corresponding JSON data.
+    """
+
+    url = create_rox_connector_url("pipelines")
+
+    try:
+        r = requests.get(url)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(True, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    else:
+        pipelines = []
+        for key, value in r.json().items():
+            pipelines.append([key, value])
+        res = RoxResponse(True)
+        res.data = pipelines
+        return res
+
+
+# Requests to ROXconnector not yet migrated.
+# TODO: Check which of the following functions needs to be migrated.
+# ==========================================
 
 def get_message_history(message_id: str) -> RoxResponse:
     """
@@ -384,29 +415,6 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
         result_msg = "Message {} posted: {}.".format(r.json()['message_id'], message)
         res = RoxResponse(True, result_msg)
         res.data = r.json()['message_id']
-        return res
-
-
-def get_pipelines() -> RoxResponse:
-    """
-    Get metadata of each available pipeline, i.e. pipeline name, involved services and current status.
-    :returns: RoxResponse instance containing pipeline metadata.
-    """
-
-    url = create_rox_connector_url("pipelines")
-
-    try:
-        r = requests.get(url)
-    except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(str(err))
-        return RoxResponse(True, error_msg)
-
-    if r.status_code != 200:
-        error_msg = _create_http_status_error(r.status_code, r.text)
-        return RoxResponse(False, error_msg)
-    else:
-        res = RoxResponse(True)
-        res.data = r.json()
         return res
 
 

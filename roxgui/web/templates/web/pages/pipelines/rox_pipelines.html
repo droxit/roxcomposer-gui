@@ -1,5 +1,7 @@
 {% extends "web/pattern/layout_detail_view_and_list.html" %}
 
+{% load static %}
+
 {% block title %}
 <title>ROXcomposer - Pipelines</title>
 {% endblock title %}
@@ -15,4 +17,5 @@
 {% block list %}
 {% csrf_token %}
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
+<script>add_data_entries_from_remote('get_pipelines');</script>
 {% endblock list %}
