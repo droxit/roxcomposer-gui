@@ -21,8 +21,9 @@ function set_detail_headline(val){
     detail_info.dataset.name = val;
 }
 
-function set_info(elem_name){
+function set_info(elem_name, elem_title){
     $("#detail_info")[0].dataset.name = elem_name;
+    $("#detail_info")[0].dataset.title = elem_title;
 }
 
 function edit_detail_headline(){
@@ -35,7 +36,7 @@ function edit_detail_headline(){
 
 function enable_detail_headline_btns(){
     //"btn-watch" ,"btn-delete"
-    ["btn-edit, btn-save"].forEach(function(btn){
+    ["btn-edit", "btn-save"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -46,7 +47,7 @@ function btn_remove_disabled(btn){
 }
 
 function go_to_detail_view(elem){
-    set_info(elem.dataset.name);
+    set_info(elem.dataset.name, elem.dataset.title);
     set_detail_headline(elem.dataset.name);
     enable_detail_headline_btns();
 
@@ -61,5 +62,12 @@ function add_detail_view(elem){
     var detail_view = $("#data_detail_list");
     detail_view.html("");
     detail_view[0].appendChild(elem);
+}
+
+function save_detail(){
+    var detail_info = $("#detail_info")[0];
+    var save_detail_specific = eval(detail_info.dataset.save_func);
+    save_detail_specific(detail_info);
+
 }
 

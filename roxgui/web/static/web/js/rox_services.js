@@ -108,3 +108,7 @@ function get_params(service){
     });
     return param_arr;
 }
+
+function save_service(service){
+    //TODO
+}
