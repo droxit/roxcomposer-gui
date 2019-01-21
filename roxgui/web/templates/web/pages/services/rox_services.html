@@ -17,6 +17,5 @@
 {% block list %}
 {% csrf_token %}
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
-<script src="{% static 'web/js/rox_services.js' %}"></script>
-<script>get_services();</script>
+<script>add_data_entries_from_remote('get_services');</script>
 {% endblock list %}

@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Communication with local filesystem to retrieve stored services.
+# Communication with filesystem to retrieve locally stored data.
 #
 # devs@droxit.de
 #
