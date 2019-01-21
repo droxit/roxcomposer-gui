@@ -54,7 +54,8 @@ def rox_services(request):
     """Services page."""
     context = {
         "search_bar_text": "Search services",
-        "headline": "Services"
+        "headline": "Services",
+        "callback_func" : "create_service_detail",
     }
     return render(request, "web/pages/services/rox_services.html", context)
 

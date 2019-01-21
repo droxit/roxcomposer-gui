@@ -30,7 +30,6 @@ function edit_detail_headline(){
     var detail_info = $("#detail_info")[0];
 
     var current_name = detail_info.dataset.name;
-    var new_info_container = document.createElement("h4");
     create_input_field(headline, current_name, create_headline); //in pattern_input_field
 }
 
@@ -49,11 +48,17 @@ function go_to_detail_view(elem){
     set_info(elem.dataset.name);
     set_detail_headline(elem.dataset.name);
     enable_detail_headline_btns();
-    add_detail_view()
+
+    var detail_info = $("#detail_info")[0];
+    var create_detail_view = eval(detail_info.dataset.func)
+
+    var detail_view = create_detail_view(elem);
+    add_detail_view(detail_view);
 }
 
 function add_detail_view(elem){
     var detail_view = $("#data_detail_list");
-    detail_view[0].html("");
-    detail_view.appendChild(elem);
+    detail_view.html("");
+    detail_view[0].appendChild(elem);
 }
+
