@@ -26,7 +26,7 @@ function set_info(elem_name){
 }
 
 function edit_detail_headline(){
-    var headline = $("#headline_detail");
+    var headline = $("#headline_detail")[0];
     var detail_info = $("#detail_info")[0];
 
     var current_name = detail_info.dataset.name;
@@ -49,4 +49,10 @@ function go_to_detail_view(elem){
     set_info(elem.dataset.name);
     set_detail_headline(elem.dataset.name);
     enable_detail_headline_btns();
+}
+
+function add_detail_view(elem){
+    var detail_view = $("#data_detail_list");
+    detail_view[0].html("");
+    detail_view.appendChild(elem);
 }

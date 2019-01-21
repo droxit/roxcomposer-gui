@@ -26,3 +26,7 @@ function show_empty_detail_view(){
 
 
 }
+
+function show_detail_of_service(){
+
+}
