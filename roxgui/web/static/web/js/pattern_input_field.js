@@ -24,7 +24,9 @@ function create_input_field(text_node, placeholder, change_text_node){
     });
 
     text_node.replaceWith(input_field);
+    input_field.focus();
 }
+
 
 function input_save(input_field, placeholder, change_text_node){
     var new_info = input_field.value;
