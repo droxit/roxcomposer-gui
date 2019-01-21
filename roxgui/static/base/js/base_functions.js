@@ -40,3 +40,4 @@ function alphabetical_sort(sort_list) {
 		return [];
 	}
 }
+

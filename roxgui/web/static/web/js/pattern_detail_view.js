@@ -34,7 +34,8 @@ function edit_detail_headline(){
 }
 
 function enable_detail_headline_btns(){
-    ["btn-edit","btn-delete","btn-watch"].forEach(function(btn){
+    //"btn-watch" ,"btn-delete"
+    ["btn-edit, btn-save"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
