@@ -106,7 +106,5 @@ function get_params(service){
     jQuery.each(json_params.params, function(i, val) {
         param_arr.push([i, val]);
     });
-
-    console.log([["classpath", json_params.classpath], json_params.params]);
     return param_arr;
 }
