@@ -100,6 +100,13 @@ function set_param_field(param_val){
 }
 
 function get_params(service){
-    console.log(service);
-    return [["gsffdh", "sdfgsdg"],["1", "2"],["a", "b"]];
+    var json_params = JSON.parse(service.title);
+    var param_arr = [["classpath", json_params.classpath]];
+
+    jQuery.each(json_params.params, function(i, val) {
+        param_arr.push([i, val]);
+    });
+
+    console.log([["classpath", json_params.classpath], json_params.params]);
+    return param_arr;
 }
