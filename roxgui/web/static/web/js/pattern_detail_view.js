@@ -49,6 +49,7 @@ function go_to_detail_view(elem){
     set_info(elem.dataset.name);
     set_detail_headline(elem.dataset.name);
     enable_detail_headline_btns();
+    add_detail_view()
 }
 
 function add_detail_view(elem){
