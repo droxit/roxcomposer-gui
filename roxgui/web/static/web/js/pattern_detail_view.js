@@ -11,11 +11,8 @@ function edit_detail_headline(){
     var detail_info = $("#detail_info")[0];
 
     var current_name = detail_info.dataset.name;
-
-    var name_input = create_input_field(current_name); //in pattern_input_field
-
-    headline.html("");
-    headline[0].appendChild(name_input);
+    var new_info_container = document.createElement("h4");
+    create_input_field(headline, current_name, new_info_container); //in pattern_input_field
 }
 
 function enable_detail_headline_btns(){
