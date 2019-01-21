@@ -41,7 +41,7 @@ function create_service_detail(service){
 
 
     var list_of_params = get_params(service);
-    list_of_params.forEach(function(param1, param2){
+    list_of_params.forEach(function(param_pair){
 
         var row = document.createElement("div");
         row.setAttribute("class", "row");
@@ -63,8 +63,8 @@ function create_service_detail(service){
         row.appendChild(col2);
         row.appendChild(col3);
 
-        var param_field_key = create_param_field(param1);
-        var param_field_value = create_param_field(param2);
+        var param_field_key = create_param_field(param_pair[0]);
+        var param_field_value = create_param_field(param_pair[1]);
         col1.appendChild(param_field_key);
         col2.appendChild(document.createTextNode(" : "));
         col3.appendChild(param_field_value);
@@ -100,5 +100,6 @@ function set_param_field(param_val){
 }
 
 function get_params(service){
-    return [("gsffdh", "sdfgsdg"),("1", "2"),("a", "b")];
+    console.log(service);
+    return [["gsffdh", "sdfgsdg"],["1", "2"],["a", "b"]];
 }

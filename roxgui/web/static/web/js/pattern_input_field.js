@@ -12,14 +12,25 @@ function create_input_field(text_node, placeholder, change_text_node){
     input_field.addEventListener("keyup", function(e){
         e.preventDefault();
         if(e.keyCode == 13){
-            var new_info = input_field.value;
-            if(!new_info){
-                new_info = placeholder;
-            }
-            var new_text_node = change_text_node(new_info);
-            input_field.replaceWith(new_text_node);
+            input_save(input_field, placeholder, change_text_node);
         }
     });
 
+    input_field.addEventListener("focusout", function(e){
+        e.preventDefault();
+        input_save(input_field, placeholder, change_text_node);
+    });
+
+
+
     text_node.replaceWith(input_field);
+}
+
+function input_save(input_field, placeholder, change_text_node){
+    var new_info = input_field.value;
+    if(!new_info){
+        new_info = placeholder;
+    }
+    var new_text_node = change_text_node(new_info);
+    input_field.replaceWith(new_text_node);
 }
