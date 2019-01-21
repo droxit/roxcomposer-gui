@@ -11,7 +11,13 @@
 {% endblock headline %}
 
 {% block detail_view %}
+<br>
 <p>Detail view</p>
+
+{% include 'web/pattern/pattern_detail_view.html' %}
+<script src="{% static 'web/js/rox_services.js' %}"></script>
+<script>get_services();</script>
+
 {% endblock detail_view %}
 
 {% block list %}
