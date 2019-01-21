@@ -2,7 +2,7 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'web/css/pattern_detail_view.css' %}">
 
-<p hidden data-name="" data-save_func="{{callback_save}}" data-func="{{callback_func}}" id="detail_info"></p>
+<p hidden data-name="" data-run_func="{{callback_run}}" data-save_func="{{callback_save}}" data-func="{{callback_func}}" id="detail_info"></p>
 
 <div class="card">
     <div class="card-header">
@@ -22,6 +22,10 @@
 
                 <button type="button" id="btn-edit" class="btn btn-primary btn-round float-right space-right disabled" onclick="edit_detail_headline()">
                     <span class="fas fa-pen"></span>
+                </button>
+
+                <button type="button" id="btn-run" class="btn btn-primary btn-round float-right space-right disabled" onclick="run_services()">
+                    <span class="fas fa-play"></span>
                 </button>
 
             </div>
