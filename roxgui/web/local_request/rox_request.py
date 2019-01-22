@@ -181,6 +181,20 @@ def get_running_service_jsons() -> RoxResponse:
         res.data = dict((key, value) for (key, value) in r.json().items() if key not in FORBIDDEN_SERVICES)
         return res
 
+def get_running_services() ->RoxResponse:
+    """
+    Get Names of all currently running services
+    :return: List of service names
+    """
+    res = get_running_service_jsons()
+    service_names = []
+    for service in res.data:
+        print(service)
+        service_names.append(service)
+    r = RoxResponse(res.success, res.message)
+    r.data = service_names
+    return r
+
 
 def create_service(ip: str,
                    port: int,

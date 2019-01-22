@@ -22,6 +22,7 @@ urlpatterns = [
 
     # JSON views.
     path('get_services', json_views.get_services, name="get_services"),
+    path('check_running', json_views.check_running, name="check_running"),
     path('start_services', json_views.start_services, name="start_services"),
     path('stop_services', json_views.stop_services, name="stop_services"),
     path('get_pipelines', json_views.get_pipelines, name="get_pipelines"),

@@ -33,6 +33,23 @@ def get_services(request):
     return JsonResponse(context)
 
 @require_http_methods(["POST"])
+def check_running(request):
+    result = rox_request.get_running_services()
+    running_services = result.data
+    services = request.POST.getlist("services[]", default=[])
+
+    running = {}
+    print(services, running_services)
+    for service in services:
+        service_is_running = False
+        if service in running_services:
+            service_is_running = True
+        running[service] = service_is_running
+    context = _create_json_context(running)
+    return JsonResponse(context)
+
+
+@require_http_methods(["POST"])
 def start_services(request):
     """Start services specified in POST request's metadata."""
     # Get list of service names which should be started.

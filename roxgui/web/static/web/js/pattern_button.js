@@ -27,12 +27,13 @@ function show_tooltip(btn, success, successmsg, failmsg){
 }
 
 
-function toggle_button(btn, detail_info, success, img1, img2){
+function toggle_button(btn, new_btn_status, img1, img2){
     var btn_span = btn.childNodes[1];
-    if(success){
+    var old_btn_status = btn.dataset.status
+    if(new_btn_status != old_btn_status){
         if(btn.dataset.status == "0"){
-                btn.dataset.status = "1"
-                btn_span.classList.replace(img1, img2);
+            btn.dataset.status = "1"
+            btn_span.classList.replace(img1, img2);
         }else{
             btn.dataset.status = "0"
             btn_span.classList.replace(img2, img1);
@@ -42,4 +43,8 @@ function toggle_button(btn, detail_info, success, img1, img2){
 
 function check_disabled(btn){
     return btn.classList.contains("disabled");
+}
+
+function set_button(btn, status, img){
+
 }
