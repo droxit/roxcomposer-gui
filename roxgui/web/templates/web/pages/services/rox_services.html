@@ -15,12 +15,17 @@
 
 {% include 'web/pattern/pattern_detail_view.html' %}
 <script src="{% static 'web/js/rox_services.js' %}"></script>
-<script>show_empty_detail_view();</script>
+<script>
+    show_empty_detail_view();
+</script>
 
 {% endblock detail_view %}
 
 {% block list %}
 {% csrf_token %}
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
-<script>add_data_entries_from_remote('get_services');</script>
+<script>
+    add_data_entries_from_remote('get_services');
+    set_service_tooltips();
+</script>
 {% endblock list %}

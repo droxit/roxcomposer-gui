@@ -5,6 +5,24 @@ function show_empty_detail_view(){
     detail_headline.html("<h4>Select a service.</h4>");
 }
 
+
+function set_service_tooltips(){
+    set_service_tooltip($("#btn-watch")[0].dataset, "(un)watch service");
+    set_service_tooltip($("#btn-edit")[0].dataset, "edit name");
+    set_service_tooltip($("#btn-run")[0].dataset, "run/stop service");
+    set_service_tooltip($("#btn-delete")[0].dataset, "delete service");
+    set_service_tooltip($("#btn-save")[0].dataset, "save changes");
+    set_service_tooltip($("#btn-add")[0].dataset, "add new service");
+}
+
+function set_service_tooltip(btn, tooltip){
+    btn.status = "0";
+    btn.toggle = "tooltip";
+    btn.placement = "bottom";
+    btn.title = tooltip;
+}
+
+
 function get_dataset(){
     return $("#detail_info")[0].dataset;
 }
