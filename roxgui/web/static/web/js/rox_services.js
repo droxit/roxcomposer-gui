@@ -107,15 +107,25 @@ function run_service(detail_info){
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-		// TODO: if error show tooltip
-		console.log(data)
-		if(data.success){
-		    update_run_button();
-		}
-		show_tooltip(element, data.success, "Started service successfully.", "Failed to start service");
+	    btn = $("#btn-run");
+	    toggle_run_button(btn[0], detail_info, data.success);
+		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service");
 	});
 }
 
-function update_run_button(){
+function stop_service(detail_info){
+    var service = detail_info.dataset.name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("stop_services", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    btn = $("#btn-run");
+	    toggle_run_button(btn[0], detail_info, data.success);
+		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service");
+	});
+}
 
+function toggle_run_button(btn, detail_info, success){
+    toggle_button(btn, detail_info, success, "fa-play", "fa-stop")
 }

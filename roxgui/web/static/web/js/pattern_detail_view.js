@@ -26,12 +26,14 @@ function set_info(elem_name, elem_title){
     $("#detail_info")[0].dataset.title = elem_title;
 }
 
-function edit_detail_headline(){
-    var headline = $("#headline_detail")[0];
-    var detail_info = $("#detail_info")[0];
+function edit_detail_headline(btn){
+    if(!check_disabled(btn)){
+        var headline = $("#headline_detail")[0];
+        var detail_info = $("#detail_info")[0];
 
-    var current_name = detail_info.dataset.name;
-    create_input_field(headline, current_name, create_headline); //in pattern_input_field
+        var current_name = detail_info.dataset.name;
+        create_input_field(headline, current_name, create_headline); //in pattern_input_field
+    }
 }
 
 function enable_detail_headline_btns(){
@@ -71,19 +73,25 @@ function save_detail(){
 
 }
 
-function run_services(){
-    var detail_info = $("#detail_info")[0];
-    var run_services = eval(detail_info.dataset.run_func)
-
-    run_services(detail_info);
-
-    update_run_button();
+function toggle_services(btn){
+    if(!check_disabled(btn)){
+        var detail_info = $("#detail_info")[0];
+        if(btn.dataset.status == "0"){
+            run_services(detail_info);
+        }else if(btn.dataset.status == "1"){
+            stop_services(detail_info);
+        }
+    }
 }
 
-function update_run_button(){
-    //TODO
+function run_services(detail_info){
+    var run_services_specific = eval(detail_info.dataset.run_func)
+    run_services_specific(detail_info);
 }
 
-function stop_services(){
-    //TODO
+
+
+function stop_services(detail_info){
+    var stop_services_specific = eval(detail_info.dataset.stop_func)
+    stop_services_specific(detail_info);
 }
