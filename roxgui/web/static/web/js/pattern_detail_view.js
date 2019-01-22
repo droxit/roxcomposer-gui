@@ -35,7 +35,7 @@ function edit_detail_headline(btn){
 
 function enable_detail_headline_btns(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-run"].forEach(function(btn){
+    ["btn-edit", "btn-run", "btn-watch"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -74,16 +74,28 @@ function save_detail(){
 
 }
 
-function toggle_services(btn){
+function toggle_services(btn, func_enable, func_disable){
     if(!check_disabled(btn)){
         var detail_info = $("#detail_info")[0];
         if(btn.dataset.status == "0"){
-            run_services(detail_info);
+            func_enable(detail_info);
         }else if(btn.dataset.status == "1"){
-            stop_services(detail_info);
+            func_disable(detail_info);
         }
     }
 }
+
+
+function watch_services(detail_info){
+    var watch_services_specific = eval(detail_info.dataset.watch_func)
+    watch_services_specific(detail_info);
+}
+
+function unwatch_services(detail_info){
+    var unwatch_services_specific = eval(detail_info.dataset.unwatch_func)
+    unwatch_services_specific(detail_info);
+}
+
 
 function run_services(detail_info){
     var run_services_specific = eval(detail_info.dataset.run_func)

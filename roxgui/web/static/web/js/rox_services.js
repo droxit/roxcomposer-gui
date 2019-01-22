@@ -3,8 +3,18 @@ function show_empty_detail_view(){
     var detail_headline = $("#headline_detail");
 
     detail_headline.html("<h4>Select a service.</h4>");
+}
 
+function get_dataset(){
+    return $("#detail_info")[0].dataset;
+}
 
+function set_service_info(elem){
+    var dataset = get_dataset();
+    var service = elem.dataset.name;
+    dataset.name = service;
+    dataset.services = [elem.dataset.name];
+    dataset.title = elem.dataset.title;
 }
 
 function create_service_detail(service){
@@ -100,6 +110,37 @@ function save_service(service){
     //TODO
 }
 
+function watch_service(detail_info){
+    var service = detail_info.dataset.name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("watch", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    btn = $("#btn-watch");
+	    if(data.success){
+	        toggle_watch_button(btn[0], '1', data.success);
+	    }
+		show_tooltip(btn, data.success, "Watching service.", "Watching failed.");
+	});
+}
+
+function unwatch_service(service){
+    var service = detail_info.dataset.name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("unwatch", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    btn = $("#btn-watch");
+	    if(data.success){
+	        toggle_watch_button(btn[0], '0', data.success);
+		}
+		show_tooltip(btn, data.success, "Watching service.", "Watching failed.");
+	});
+}
+
+
 function run_service(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -108,7 +149,9 @@ function run_service(detail_info){
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    btn = $("#btn-run");
-	    toggle_run_button(btn[0], '1', data.success);
+	    if(data.success){
+	        toggle_run_button(btn[0], '1', data.success);
+		}
 		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service");
 	});
 }
@@ -121,30 +164,21 @@ function stop_service(detail_info){
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    btn = $("#btn-run");
-	    toggle_run_button(btn[0], '0' , data.success);
+	    if(data.success){
+    	    toggle_run_button(btn[0], '0' , data.success);
+		}
 		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service");
 	});
 }
 
-function set_service_info(elem){
-    var dataset = get_dataset();
-    var service = elem.dataset.name;
-    dataset.name = service;
-    dataset.services = [elem.dataset.name];
-    dataset.title = elem.dataset.title;
-}
-
 function toggle_run_button(btn, btn_status){
-    toggle_button(btn, btn_status, "fa-play", "fa-stop")
+    toggle_button(btn, btn_status, "fa-play", "fa-stop");
 }
 
 function set_service_buttons(detail_info){
     var service = detail_info.dataset.name;
     set_run_button(service);
-}
-
-function get_dataset(){
-    return $("#detail_info")[0].dataset
+    set_watch_button(service);
 }
 
 function set_run_button(service){
@@ -159,5 +193,22 @@ function set_run_button(service){
 	    }
 	    toggle_run_button($("#btn-run")[0], running);
 	});
+}
 
+function set_watch_button(service){
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    $.post("check_watched", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    var watched = "0";
+	    if(data.data[service] == true){
+            watched = "1";
+	    }
+	    toggle_watch_button($("#btn-watch")[0], watched);
+	});
+}
+
+function toggle_watch_button(btn, btn_status){
+    toggle_button(btn, btn_status, "fa-eye", "fa-eye-slash");
 }

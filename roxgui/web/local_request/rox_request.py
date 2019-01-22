@@ -549,6 +549,43 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
             return RoxResponse(False, "All services are already watched.")
 
 
+def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
+    """
+    The specified services are removed from the watchlist and logs concerning these services
+    will no longer be sent from the server.
+    :param service_names: a list of service names of services that should no longer be watched
+    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+            for instance the session ID, or which services are being watched.
+    :return: RoxResponse with the new or updated session dict as data
+    """
+    if len(service_names) < 1:
+        return RoxResponse(False, "No services specified.")
+
+    if rox_session is None:
+        return RoxResponse(False, "No session specified.")
+
+    s = list(filter(lambda service: service in rox_session['services'], service_names))
+
+    if len(s) == 0:
+        return RoxResponse(False, "The specified services are not being watched.")
+
+    data = {'sessionid': rox_session['id'], 'services': s}
+    try:
+        r = requests.delete(create_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    else:
+        rox_session['services'] = list(set(rox_session['services']).difference(set(s)))
+        res = RoxResponse(True, "Services no longer watched: {}.".format(s))
+        res.data = rox_session
+        return res
+
+
 def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxResponse:
     """
     Attempt to start a new log session on the ROXcomposer
@@ -589,43 +626,6 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
     res = RoxResponse(True, r.text)
     res.data = rox_session
     return res
-
-
-def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
-    """
-    The specified services are removed from the watchlist and logs concerning these services
-    will no longer be sent from the server.
-    :param service_names: a list of service names of services that should no longer be watched
-    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
-            for instance the session ID, or which services are being watched.
-    :return: RoxResponse with the new or updated session dict as data
-    """
-    if len(service_names) < 1:
-        return RoxResponse(False, "No services specified.")
-
-    if rox_session is None:
-        return RoxResponse(False, "No session specified.")
-
-    s = list(filter(lambda service: service in rox_session['services'], service_names))
-
-    if len(s) == 0:
-        return RoxResponse(False, "The specified services are not being watched.")
-
-    data = {'sessionid': rox_session['id'], 'services': s}
-    try:
-        r = requests.delete(create_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
-    except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(str(err))
-        return RoxResponse(False, error_msg)
-
-    if r.status_code != 200:
-        error_msg = _create_http_status_error(r.status_code, r.text)
-        return RoxResponse(False, error_msg)
-    else:
-        rox_session['services'] = list(set(rox_session['services']).difference(set(s)))
-        res = RoxResponse(True, "Services no longer watched: {}.".format(s))
-        res.data = rox_session
-        return res
 
 
 def get_service_logs(rox_session: dict):

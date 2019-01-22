@@ -61,6 +61,9 @@ def rox_services(request):
         "callback_stop": "stop_service",
         "callback_info": "set_service_info",
         "callback_buttons": "set_service_buttons",
+        "callback_watch": "watch_service",
+        "callback_unwatch": "unwatch_service",
+
 
     }
     return render(request, "web/pages/services/rox_services.html", context)
