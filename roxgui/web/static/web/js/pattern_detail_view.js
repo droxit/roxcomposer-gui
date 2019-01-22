@@ -35,8 +35,8 @@ function edit_detail_headline(){
 }
 
 function enable_detail_headline_btns(){
-    //"btn-watch" ,"btn-delete"
-    ["btn-edit", "btn-save"].forEach(function(btn){
+    //"btn-watch" ,"btn-delete", "btn-save"
+    ["btn-edit", "btn-run"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -71,3 +71,19 @@ function save_detail(){
 
 }
 
+function run_services(){
+    var detail_info = $("#detail_info")[0];
+    var run_services = eval(detail_info.dataset.run_func)
+
+    run_services(detail_info);
+
+    update_run_button();
+}
+
+function update_run_button(){
+    //TODO
+}
+
+function stop_services(){
+    //TODO
+}
