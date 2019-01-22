@@ -121,7 +121,7 @@ function watch_service(detail_info){
 	    if(data.success){
 	        toggle_watch_button(btn[0], '1', data.success);
 	    }
-		show_tooltip(btn, data.success, "Watching service.", "Watching failed.");
+		show_tooltip(btn, data.success, "Watching service.", "Watching failed. \n "+data.message);
 	});
 }
 
@@ -136,7 +136,7 @@ function unwatch_service(service){
 	    if(data.success){
 	        toggle_watch_button(btn[0], '0', data.success);
 		}
-		show_tooltip(btn, data.success, "Watching service.", "Watching failed.");
+		show_tooltip(btn, data.success, "Unwatched service.", "Unwatching not successful.");
 	});
 }
 
@@ -152,7 +152,7 @@ function run_service(detail_info){
 	    if(data.success){
 	        toggle_run_button(btn[0], '1', data.success);
 		}
-		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service");
+		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service. \n "+data.message);
 	});
 }
 
@@ -167,7 +167,7 @@ function stop_service(detail_info){
 	    if(data.success){
     	    toggle_run_button(btn[0], '0' , data.success);
 		}
-		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service");
+		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service. \n "+data.message);
 	});
 }
 
