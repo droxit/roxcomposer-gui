@@ -27,6 +27,7 @@ def get_pipelines(request):
     # Get JSON data of local pipelines.
     result = rox_request.get_pipelines()
     pipelines_json_dict = result.data
+    print(pipelines_json_dict)
     # Prepare and return JSON response.
     context = _create_json_context(pipelines_json_dict)
     return JsonResponse(context)

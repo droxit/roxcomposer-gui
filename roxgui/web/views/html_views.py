@@ -44,7 +44,15 @@ def rox_pipelines(request):
     """Pipelines page."""
     context = {
         "search_bar_text": "Search pipelines",
-        "headline": "Pipelines"
+        "headline": "Pipelines",
+        "callback_func": "create_pipe_detail",
+        "callback_save": "save_pipe",
+        "callback_run": "run_pipe",
+        "callback_stop": "stop_pipe",
+        "callback_info": "set_pipe_info",
+        "callback_buttons": "set_pipe_buttons",
+        "callback_watch": "watch_pipe",
+        "callback_unwatch": "unwatch_pipe",
     }
     return render(request, "web/pages/pipelines/rox_pipelines.html", context)
 

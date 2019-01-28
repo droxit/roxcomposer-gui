@@ -2,29 +2,30 @@ function show_empty_detail_view(){
     $("#data_detail_list").html("");
     var detail_headline = $("#headline_detail");
 
-    detail_headline.html("<h4>Select a service.</h4>");
+    detail_headline.html("<h4>Select a pipeline.</h4>");
 }
 
 
-function set_service_tooltips(){
-    set_service_tooltip($("#btn-watch")[0].dataset, "(un)watch service");
-    set_service_tooltip($("#btn-edit")[0].dataset, "edit name");
-    set_service_tooltip($("#btn-run")[0].dataset, "run/stop service");
-    set_service_tooltip($("#btn-delete")[0].dataset, "delete service");
-    set_service_tooltip($("#btn-save")[0].dataset, "save changes");
-    set_service_tooltip($("#btn-add")[0].dataset, "add new service");
+function set_pipe_tooltips(){
+    set_pipe_tooltip($("#btn-watch")[0].dataset, "(un)watch all services in pipeline");
+    set_pipe_tooltip($("#btn-edit")[0].dataset, "edit name");
+    set_pipe_tooltip($("#btn-run")[0].dataset, "run/stop all services in pipe");
+    set_pipe_tooltip($("#btn-delete")[0].dataset, "delete pipe");
+    set_pipe_tooltip($("#btn-save")[0].dataset, "save changes");
+    set_pipe_tooltip($("#btn-add")[0].dataset, "add new pipe");
 }
 
-function set_service_tooltip(btn, tooltip){
+function set_pipe_tooltip(btn, tooltip){
     btn.status = "0";
     btn.toggle = "tooltip";
     btn.placement = "bottom";
     btn.title = tooltip;
 }
 
+
 function enable_detail_headline_btns(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-run", "btn-watch"].forEach(function(btn){
+    ["btn-edit"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -34,20 +35,19 @@ function btn_remove_disabled(btn){
     btnedit.classList.remove("disabled");
 }
 
-
 function get_dataset(){
     return $("#detail_info")[0].dataset;
 }
 
-function set_service_info(elem){
+function set_pipe_info(elem){
     var dataset = get_dataset();
-    var service = elem.dataset.name;
-    dataset.name = service;
-    dataset.services = [elem.dataset.name];
-    dataset.title = elem.dataset.title;
+    var pipe = elem.dataset.name;
+    dataset.name = pipe;
+    dataset.services = JSON.parse(elem.dataset.title).services;
 }
 
-function create_service_detail(service){
+
+function create_pipe_detail(pipeline){
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
 
@@ -59,66 +59,20 @@ function create_service_detail(service){
     empty_row.appendChild(empty_col);
     detail_container.appendChild(empty_row);
 
-
-    var list_of_params = get_params(service);
-    list_of_params.forEach(function(param_pair){
-
-        var row = document.createElement("div");
-        row.setAttribute("class", "row");
-        detail_container.appendChild(row);
-
-        var col1 = document.createElement("div");
-        col1.setAttribute("class", "col-md-5");
-        col1.setAttribute("align", "center");
-
-        var col2 = document.createElement("div");
-        col2.setAttribute("class", "col-md-1");
-        col2.setAttribute("align", "center");
-
-        var col3 = document.createElement("div");
-        col3.setAttribute("class", "col-md-5");
-        col3.setAttribute("align", "center");
-
-        row.appendChild(col1);
-        row.appendChild(col2);
-        row.appendChild(col3);
-
-        var param_field_key = create_param_field(param_pair[0]);
-        var param_field_value = create_param_field(param_pair[1]);
-        col1.appendChild(param_field_key);
-        col2.appendChild(document.createTextNode(" : "));
-        col3.appendChild(param_field_value);
-
-    });
-
-    var service_name = document.createTextNode(service.id);
     return detail_container;
 
 }
 
-function get_params(service){
-    var json_params = JSON.parse(service.dataset.title);
-    if(json_params.classpath){
-        var param_arr = [["classpath", JSON.stringify(json_params.classpath, null, ' ')]];
-    }
-    if(json_params.path){
-        var param_arr = [["path", JSON.stringify(json_params.path, null, ' ')]];
-    }
 
-    jQuery.each(json_params.params, function(i, val) {
-        val = JSON.stringify(val, null, ' ');
 
-        param_arr.push([i, val]);
-    });
-    return param_arr;
-}
 
-function save_service(service){
+
+function save_pipe(pipe){
     //TODO
 }
 
-function watch_service(detail_info){
-    var service = detail_info.dataset.name;
+function watch_pipe(detail_info){
+    var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
 		services: [service],
@@ -132,8 +86,8 @@ function watch_service(detail_info){
 	});
 }
 
-function unwatch_service(service){
-    var service = detail_info.dataset.name;
+function unwatch_pipe(detail_info){
+    var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
 		services: [service],
@@ -148,8 +102,8 @@ function unwatch_service(service){
 }
 
 
-function run_service(detail_info){
-    var service = detail_info.dataset.name;
+function run_pipe(detail_info){
+    var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
 		services: [service],
@@ -163,8 +117,8 @@ function run_service(detail_info){
 	});
 }
 
-function stop_service(detail_info){
-    var service = detail_info.dataset.name;
+function stop_pipe(detail_info){
+    var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
 		services: [service],
@@ -179,16 +133,17 @@ function stop_service(detail_info){
 }
 
 
-function set_service_buttons(detail_info){
-    var service = detail_info.dataset.name;
-    set_run_button(service);
-    set_watch_button(service);
+//TODO
+function set_pipe_buttons(detail_info){
+    var pipe = detail_info.dataset.name;
+    //set_pipe_run_button(pipe);
+    //set_pipe_watch_button(pipe);
 }
 
-function set_run_button(service){
+function set_pipe_run_button(pipe){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_running", {
-		services: [service],
+		services: [services],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    var running = "0";
@@ -199,10 +154,10 @@ function set_run_button(service){
 	});
 }
 
-function set_watch_button(service){
+function set_pipe_watch_button(pipe){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_watched", {
-		services: [service],
+		services: [services],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    var watched = "0";
@@ -212,4 +167,3 @@ function set_watch_button(service){
 	    toggle_watch_button($("#btn-watch")[0], watched);
 	});
 }
-

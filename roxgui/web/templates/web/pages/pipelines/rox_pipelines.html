@@ -11,11 +11,20 @@
 {% endblock headline %}
 
 {% block detail_view %}
-<p>Detail view</p>
+<br>
+
+{% include 'web/pattern/pattern_detail_view.html' %}
+<script src="{% static 'web/js/rox_pipelines.js' %}"></script>
+<script>
+    show_empty_detail_view();
+</script>
 {% endblock detail_view %}
 
 {% block list %}
 {% csrf_token %}
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
-<script>add_data_entries_from_remote('get_pipelines');</script>
+<script>
+    add_data_entries_from_remote('get_pipelines');
+    set_pipe_tooltips();
+</script>
 {% endblock list %}

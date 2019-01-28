@@ -24,25 +24,34 @@ function set_detail_headline(val){
 
 
 function edit_detail_headline(btn){
-    if(!check_disabled(btn)){
-        var headline = $("#headline_detail")[0];
-        var detail_info = $("#detail_info")[0];
+    var headline = $("#headline_detail")[0];
+    var detail_info = $("#detail_info")[0];
 
-        var current_name = detail_info.dataset.name;
-        create_input_field(headline, current_name, create_headline); //in pattern_input_field
-    }
+    var current_name = detail_info.dataset.name;
+    create_input_field(headline, current_name, create_headline); //in pattern_input_field
+
 }
 
-function enable_detail_headline_btns(){
-    //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-run", "btn-watch"].forEach(function(btn){
-        btn_remove_disabled(btn);
-    });
+function edit_param_field(param_div, param){
+
+    create_input_field(param_div, param , create_param_field);
 }
 
-function btn_remove_disabled(btn){
-    var btnedit = $("#"+btn+"")[0];
-    btnedit.classList.remove("disabled");
+function create_param_field(val) {
+    var param_div = document.createElement("div");
+    param_div.setAttribute("onclick", "edit_param_field(this, '"+ escapeHtml(val) +"')");
+
+    var param_content = set_param_field(val);
+    param_div.appendChild(param_content);
+
+    return param_div;
+}
+
+function set_param_field(param_val){
+    var new_text_field = document.createElement("h4");
+    new_text_field.appendChild(document.createTextNode(param_val));
+    return new_text_field;
+
 }
 
 function go_to_detail_view(elem){
@@ -110,4 +119,12 @@ function stop_services(detail_info){
 function set_buttons(detail_info){
    var set_buttons_specific = eval(detail_info.dataset.set_buttons)
    set_buttons_specific(detail_info);
+}
+
+function toggle_run_button(btn, btn_status){
+    toggle_button(btn, btn_status, "fa-play", "fa-stop");
+}
+
+function toggle_watch_button(btn, btn_status){
+    toggle_button(btn, btn_status, "fa-eye", "fa-eye-slash");
 }
