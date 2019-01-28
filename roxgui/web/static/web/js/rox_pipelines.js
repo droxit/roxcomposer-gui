@@ -1,3 +1,4 @@
+
 function show_empty_detail_view(){
     $("#data_detail_list").html("");
     var detail_headline = $("#headline_detail");
@@ -51,14 +52,9 @@ function create_pipe_detail(pipeline){
     var data = get_dataset()
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
+    detail_container.setAttribute("style", "padding:60px")
 
-    var empty_row = document.createElement("div");
-    empty_row.setAttribute("class", "row");
-    var empty_col = document.createElement("div");
-    empty_col.setAttribute("class", "col-md-12");
-    empty_col.appendChild(document.createElement("br"));
-    empty_row.appendChild(empty_col);
-    detail_container.appendChild(empty_row);
+    var services_in_pipe = JSON.parse(data.services);
 
     var services_row = document.createElement("div");
     services_row.setAttribute("class", "row");
@@ -68,9 +64,9 @@ function create_pipe_detail(pipeline){
     services_row.appendChild(services_col);
     detail_container.appendChild(services_row);
 
-    var services_in_pipe = JSON.parse(data.services);
+
     services_in_pipe.forEach(function(service){
-        add_service_card(service, services_col);
+        add_service_card(service, services_row);
     });
 
     return detail_container;
@@ -78,17 +74,75 @@ function create_pipe_detail(pipeline){
 }
 
 function add_service_card(service, services_container){
-    console.log(service)
-    var prev = get_preceding_service()
+    console.log(service);
+    var prev = get_preceding_service(services_container);
+
+    //create the card for the current service
+    var card = document.createElement("div");
+    card.setAttribute("class", "card");
+    card.classList.add("carddiv");
+    card.setAttribute("style", "width: min-content; margin-bottom:30px");
+    services_container.appendChild(card);
+
+    var card_body = document.createElement("div");
+    card_body.setAttribute("class", "card-body");
+    card.appendChild(card_body);
+
+    var card_header_container = document.createElement("div");
+    card_header_container.setAttribute("class", "d-flex");
+    card_body.appendChild(card_header_container);
+
+    var card_header = document.createElement("div");
+    card_header.setAttribute("class", "row ml-auto");
+    card_header.setAttribute("style", "margin-top: -30px;")
+    card_header_container.appendChild(card_header);
+
+    var btn_watch = document.createElement("button");
+    btn_watch.setAttribute("style", "margin-right:5px");
+    card_header.appendChild(btn_watch);
+    var btn_del = document.createElement("button");
+    card_header.appendChild(btn_del);
+
+    btn_watch.setAttribute("class", "btn btn-secondary disabled btn-sm");
+    btn_del.setAttribute("class", "btn btn-secondary disabled btn-sm");
+
+    var btn_watch_img = document.createElement("span");
+    var btn_del_img = document.createElement("span");
+    btn_watch_img.setAttribute("class", "fas fa-eye");
+    btn_del_img.setAttribute("class", "fas fa-trash");
+    btn_watch.appendChild(btn_watch_img);
+    btn_del.appendChild(btn_del_img);
+
+
+    var card_text = document.createElement("p");
+    card_text.setAttribute("class", "card-text");
+    card_body.appendChild(card_text);
+
+    card_text.appendChild(document.createTextNode(service));
+
+    //create the connection line to the preceding service
+    if(prev){
+        //create connection
+    }
+
+
 }
 
-function get_preceding_service(){
 
+function get_preceding_service(container){
+    var node = container.lastElementChild;
+    if(node.classList.contains("card")){
+        return node;
+    }else{
+        return null;
+    }
 }
 
 function save_pipe(pipe){
     //TODO
 }
+
+
 
 function watch_pipe(detail_info){
     var services = detail_info.dataset.services;
