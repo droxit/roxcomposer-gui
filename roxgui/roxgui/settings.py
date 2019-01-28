@@ -69,10 +69,8 @@ if tmp_log_file is not None:
     if os.path.isfile(tmp_log_file):
         # Log file is valid and can be used.
         ROX_COMPOSER_LOG_FILE = tmp_log_file
-    else:
-        # Exit with error: Log file is invalid.
-        logger.error("Path to ROXcomposer log file is invalid.")
-        exit(1)
+else:
+    ROX_COMPOSER_LOG_FILE = "/roxcomposer/logs/trace.log"
 
 # Initialize ROXconnector connection data as specified in config file.
 tmp_ip = config.get("Default", "RoxConnectorIp", fallback=None)
