@@ -50,3 +50,9 @@ function convert_to_json_string(json_instance) {
 function escapeHtml(unsafe) {
     return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'"'/g, "&quot;").replace(/"'"/g, "&#039;");
  }
+
+function set_tooltip(elem, tooltip){
+    elem.toggle = "tooltip";
+    elem.placement = "bottom";
+    elem.title = tooltip;
+}

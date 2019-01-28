@@ -28,6 +28,7 @@ urlpatterns = [
     path('check_running', service_views.check_running, name="check_running"),
     path('start_services', service_views.start_services, name="start_services"),
     path('stop_services', service_views.stop_services, name="stop_services"),
+    path('get_service_info', service_views.get_service_info, name="get_service_info"),
 
     #Watch views
     path('check_watched', watch_views.check_watched, name="check_watched"),

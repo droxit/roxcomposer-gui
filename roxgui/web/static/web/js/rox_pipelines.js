@@ -52,37 +52,61 @@ function create_pipe_detail(pipeline){
     var data = get_dataset()
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
-    detail_container.setAttribute("style", "padding:60px")
+    detail_container.setAttribute("style", "padding:60px");
+
 
     var services_in_pipe = JSON.parse(data.services);
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("get_service_info", {
+		services: services_in_pipe,
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    var service_info = data.data;
 
-    var services_row = document.createElement("div");
-    services_row.setAttribute("class", "row");
-    var services_col = document.createElement("div");
-    services_col.setAttribute("class", "col-md-12");
-    services_col.setAttribute("id", "services_in_pipe")
-    services_row.appendChild(services_col);
-    detail_container.appendChild(services_row);
+        var services_row = document.createElement("div");
+        services_row.setAttribute("class", "row");
+
+        var services_col = document.createElement("div");
+        services_col.setAttribute("class", "col-md-12");
+        services_col.setAttribute("id", "services_in_pipe");
+        services_row.appendChild(services_col);
+        detail_container.appendChild(services_row);
+
+        //remove this to view services next to each other
+        var inner_container = document.createElement("div");
+        inner_container.setAttribute("class", "container");
+        services_col.appendChild(inner_container);
+
+        services_in_pipe.forEach(function(service){
+            var service_info_single = "";
+            if(service_info[service]){
+                service_info_single = service_info[service];
+            }
+            add_service_card(service, service_info_single, inner_container);
+        });
 
 
-    services_in_pipe.forEach(function(service){
-        add_service_card(service, services_row);
-    });
+	});
 
     return detail_container;
 
 }
 
-function add_service_card(service, services_container){
-    console.log(service);
+function add_service_card(service, serviceinfo, services_container){
     var prev = get_preceding_service(services_container);
+
+    var newrow = document.createElement("div");
+    newrow.setAttribute("class","row");
+    services_container.appendChild(newrow);
 
     //create the card for the current service
     var card = document.createElement("div");
     card.setAttribute("class", "card");
     card.classList.add("carddiv");
     card.setAttribute("style", "width: min-content; margin-bottom:30px");
-    services_container.appendChild(card);
+    newrow.appendChild(card);
+
+    set_tooltip(card, serviceinfo);
 
     var card_body = document.createElement("div");
     card_body.setAttribute("class", "card-body");
@@ -131,11 +155,16 @@ function add_service_card(service, services_container){
 
 function get_preceding_service(container){
     var node = container.lastElementChild;
-    if(node.classList.contains("card")){
-        return node;
+    if(node){
+            if(node.classList.contains("card")){
+            return node;
+        }else{
+            return null;
+        }
     }else{
         return null;
     }
+
 }
 
 function save_pipe(pipe){

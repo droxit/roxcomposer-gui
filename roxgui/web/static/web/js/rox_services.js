@@ -17,9 +17,7 @@ function set_service_tooltips(){
 
 function set_service_tooltip(btn, tooltip){
     btn.status = "0";
-    btn.toggle = "tooltip";
-    btn.placement = "bottom";
-    btn.title = tooltip;
+    set_tooltip(btn, tooltip);
 }
 
 function enable_detail_headline_btns(){

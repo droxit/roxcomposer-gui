@@ -15,6 +15,7 @@ from web.views.json_views import _create_json_context
 
 @require_http_methods(["POST"])
 def get_services(request):
+    """get a list of all available services and their information"""
     # Get JSON data of local services.
     result = file_request.get_local_services()
     local_services_json_dict = result.data
@@ -23,7 +24,34 @@ def get_services(request):
     return JsonResponse(context)
 
 @require_http_methods(["POST"])
+def get_service_info(request):
+    """
+    Returns the info of services in a dictionary (their parameters etc.)
+    :param request: contains a list "services" with the names of all services that the info should be retrieved of
+    :return: a JsonResponse context with key value pairs, where the key is the service name and value the corresponding service info
+    """
+    services = request.POST.getlist("services[]", default=[])
+    result = file_request.get_local_services()
+
+    service_dict = {}
+
+    for entry in result.data:
+        service_dict[entry[0]] = entry[1]
+    info = {}
+    for service in services:
+        if service in service_dict:
+            info[service] = service_dict[service]
+
+    context = _create_json_context(info)
+    return JsonResponse(context)
+
+@require_http_methods(["POST"])
 def check_running(request):
+    """
+    For a specified list of services returns which of those are running
+    :param request: contains list of service names
+    :return: dictionary with service names as  keys and boolean as value, the boolean indicates if the service is running.
+    """
     result = rox_request.get_running_services()
     running_services = result.data
     services = request.POST.getlist("services[]", default=[])
