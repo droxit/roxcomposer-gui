@@ -43,11 +43,12 @@ function set_pipe_info(elem){
     var dataset = get_dataset();
     var pipe = elem.dataset.name;
     dataset.name = pipe;
-    dataset.services = JSON.parse(elem.dataset.title).services;
+    dataset.services = JSON.stringify(JSON.parse(elem.dataset.title).services);
 }
 
 
 function create_pipe_detail(pipeline){
+    var data = get_dataset()
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
 
@@ -55,17 +56,35 @@ function create_pipe_detail(pipeline){
     empty_row.setAttribute("class", "row");
     var empty_col = document.createElement("div");
     empty_col.setAttribute("class", "col-md-12");
-    empty_col.appendChild(document.createElement("p"));
+    empty_col.appendChild(document.createElement("br"));
     empty_row.appendChild(empty_col);
     detail_container.appendChild(empty_row);
+
+    var services_row = document.createElement("div");
+    services_row.setAttribute("class", "row");
+    var services_col = document.createElement("div");
+    services_col.setAttribute("class", "col-md-12");
+    services_col.setAttribute("id", "services_in_pipe")
+    services_row.appendChild(services_col);
+    detail_container.appendChild(services_row);
+
+    var services_in_pipe = JSON.parse(data.services);
+    services_in_pipe.forEach(function(service){
+        add_service_card(service, services_col);
+    });
 
     return detail_container;
 
 }
 
+function add_service_card(service, services_container){
+    console.log(service)
+    var prev = get_preceding_service()
+}
 
+function get_preceding_service(){
 
-
+}
 
 function save_pipe(pipe){
     //TODO
