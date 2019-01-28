@@ -1,4 +1,4 @@
-
+/* Creates an empty detail view with the specific pipeline headline */
 function show_empty_detail_view(){
     $("#data_detail_list").html("");
     var detail_headline = $("#headline_detail");
@@ -6,7 +6,7 @@ function show_empty_detail_view(){
     detail_headline.html("<h4>Select a pipeline.</h4>");
 }
 
-
+/* Set the tooltips for all pipeline view buttons*/
 function set_pipe_tooltips(){
     set_pipe_tooltip($("#btn-watch")[0].dataset, "(un)watch all services in pipeline");
     set_pipe_tooltip($("#btn-edit")[0].dataset, "edit name");
@@ -16,14 +16,13 @@ function set_pipe_tooltips(){
     set_pipe_tooltip($("#btn-add")[0].dataset, "add new pipe");
 }
 
+/* Set the tooltip for a single button, the status is set to 0 and indicates if the pipe is running */
 function set_pipe_tooltip(btn, tooltip){
     btn.status = "0";
-    btn.toggle = "tooltip";
-    btn.placement = "bottom";
-    btn.title = tooltip;
+    set_tooltip(btn, tooltip);
 }
 
-
+/* Remove the 'disabled' status of those buttons that already have functionality */
 function enable_detail_headline_btns(){
     //"btn-watch" ,"btn-delete", "btn-save"
     ["btn-edit"].forEach(function(btn){
@@ -31,15 +30,19 @@ function enable_detail_headline_btns(){
     });
 }
 
+/* Remove the 'disabled' status of a single button */
 function btn_remove_disabled(btn){
     var btnedit = $("#"+btn+"")[0];
     btnedit.classList.remove("disabled");
 }
 
+/* Retrieve the dataset of the hidden 'detail info' element that contains information on callback functions and the selected pipe */
 function get_dataset(){
     return $("#detail_info")[0].dataset;
 }
 
+/* Set the data for the dataset of the hidden 'detail info' element, which concerns the
+    pipe name of the selected pipeline, and the services it contains */
 function set_pipe_info(elem){
     var dataset = get_dataset();
     var pipe = elem.dataset.name;
@@ -47,7 +50,8 @@ function set_pipe_info(elem){
     dataset.services = JSON.stringify(JSON.parse(elem.dataset.title).services);
 }
 
-
+/* When a pipeline has been selected this function is called to create the detail view containing the service cards
+   of the selected pipeline */
 function create_pipe_detail(pipeline){
     var data = get_dataset()
     var detail_container = document.createElement("div");
@@ -92,6 +96,9 @@ function create_pipe_detail(pipeline){
 
 }
 
+
+/* Adds a single service card to the services_container and sets the tooltip info to serviceinfo
+   connecting lines between cards have not yet been implemented */
 function add_service_card(service, serviceinfo, services_container){
     var prev = get_preceding_service(services_container);
 
@@ -152,7 +159,7 @@ function add_service_card(service, serviceinfo, services_container){
 
 }
 
-
+/* This is supposed to return the card of the preceding service in the pipeline */
 function get_preceding_service(container){
     var node = container.lastElementChild;
     if(node){
@@ -172,7 +179,7 @@ function save_pipe(pipe){
 }
 
 
-
+/* TODO */
 function watch_pipe(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -188,6 +195,7 @@ function watch_pipe(detail_info){
 	});
 }
 
+/* TODO */
 function unwatch_pipe(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -203,7 +211,7 @@ function unwatch_pipe(detail_info){
 	});
 }
 
-
+/* TODO */
 function run_pipe(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -219,6 +227,7 @@ function run_pipe(detail_info){
 	});
 }
 
+/* TODO */
 function stop_pipe(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -256,6 +265,7 @@ function set_pipe_run_button(pipe){
 	});
 }
 
+/* TODO */
 function set_pipe_watch_button(pipe){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_watched", {
