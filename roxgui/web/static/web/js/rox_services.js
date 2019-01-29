@@ -1,3 +1,5 @@
+/* This function is called when the service view is first opened and no service is selected
+    It shows an empty detail view with disabled buttons */
 function show_empty_detail_view(){
     $("#data_detail_list").html("");
     var detail_headline = $("#headline_detail");
@@ -5,7 +7,7 @@ function show_empty_detail_view(){
     detail_headline.html("<h4>Select a service.</h4>");
 }
 
-
+/* Set the tooltips for all buttons on the services page. */
 function set_service_tooltips(){
     set_service_tooltip($("#btn-watch")[0].dataset, "(un)watch service");
     set_service_tooltip($("#btn-edit")[0].dataset, "edit name");
@@ -15,28 +17,33 @@ function set_service_tooltips(){
     set_service_tooltip($("#btn-add")[0].dataset, "add new service");
 }
 
+/* Set the tooltip for a single button.
+    Also, the status is initialized to 0 as this function is only called when opening the service page anew*/
 function set_service_tooltip(btn, tooltip){
     btn.status = "0";
     set_tooltip(btn, tooltip);
 }
 
-function enable_detail_headline_btns(){
+/* Enable certain buttons that already have functionality. */
+function enable_detail_elements(){
     //"btn-watch" ,"btn-delete", "btn-save"
     ["btn-edit", "btn-run", "btn-watch"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
 
+/* Removes the disabled status on an element*/
 function btn_remove_disabled(btn){
     var btnedit = $("#"+btn+"")[0];
     btnedit.classList.remove("disabled");
 }
 
-
+/* Retrieves the hidden info dataset*/
 function get_dataset(){
     return $("#detail_info")[0].dataset;
 }
 
+/* Sets the hidden dataset information */
 function set_service_info(elem){
     var dataset = get_dataset();
     var service = elem.dataset.name;
@@ -45,6 +52,7 @@ function set_service_info(elem){
     dataset.title = elem.dataset.title;
 }
 
+/* When a service has been selected this function is called to create the detail view of this service. */
 function create_service_detail(service){
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
@@ -57,7 +65,7 @@ function create_service_detail(service){
     empty_row.appendChild(empty_col);
     detail_container.appendChild(empty_row);
 
-
+    //The detail view contains a list of (editable) parameter key-value pairs.
     var list_of_params = get_params(service);
     list_of_params.forEach(function(param_pair){
 
@@ -94,20 +102,31 @@ function create_service_detail(service){
 
 }
 
+/* Retrieve the parameter key-value pairs of a service from the hidden dataset */
 function get_params(service){
-    var json_params = JSON.parse(service.dataset.title);
-    if(json_params.classpath){
-        var param_arr = [["classpath", JSON.stringify(json_params.classpath, null, ' ')]];
-    }
-    if(json_params.path){
-        var param_arr = [["path", JSON.stringify(json_params.path, null, ' ')]];
-    }
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var param_arr = [];
+	$.post("get_service_info", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    console.log(data)
+        var json_params = data;
+        if(json_params.classpath){
+            var param_arr = [["classpath", JSON.stringify(json_params.classpath, null, ' ')]];
+        }
+        if(json_params.path){
+            var param_arr = [["path", JSON.stringify(json_params.path, null, ' ')]];
+        }
 
-    jQuery.each(json_params.params, function(i, val) {
-        val = JSON.stringify(val, null, ' ');
+        jQuery.each(json_params.params, function(i, val) {
+            val = JSON.stringify(val, null, ' ');
 
-        param_arr.push([i, val]);
-    });
+            param_arr.push([i, val]);
+        });
+	});
+
+
     return param_arr;
 }
 

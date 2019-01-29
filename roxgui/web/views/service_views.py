@@ -33,7 +33,7 @@ def get_service_info(request):
     service_dict = {}
 
     for entry in result.data:
-        service_dict[entry[0]] = entry[1]
+        service_dict[entry] = result.data[entry]
     info = {}
     for service in services:
         if service in service_dict:
