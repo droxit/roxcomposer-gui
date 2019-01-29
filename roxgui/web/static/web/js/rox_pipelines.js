@@ -25,7 +25,7 @@ function set_pipe_tooltip(btn, tooltip){
 /* Remove the 'disabled' status of those buttons that already have functionality */
 function enable_detail_headline_btns(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit"].forEach(function(btn){
+    ["btn-edit", "btn-add-service"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -53,9 +53,9 @@ function set_pipe_info(elem){
 function add_search_bar(){
     var search_container = $("#search-bar-container");
     var search_btn_container = $("#search-btn-container");
-    var searchbar = $("<input id='search_services' class='form-control' type='text' onchange='add_service_to_pipe(this)' list='data-service-list' placeholder='Add service ...' disabled='disabled'></input>");
+    var searchbar = $("<input id='search_services' class='form-control' type='text' onchange='add_service_to_pipe()' list='data-service-list' placeholder='Add service ...' disabled='disabled'></input>");
     var service_datalist = $("<datalist id='data-service-list'></datalist>");
-    var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='add_service_to_pipe("+searchbar+")'><span class='fas fa-plus'></span></button>")
+    var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='add_service_to_pipe()'><span class='fas fa-plus'></span></button>")
 
     //add_service_dataset()
 
@@ -71,7 +71,8 @@ function enable_search_bar(){
 }
 
 /* Add a selected service to the currently viewed pipeline */
-function add_service_to_pipe(searchbar){
+function add_service_to_pipe(){
+    var searchbar = $('#search_services')[0]
     var pipe = $("#headline_detail")[0].dataset.name; //currently selected pipeline that is being edited
     var pipe_container = $("#services_in_pipe")[0]; // the container where service cards will be added
 
