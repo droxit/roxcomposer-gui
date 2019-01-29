@@ -1,3 +1,7 @@
+/* Shows a popover message on the element 'btn' depending on the boolean 'success'.
+   If true 'successmsg' will be shown, else the 'failmsg' string.
+   If there is a tooltip on the element it will be removed for the duration of the popover,
+   but will be reinitialised after. */
 function show_tooltip(btn, success, successmsg, failmsg){
     btn.attr("data-toggle", "popover");
     btn.attr("data-placement", "top");
@@ -26,7 +30,9 @@ function show_tooltip(btn, success, successmsg, failmsg){
 
 }
 
-
+/* toggles a specific button with two states (e.g. the watch or run buttons) to the other state.
+    img1 is the icon for the first state and img2 for the second. These buttons must have a dataset.status info
+    that can be either 0 or 1 (for on and off). */
 function toggle_button(btn, new_btn_status, img1, img2){
     var btn_span = btn.childNodes[1];
     var old_btn_status = btn.dataset.status
@@ -41,10 +47,8 @@ function toggle_button(btn, new_btn_status, img1, img2){
     }
 }
 
+/* check if the class list of an element contains 'disabled */
 function check_disabled(btn){
     return btn.classList.contains("disabled");
 }
 
-function set_button(btn, status, img){
-
-}

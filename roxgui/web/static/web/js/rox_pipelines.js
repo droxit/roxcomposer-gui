@@ -91,6 +91,7 @@ function add_send_message(){
 
 }
 
+/* binds the enter key on the send message input field to click the send button */
 function bind_message_enter(){
     var msg_input = document.getElementById("send_msg");
 
