@@ -1,3 +1,14 @@
+/* encoding: utf-8
+#
+# Define the services functionality of the services page.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
+
 /* This function is called when the service view is first opened and no service is selected
     It shows an empty detail view with disabled buttons */
 function show_empty_detail_view(){
@@ -65,69 +76,71 @@ function create_service_detail(service){
     empty_row.appendChild(empty_col);
     detail_container.appendChild(empty_row);
 
+
     //The detail view contains a list of (editable) parameter key-value pairs.
-    var list_of_params = get_params(service);
-    list_of_params.forEach(function(param_pair){
+    get_params(detail_container, service);
 
-        var row = document.createElement("div");
-        row.setAttribute("class", "row");
-        detail_container.appendChild(row);
-
-        var col1 = document.createElement("div");
-        col1.setAttribute("class", "col-md-5");
-        col1.setAttribute("align", "center");
-
-        var col2 = document.createElement("div");
-        col2.setAttribute("class", "col-md-1");
-        col2.setAttribute("align", "center");
-
-        var col3 = document.createElement("div");
-        col3.setAttribute("class", "col-md-5");
-        col3.setAttribute("align", "center");
-
-        row.appendChild(col1);
-        row.appendChild(col2);
-        row.appendChild(col3);
-
-        var param_field_key = create_param_field(param_pair[0]);
-        var param_field_value = create_param_field(param_pair[1]);
-        col1.appendChild(param_field_key);
-        col2.appendChild(document.createTextNode(" : "));
-        col3.appendChild(param_field_value);
-
-    });
-
-    var service_name = document.createTextNode(service.id);
+    var service_name = document.createTextNode(service);
     return detail_container;
 
 }
 
+/* append an editable key value pair to the container */
+function append_param(container, key, val){
+    var row = document.createElement("div");
+    row.setAttribute("class", "row");
+    container.appendChild(row);
+
+    var col1 = document.createElement("div");
+    col1.setAttribute("class", "col-md-5");
+    col1.setAttribute("align", "center");
+
+    var col2 = document.createElement("div");
+    col2.setAttribute("class", "col-md-1");
+    col2.setAttribute("align", "center");
+
+    var col3 = document.createElement("div");
+    col3.setAttribute("class", "col-md-5");
+    col3.setAttribute("align", "center");
+
+    row.appendChild(col1);
+    row.appendChild(col2);
+    row.appendChild(col3);
+
+    var param_field_key = create_param_field(key);
+    var param_field_value = create_param_field(val);
+    col1.appendChild(param_field_key);
+    col2.appendChild(document.createTextNode(" : "));
+    col3.appendChild(param_field_value);
+}
+
 /* Retrieve the parameter key-value pairs of a service from the hidden dataset */
-function get_params(service){
+function get_params(container, service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     var param_arr = [];
 	$.post("get_service_info", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-        console.log(data)
-        var json_params = data.service;
+
+        var json_params = data[service];
 
         if(json_params.classpath){
-            var param_arr = [["classpath", JSON.stringify(json_params.classpath, null, ' ')]];
+            var key = "classpath";
+            var val = JSON.stringify(json_params.classpath, null, ' ');
+            append_param(container, key, val);
         }
         if(json_params.path){
-            var param_arr = [["path", JSON.stringify(json_params.path, null, ' ')]];
+            var key = "path";
+            var val = JSON.stringify(json_params.classpath, null, ' ');
+            append_param(container, key, val);
         }
 
         jQuery.each(json_params.params, function(i, val) {
             val = JSON.stringify(val, null, ' ');
-
-            param_arr.push([i, val]);
+            append_param(container, i, val);
         });
 	});
-
-
     return param_arr;
 }
 
@@ -135,6 +148,7 @@ function save_service(service){
     //TODO
 }
 
+/* Watch a service */
 function watch_service(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -150,6 +164,7 @@ function watch_service(detail_info){
 	});
 }
 
+/* Unwatch a service */
 function unwatch_service(service){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -165,7 +180,7 @@ function unwatch_service(service){
 	});
 }
 
-
+/* Run a service */
 function run_service(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -181,6 +196,7 @@ function run_service(detail_info){
 	});
 }
 
+/* Stop a service */
 function stop_service(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -196,13 +212,16 @@ function stop_service(detail_info){
 	});
 }
 
-
+/* Sets the status of the run/stop and watch/unwatch buttons depending on
+    the state of the service on the ROXcomposer server */
 function set_service_buttons(detail_info){
     var service = detail_info.dataset.name;
     set_run_button(service);
     set_watch_button(service);
 }
 
+/* Sets the status of the run/stop button depending on
+    the state of the service on the ROXcomposer server */
 function set_run_button(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_running", {
@@ -217,6 +236,8 @@ function set_run_button(service){
 	});
 }
 
+/* Sets the status of the watch/unwatch button depending on
+    the state of the service on the ROXcomposer server */
 function set_watch_button(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_watched", {

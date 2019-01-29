@@ -1,3 +1,13 @@
+/* encoding: utf-8
+#
+# Define the dynamic pipeline functionality of the pipeline view.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
 function get_option_text_pattern() {
 	return 'option_';
 }

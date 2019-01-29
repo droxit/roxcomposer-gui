@@ -1,3 +1,14 @@
+/* encoding: utf-8
+#
+# Define the pattern for popovers and togglable buttons.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
+
 /* Shows a popover message on the element 'btn' depending on the boolean 'success'.
    If true 'successmsg' will be shown, else the 'failmsg' string.
    If there is a tooltip on the element it will be removed for the duration of the popover,
