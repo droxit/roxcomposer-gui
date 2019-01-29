@@ -1,6 +1,6 @@
 /* encoding: utf-8
 #
-# Define the dynamic pipeline functionality of the pipeline view.
+# Define the patterns of a search bar with a searchable list.
 #
 # devs@droxit.de
 #
