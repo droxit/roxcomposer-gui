@@ -110,8 +110,9 @@ function get_params(service){
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    console.log(data)
-        var json_params = data;
+        console.log(data)
+        var json_params = data.service;
+
         if(json_params.classpath){
             var param_arr = [["classpath", JSON.stringify(json_params.classpath, null, ' ')]];
         }
