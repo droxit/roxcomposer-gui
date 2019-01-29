@@ -51,6 +51,8 @@ function set_pipe_info(elem){
     dataset.services = JSON.stringify(JSON.parse(elem.dataset.title).services);
 }
 
+/* Adds a search bar for searching through available services below the selected pipe detail view.
+    The search bar is at first disabled (not clickable) until the user selects a pipe. */
 function add_search_bar(){
     var search_container = $("#search-bar-container");
     var search_btn_container = $("#search-btn-container");
@@ -58,11 +60,24 @@ function add_search_bar(){
     var service_datalist = $("<datalist id='data-service-list'></datalist>");
     var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='add_service_to_pipe()'><span class='fas fa-plus'></span></button>")
 
-    //add_service_dataset()
-
     search_container.append(searchbar);
     search_container.append(service_datalist);
     search_btn_container.append(add_btn);
+
+}
+
+/* adds a disabled */
+function add_send_message(){
+    var search_container = $("#content-container");
+    var msg_row = $("<div class='row'></div>");
+    var msg_col = $("<div class='col-md-5'></div>");
+    var empty_col = $("<div class='col-md-7'></div>");
+
+    msg_row.append(msg_col);
+    msg_row.append(empty_col);
+    search_container.append(msg_row);
+
+
 
 }
 
