@@ -37,33 +37,16 @@ def update_watch_buttons(request, logsession):
             # for every watched service in session set to watched
             request.session['watch_button_active'][service] = True
 
-"""
 @require_http_methods(["POST"])
 def check_watched(request):
-    result = rox_request.get_running_services()
-    running_services = result.data
-    services = request.POST.getlist("services[]", default=[])
-
-    running = {}
-    for service in services:
-        service_is_running = False
-        if service in running_services:
-            service_is_running = True
-        running[service] = service_is_running
-    context = _create_json_context(running)
-    return JsonResponse(context)
-"""
-
-@require_http_methods(["POST"])
-def check_watched(request):
+    """Check which services are being watched and which are not."""
     check_session(request)
-    print("Watched services:")
-    print(request.session.get('watch_button_active', {}))
     context = _create_json_context(request.session.get('watch_button_active', {}))
     return JsonResponse(context)
 
 
 def check_session(request):
+    """Check if a ROXcomposer session is active, if not create a new one"""
     active = request.session.get('watch_button_active', {})
     if active == {}:
         logsess = rox_request.create_new_sess([]).data
@@ -73,6 +56,11 @@ def check_session(request):
 
 @require_http_methods(["POST"])
 def watch(request):
+    """
+    Watch specified services.
+    :param request: Shall contain a 'services' list with the identifiers of all services that need to be watched
+    :return: the response from the server
+    """
     service_names = request.POST.getlist("services[]", default=[])
     cur_sess = request.session.get('current_session', None)
     res = rox_request.watch_services(service_names, rox_session=cur_sess)
@@ -88,7 +76,7 @@ def watch(request):
 
 @require_http_methods(["POST"])
 def unwatch(request):
-    """save the session to a json file """
+    """unwatch specified services """
     service_names = request.POST.getlist("services[]", default=[])
     cur_sess = request.session.get('current_session', None)
     res = rox_request.unwatch_services(service_names, cur_sess)
