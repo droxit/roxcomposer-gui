@@ -26,8 +26,9 @@
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
 <script>
     add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0],'get_pipelines');
-    set_pipe_tooltips();
     add_search_bar();
     add_data_entries_from_remote($('#search_services')[0], 'add_service_to_pipe(this)', null,'get_services');
+    set_pipe_tooltips();
+
 </script>
 {% endblock list %}

@@ -14,6 +14,7 @@ function set_pipe_tooltips(){
     set_pipe_tooltip($("#btn-delete")[0].dataset, "delete pipe");
     set_pipe_tooltip($("#btn-save")[0].dataset, "save changes");
     set_pipe_tooltip($("#btn-add")[0].dataset, "add new pipe");
+    set_pipe_tooltip($("#btn-add-service")[0].dataset, "add new service to pipeline");
 }
 
 /* Set the tooltip for a single button, the status is set to 0 and indicates if the pipe is running */
