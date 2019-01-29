@@ -20,34 +20,39 @@ function extract_name_from_info_id(info_id) {
 	return info_id.replace(get_info_text_pattern(), '');
 }
 
-function add_data_entry(data_name, data_info) {
+function add_data_entry(search_field, func, data_name, data_info, info_container) {
 	// Append entry to data name list.
 	var option = document.createElement('option');
 	option.setAttribute('id', create_option_id(data_name));
+	option.setAttribute('data-info', data_info)
 	option.appendChild(document.createTextNode(data_name));
-	document.getElementById('data_name_list').appendChild(option);
+	search_field.list.appendChild(option);
+
 	// Append entry to data info list.
-	var li = document.createElement('li');
-	li.setAttribute("id", create_info_id(data_name));
-	li.setAttribute("class", "list-group-item");
-	li.setAttribute("title", data_info);
-	li.setAttribute("data-title", data_info);
-	li.setAttribute("data-name", data_name);
-	li.setAttribute("onclick", "go_to_detail_view(this)");
-	li.appendChild(document.createTextNode(data_name));
-	document.getElementById('data_info_list').appendChild(li);
+	if(info_container != null){
+	    var li = document.createElement('li');
+        li.setAttribute("id", create_info_id(data_name));
+        li.setAttribute("class", "list-group-item");
+        li.setAttribute("title", data_info);
+        li.setAttribute("data-title", data_info);
+        li.setAttribute("data-name", data_name);
+        li.setAttribute("onclick", func); //go_to_detail_view(this)
+        li.appendChild(document.createTextNode(data_name));
+        info_container.appendChild(li);
+	}
+
 }
 
-function add_data_entries(name_info_list) {
+function add_data_entries(search_field, func, name_info_list, info_container) {
 	for (var i = 0; i < name_info_list.length; i++) {
 		var name = name_info_list[i][0];
 		var info = name_info_list[i][1];
-		add_data_entry(name, info);
+		add_data_entry(search_field, func, name, info, info_container);
 	}
 }
 
 
-function add_data_entries_from_remote(relative_url) {
+function add_data_entries_from_remote(search_field, func, info_container, relative_url) {
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post(relative_url, {
 	    csrfmiddlewaretoken: CSRFtoken,
@@ -63,7 +68,7 @@ function add_data_entries_from_remote(relative_url) {
 	        name_info_list.push([name, json]);
 	    }
 	    // Add service data to list.
-	    add_data_entries(name_info_list);
+	    add_data_entries(search_field, func, name_info_list, info_container);
 	});
 }
 
