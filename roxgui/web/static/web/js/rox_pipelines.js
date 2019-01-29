@@ -311,8 +311,8 @@ function save_pipe(pipe, services, func){
 function send_msg_to_pipe(){
     // Retrieve the info on currently selected pipe and message
     var pipe = document.getElementById('headline_detail').dataset.name;
-    var msg_input_field = document.getElementById('send_msg');
-    var msg = msg_input_field.value;
+    var msg_input_field = $('#send_msg');
+    var msg = msg_input_field[0].value;
 
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("send_msg", {

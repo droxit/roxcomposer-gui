@@ -24,6 +24,7 @@ urlpatterns = [
     path('get_pipelines', pipe_views.get_pipelines, name="get_pipelines"),
     path('create_pipeline', pipe_views.create_pipeline, name="create_pipeline"),
     path('get_pipeline_info', pipe_views.get_pipeline_info, name="get_pipeline_info"),
+    path('send_msg', pipe_views.send_msg, name="send_msg"),
 
     #Service views
     path('get_services', service_views.get_services, name="get_services"),
