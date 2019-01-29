@@ -20,13 +20,13 @@ def get_local_services() -> RoxResponse:
     :return: RoxResponse instance containing a list of tuples
         mapping each service name to its corresponding JSON data.
     """
-    local_services = []
+    local_services = {}
     for f in os.scandir(SERVICE_DIR):
         if f.is_file() and f.name.endswith(".json"):
             fd = open(os.path.join(SERVICE_DIR, f.name), 'r')
             service_name = f.name[:-5]
             service_json = json.load(fd)
-            local_services.append([service_name, service_json])
+            local_services[service_name] = service_json
             fd.close()
     res = RoxResponse(True)
     res.data = local_services

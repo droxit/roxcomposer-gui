@@ -108,13 +108,13 @@ function create_pipe_detail(pipeline){
     detail_container.setAttribute("class", "container");
     detail_container.setAttribute("style", "padding:60px");
 
-    console.log(pipeline)
+    //console.log(pipeline)
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_pipeline_info", {
 		pipe_name: pipeline,
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
-        console.log(data);
+        //console.log(data);
 	});
 
     /*

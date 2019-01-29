@@ -18,10 +18,7 @@ def get_services(request):
     """get a list of all available services and their information"""
     # Get JSON data of local services.
     result = file_request.get_local_services()
-    local_services_json_dict = result.data
-    # Prepare and return JSON response.
-    context = _create_json_context(local_services_json_dict)
-    return JsonResponse(context)
+    return JsonResponse(result.data)
 
 @require_http_methods(["POST"])
 def get_service_info(request):

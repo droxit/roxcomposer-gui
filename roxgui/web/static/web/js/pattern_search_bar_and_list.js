@@ -57,13 +57,13 @@ function add_data_entries_from_remote(search_field, func, info_container, relati
 	$.post(relative_url, {
 	    csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
-	    // Get list mapping service name to its JSON data.
-	    tmp = data['data'];
 	    // Create list to store converted data.
 	    name_info_list = [];
+	    console.log("New data: ", data)
 	    // Convert JSON data to string.
-	    for (var i = 0; i < tmp.length; i++) {
-	        var name = tmp[i][0];
+	    for (var i in data) {
+	        //console.log(i)
+	        var name = data[i][0];
 	        var json = convert_to_json_string(tmp[i][1]);
 	        name_info_list.push([name, json]);
 	    }

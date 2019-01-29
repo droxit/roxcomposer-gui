@@ -18,10 +18,7 @@ from web.views.json_views import _create_json_context
 def get_pipelines(request):
     # Get JSON data of local pipelines.
     result = rox_request.get_pipelines()
-    pipelines_json_dict = result.data
-    # Prepare and return JSON response.
-    context = _create_json_context(pipelines_json_dict)
-    return JsonResponse(context)
+    return JsonResponse(result.data)
 
 
 @require_http_methods(["POST"])

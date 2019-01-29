@@ -119,10 +119,9 @@ def get_pipelines() -> RoxResponse:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
     else:
-        pipelines = []
-        print(r.text)
+        pipelines = {}
         for key, value in r.json().items():
-            pipelines.append([key, value])
+            pipelines[key] = value
         res = RoxResponse(True)
         res.data = pipelines
         return res
