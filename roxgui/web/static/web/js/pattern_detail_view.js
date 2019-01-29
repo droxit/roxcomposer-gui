@@ -64,7 +64,7 @@ function go_to_detail_view(elem){
 
     var create_detail_view = eval(detail_info.dataset.func)
 
-    var detail_view = create_detail_view(elem);
+    var detail_view = create_detail_view(elem.dataset.name);
     add_detail_view(detail_view);
 
     set_buttons(detail_info);

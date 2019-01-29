@@ -80,16 +80,23 @@ function add_service_to_pipe(searchbar){
     var selected_service_info = $("#option_"+selected_service)[0].dataset.info;
 
 
-
     //Add the service card to view and update pipe info
-    add_service_card(selected_service, selected_service_info, pipe_container);
-
+    //add_service_card(selected_service, selected_service_info, pipe_container);
+    var current_services = JSON.parse("[" + pipe_info.services + "]")[0];
+    current_services.push(selected_service);
+    console.log(current_services)
 
     //Update and save the new pipeline
+    save_pipe(pipe_info.name, current_services, update_pipe)
+
 }
 
-function update_pipe(){
+function update_pipe(pipe, services){
+    var pipe_info = $("#detail_info")[0].dataset;
+    pipe_info.name = pipe;
+    pipe_info.services = JSON.stringify(services);
 
+    create_pipe_detail(pipe)
 }
 
 
@@ -101,7 +108,16 @@ function create_pipe_detail(pipeline){
     detail_container.setAttribute("class", "container");
     detail_container.setAttribute("style", "padding:60px");
 
+    console.log(pipeline)
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("get_pipeline_info", {
+		pipe_name: pipeline,
+		csrfmiddlewaretoken: CSRFtoken,
+	}).done(function(data) {
+        console.log(data);
+	});
 
+    /*
     var services_in_pipe = JSON.parse(data.services);
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_service_info", {
@@ -133,7 +149,7 @@ function create_pipe_detail(pipeline){
         });
 
 
-	});
+	}); */
 
 	//enable the searchbar so the user can edit the pipe
 	enable_search_bar()
@@ -222,12 +238,16 @@ function get_preceding_service(container){
 
 function save_pipe(pipe, services, func){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("create_pipe", {
-		services: [service],
+	$.post("create_pipeline", {
+		services: services,
+		pipe_name: pipe,
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    if(data.success){
 	        func(pipe, services);
+	    }else{
+	        console.log(data)
+	        show_tooltip($("#btn-add-service")[0], data.success, "", "Adding service failed. \n "+data.message);
 	    }
 	});
 }

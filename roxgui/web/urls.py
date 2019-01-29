@@ -8,7 +8,7 @@
 #
 
 from django.urls import path
-from web.views import html_views, json_views, watch_views, service_views
+from web.views import html_views, json_views, watch_views, service_views, pipe_views
 
 urlpatterns = [
     # HTML views.
@@ -20,8 +20,10 @@ urlpatterns = [
     path('services', html_views.rox_services, name="rox_services"),
     path('tests', html_views.rox_tests, name="rox_tests"),
 
-    # JSON views.
-    path('get_pipelines', json_views.get_pipelines, name="get_pipelines"),
+    # Pipeline views.
+    path('get_pipelines', pipe_views.get_pipelines, name="get_pipelines"),
+    path('create_pipeline', pipe_views.create_pipeline, name="create_pipeline"),
+    path('get_pipeline_info', pipe_views.get_pipeline_info, name="get_pipeline_info"),
 
     #Service views
     path('get_services', service_views.get_services, name="get_services"),
