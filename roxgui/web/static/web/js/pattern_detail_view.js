@@ -5,6 +5,7 @@ function create_headline(name){
     var headline = document.createElement("div");
     headline.setAttribute("id", "headline_detail");
     headline.setAttribute("onclick", "edit_detail_headline()");
+    headline.setAttribute("data-name", name);
 
     var header = document.createElement("h4");
     header.appendChild(document.createTextNode(name));
@@ -55,10 +56,10 @@ function set_param_field(param_val){
 }
 
 function go_to_detail_view(elem){
-    var detail_info = $("#detail_info")[0];
-    var set_specific_info = eval(detail_info.dataset.set_info)
+    //var detail_info = $("#detail_info")[0];
+    //var set_specific_info = eval(detail_info.dataset.set_info)
 
-    set_specific_info(elem);
+    //set_specific_info(elem);
     set_detail_headline(elem.dataset.name);
     enable_detail_headline_btns();
 

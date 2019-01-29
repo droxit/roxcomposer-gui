@@ -72,7 +72,7 @@ function enable_search_bar(){
 
 /* Add a selected service to the currently viewed pipeline */
 function add_service_to_pipe(searchbar){
-    var pipe_info = $("#detail_info")[0].dataset; //currently selected pipeline that is being edited
+    var pipe = $("#headline_detail")[0].dataset.name; //currently selected pipeline that is being edited
     var pipe_container = $("#services_in_pipe")[0]; // the container where service cards will be added
 
     //Retrieve the selected service that is to be added to pipe (and its information)
@@ -80,79 +80,83 @@ function add_service_to_pipe(searchbar){
     var selected_service_info = $("#option_"+selected_service)[0].dataset.info;
 
 
-    //Add the service card to view and update pipe info
-    //add_service_card(selected_service, selected_service_info, pipe_container);
-    var current_services = JSON.parse("[" + pipe_info.services + "]")[0];
-    current_services.push(selected_service);
-    console.log(current_services)
+    //Get the pipeline info
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("get_pipeline_info", {
+		pipe_name: pipe,
+		csrfmiddlewaretoken: CSRFtoken,
+	}).done(function(pipe_data) {
+	    //Get the current service list of the pipeline and add the new service
+	    var current_services = pipe_data.data[pipe]["services"];
+        current_services.push(selected_service);
 
-    //Update and save the new pipeline
-    save_pipe(pipe_info.name, current_services, update_pipe)
+        //Update and save the new pipeline
+        save_pipe(pipe, current_services, update_pipe)
+	});
+
+
 
 }
 
 function update_pipe(pipe, services){
     var pipe_info = $("#detail_info")[0].dataset;
     pipe_info.name = pipe;
-    pipe_info.services = JSON.stringify(services);
 
-    create_pipe_detail(pipe)
+    var new_detail = create_pipe_detail(pipe);
+    add_detail_view(new_detail);
 }
 
 
 /* When a pipeline has been selected this function is called to create the detail view containing the service cards
    of the selected pipeline */
 function create_pipe_detail(pipeline){
-    var data = get_dataset()
+
+    //Create the container for the detail view
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
     detail_container.setAttribute("style", "padding:60px");
 
-    //console.log(pipeline)
+    var services_row = document.createElement("div");
+    services_row.setAttribute("class", "row");
+
+    var services_col = document.createElement("div");
+    services_col.setAttribute("class", "col-md-12");
+    services_row.appendChild(services_col);
+    detail_container.appendChild(services_row);
+
+
+    //Get the pipeline info
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_pipeline_info", {
 		pipe_name: pipeline,
 		csrfmiddlewaretoken: CSRFtoken,
-	}).done(function(data) {
-        //console.log(data);
-	});
+	}).done(function(pipe_data) {
+        var services_in_pipe = pipe_data.data[pipeline]["services"];
+        $.post("get_service_info", {
+            services: services_in_pipe,
+            csrfmiddlewaretoken: CSRFtoken
+        }).done(function(data) {
 
-    /*
-    var services_in_pipe = JSON.parse(data.services);
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("get_service_info", {
-		services: services_in_pipe,
-		csrfmiddlewaretoken: CSRFtoken
-	}).done(function(data) {
-	    var service_info = data.data;
+            var service_info = data;
 
-        var services_row = document.createElement("div");
-        services_row.setAttribute("class", "row");
+            //remove this to view services next to each other
+            var inner_container = document.createElement("div");
+            inner_container.setAttribute("class", "container");
+            inner_container.setAttribute("id", "services_in_pipe");
+            services_col.appendChild(inner_container);
 
-        var services_col = document.createElement("div");
-        services_col.setAttribute("class", "col-md-12");
-        services_row.appendChild(services_col);
-        detail_container.appendChild(services_row);
+            services_in_pipe.forEach(function(service){
+                var service_info_single = "";
+                if(service_info[service]){
+                    service_info_single = service_info[service];
+                }
+                add_service_card(service, service_info_single, inner_container);
+            });
+        //enable the searchbar so the user can edit the pipe
+        enable_search_bar()
+	    });
+    });
 
-        //remove this to view services next to each other
-        var inner_container = document.createElement("div");
-        inner_container.setAttribute("class", "container");
-        inner_container.setAttribute("id", "services_in_pipe");
-        services_col.appendChild(inner_container);
-
-        services_in_pipe.forEach(function(service){
-            var service_info_single = "";
-            if(service_info[service]){
-                service_info_single = service_info[service];
-            }
-            add_service_card(service, service_info_single, inner_container);
-        });
-
-
-	}); */
-
-	//enable the searchbar so the user can edit the pipe
-	enable_search_bar()
 
     return detail_container;
 
@@ -246,7 +250,6 @@ function save_pipe(pipe, services, func){
 	    if(data.success){
 	        func(pipe, services);
 	    }else{
-	        console.log(data)
 	        show_tooltip($("#btn-add-service")[0], data.success, "", "Adding service failed. \n "+data.message);
 	    }
 	});

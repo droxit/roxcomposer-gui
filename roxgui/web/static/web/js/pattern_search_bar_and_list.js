@@ -59,12 +59,10 @@ function add_data_entries_from_remote(search_field, func, info_container, relati
 	}).done(function(data) {
 	    // Create list to store converted data.
 	    name_info_list = [];
-	    console.log("New data: ", data)
 	    // Convert JSON data to string.
 	    for (var i in data) {
-	        //console.log(i)
-	        var name = data[i][0];
-	        var json = convert_to_json_string(tmp[i][1]);
+	        var name = i;
+	        var json = convert_to_json_string(data[i]);
 	        name_info_list.push([name, json]);
 	    }
 	    // Add service data to list.

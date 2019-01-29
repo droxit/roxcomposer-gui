@@ -39,8 +39,7 @@ def get_service_info(request):
         if service in service_dict:
             info[service] = service_dict[service]
 
-    context = _create_json_context(info)
-    return JsonResponse(context)
+    return JsonResponse(service_dict)
 
 @require_http_methods(["POST"])
 def check_running(request):
