@@ -24,9 +24,9 @@ function set_pipe_tooltip(btn, tooltip){
 }
 
 /* Remove the 'disabled' status of those buttons that already have functionality */
-function enable_detail_headline_btns(){
+function enable_detail_elements(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-add-service"].forEach(function(btn){
+    ["btn-edit", "btn-add-service", "btn-send-msg"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -69,18 +69,49 @@ function add_search_bar(){
 /* adds a disabled */
 function add_send_message(){
     var search_container = $("#content-container");
-    var msg_row = $("<div class='row'></div>");
+    var msg_row = $("<div class='row' style='margin-top:20px'></div>");
     var msg_col = $("<div class='col-md-5'></div>");
-    var empty_col = $("<div class='col-md-7'></div>");
+    var btn_col = $("<div class='col-md-7'></div>");
 
     msg_row.append(msg_col);
-    msg_row.append(empty_col);
+    msg_row.append(btn_col);
     search_container.append(msg_row);
 
+    var msg_input = $("<input id='send_msg' class='form-control' type='text' placeholder='Send a message to pipeline' disabled = 'disabled'></input>");
+    msg_col.append(msg_input);
+
+
+    var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>")
+    var attach_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-round disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
+    btn_col.append(msg_send_btn);
+    btn_col.append(attach_btn);
+
+    bind_message_enter(); //bind the enter key on the input field to send a message
 
 
 }
 
+function bind_message_enter(){
+    var msg_input = document.getElementById("send_msg");
+
+    msg_input.addEventListener("keyup", function(event) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // When enter is pressed send the message to current pipe
+      if (event.keyCode === 13) {
+        document.getElementById("btn-send-msg").click();
+      }
+    });
+}
+
+/* Remove the disabled status of the send message input field */
+function enable_send_msg(){
+    var send_msg = $("#send_msg")[0];
+    send_msg.disabled = '';
+
+}
+
+/* Remove the disabled status of the search bar so the user can search services and add them */
 function enable_search_bar(){
     var searchbar = $("#search_services")[0];
     searchbar.disabled = '';
@@ -104,7 +135,7 @@ function add_service_to_pipe(){
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
 	    //Get the current service list of the pipeline and add the new service
-	    var current_services = pipe_data.data[pipe]["services"];
+	    var current_services = pipe_data.data.services;
         current_services.push(selected_service);
 
         //Update and save the new pipeline
@@ -115,6 +146,7 @@ function add_service_to_pipe(){
 
 }
 
+/* update the detail view after an element has been changed in the pipe */
 function update_pipe(pipe, services){
     var pipe_info = $("#detail_info")[0].dataset;
     pipe_info.name = pipe;
@@ -148,7 +180,7 @@ function create_pipe_detail(pipeline){
 		pipe_name: pipeline,
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
-        var services_in_pipe = pipe_data.data[pipeline]["services"];
+        var services_in_pipe = pipe_data.data.services;
         $.post("get_service_info", {
             services: services_in_pipe,
             csrfmiddlewaretoken: CSRFtoken
@@ -169,8 +201,9 @@ function create_pipe_detail(pipeline){
                 }
                 add_service_card(service, service_info_single, inner_container);
             });
-        //enable the searchbar so the user can edit the pipe
-        enable_search_bar()
+        //enable the searchbar and send message field so the user can edit the pipe and send messages
+        enable_search_bar();
+        enable_send_msg();
 	    });
     });
 
@@ -257,6 +290,7 @@ function get_preceding_service(container){
 
 }
 
+/* Create and save (or overwrite if name already exists) the new pipe on the roxcomposer */
 function save_pipe(pipe, services, func){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_pipeline", {
@@ -272,6 +306,25 @@ function save_pipe(pipe, services, func){
 	});
 }
 
+
+/* Send a message to the currently selected pipeline and show tooltip after */
+function send_msg_to_pipe(){
+    // Retrieve the info on currently selected pipe and message
+    var pipe = document.getElementById('headline_detail').dataset.name;
+    var msg_input_field = document.getElementById('send_msg');
+    var msg = msg_input_field.value;
+
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("send_msg", {
+		msg: msg,
+		pipe: pipe,
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+
+	    show_tooltip(msg_input_field, data.success, "Sent message successfully.", "Sending failed. \n "+data.message);
+
+	});
+}
 
 /* TODO */
 function watch_pipe(detail_info){

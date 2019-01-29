@@ -61,7 +61,7 @@ function go_to_detail_view(elem){
 
     //set_specific_info(elem);
     set_detail_headline(elem.dataset.name);
-    enable_detail_headline_btns();
+    enable_detail_elements();
 
     var create_detail_view = eval(detail_info.dataset.func)
 

@@ -10,7 +10,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
-from web.views.json_views import _create_json_context
+from web.views.json_views import create_rox_response
 
 
 
@@ -27,7 +27,7 @@ def create_pipeline(request):
     services = request.POST.getlist("services[]", default=[])
     pipe_name = request.POST.get("pipe_name", default="")
     result = rox_request.create_pipeline(pipe_name, services)
-    return JsonResponse({"data":result.data, "success":result.success, "message":result.message})
+    return create_rox_response(result)
 
 
 @require_http_methods(["POST"])
@@ -37,8 +37,14 @@ def get_pipeline_info(request):
     result = rox_request.get_pipelines() #get a list of all available pipelines
     print("PIPES: ", result.data)
     if pipe_name in result.data:
-        print("PIPELINE:")
-        print(result.data[pipe_name])
+        result.data = result.data[pipe_name]
 
-    #result = rox_request.create_pipeline(pipe_name, services)
-    return JsonResponse({"data":result.data, "success":result.success, "message":result.message})
+    return create_rox_response(result)
+
+@require_http_methods(["POST"])
+def send_msg(request):
+    # Get the message and the pipe name
+    pipe_name = request.POST.get("pipe", default="")
+    msg = request.POST.get("msg", default="")
+    result = rox_request.post_to_pipeline(pipe_name, msg)
+    return create_rox_response(result)
