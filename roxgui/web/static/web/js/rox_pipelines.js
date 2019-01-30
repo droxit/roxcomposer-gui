@@ -149,7 +149,7 @@ function add_service_to_pipe(){
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
 	    //if the pipeline already exists
-	    if(pipe_data.data.length){
+	    if(jQuery.isEmptyObject(pipe_data.data.length)){
             //Get the current service list of the pipeline
             var current_services = pipe_data.data.services;
 	    }else{
@@ -226,6 +226,7 @@ function create_detail_view(pipeline){
                 if(service_info[service]){
                     service_info_single = service_info[service];
                 }
+
                 add_service_card(service, service_info_single, inner_container);
             });
 	    });
@@ -268,12 +269,21 @@ function add_service_card(service, serviceinfo, services_container){
 
     var btn_watch = document.createElement("button");
     btn_watch.setAttribute("style", "margin-right:5px");
+    btn_watch.setAttribute("data-toggle", "tooltip");
+    btn_watch.setAttribute("data-placement", "top");
+    btn_watch.setAttribute("data-title", "(un)watch");
+
     card_header.appendChild(btn_watch);
     var btn_del = document.createElement("button");
     card_header.appendChild(btn_del);
 
     btn_watch.setAttribute("class", "btn btn-secondary disabled btn-sm");
     btn_del.setAttribute("class", "btn btn-secondary disabled btn-sm");
+    btn_del.setAttribute("style", "margin-right:5px");
+    btn_del.setAttribute("data-toggle", "tooltip");
+    btn_del.setAttribute("data-placement", "top");
+    btn_del.setAttribute("data-title", "delete from pipe");
+
 
     var btn_watch_img = document.createElement("span");
     var btn_del_img = document.createElement("span");
