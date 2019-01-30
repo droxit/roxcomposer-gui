@@ -116,11 +116,11 @@ function toggle_services(btn, func_enable, func_disable){
     }
 }
 
-/* Pattern to watch services. */
+/* Pattern to watch services.
 function watch_services(detail_info){
     var watch_services_specific = eval(detail_info.dataset.watch_func)
     watch_services_specific(detail_info);
-}
+} */
 
 /* Pattern to unwatch services. */
 function unwatch_services(detail_info){

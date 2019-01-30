@@ -149,7 +149,7 @@ function save_service(service){
 }
 
 /* Watch a service */
-function watch_service(detail_info){
+function watch_services(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
