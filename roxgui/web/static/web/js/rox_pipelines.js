@@ -79,7 +79,7 @@ function add_search_bar(){
 /* adds a disabled */
 function add_send_message(){
     var search_container = $("#content-container");
-    var msg_row = $("<div class='row' style='margin-top:20px'></div>");
+    var msg_row = $("<div class='row' style='margin-top:20px;margin-bottom:20px'></div>");
     var msg_col = $("<div class='col-md-5'></div>");
     var btn_col = $("<div class='col-md-7'></div>");
 
