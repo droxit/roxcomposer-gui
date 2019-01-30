@@ -25,6 +25,9 @@ function set_pipe_tooltips(){
     set_pipe_tooltip($("#btn-save")[0].dataset, "save changes");
     set_pipe_tooltip($("#btn-add")[0].dataset, "add new pipe");
     set_pipe_tooltip($("#btn-add-service")[0].dataset, "add new service to pipeline");
+    set_pipe_tooltip($("#btn-send-msg")[0].dataset, "send");
+    set_pipe_tooltip($("#btn-attach")[0].dataset, "attach a file");
+
 }
 
 /* Set the tooltip for a single button, the status is set to 0 and indicates if the pipe is running */
@@ -92,7 +95,7 @@ function add_send_message(){
 
 
     var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>")
-    var attach_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-round disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
+    var attach_btn = $("<button type='button' id='btn-attach' class='btn btn-primary btn-round disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
     btn_col.append(msg_send_btn);
     btn_col.append(attach_btn);
 
