@@ -341,7 +341,7 @@ function send_msg_to_pipe(){
 }
 
 /* TODO */
-function watch_pipe(detail_info){
+function watch_services(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
