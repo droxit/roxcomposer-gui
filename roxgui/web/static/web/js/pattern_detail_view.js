@@ -83,6 +83,8 @@ function go_to_detail_view(elem){
     set_buttons(detail_info);
 }
 
+/* Called when a new pipe/service is to be created, a new empty detail view is opened
+    And the buttons and input elements are set from disabled to enabled. */
 function go_to_new_detail_view(new_name){
     set_detail_headline(new_name);
     enable_detail_elements();

@@ -458,6 +458,7 @@ function set_buttons(detail_info){
     //set_pipe_watch_button(pipe);
 }
 
+//TODO
 function set_pipe_run_button(pipe){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     $.post("check_running", {
