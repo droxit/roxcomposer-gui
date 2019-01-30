@@ -54,6 +54,9 @@ function add_data_entry(search_field, func, data_name, data_info, info_container
 }
 
 function add_data_entries(search_field, func, name_info_list, info_container) {
+    if(info_container != null){
+        info_container.innerHTML = "";
+    }
 	for (var i = 0; i < name_info_list.length; i++) {
 		var name = name_info_list[i][0];
 		var info = name_info_list[i][1];

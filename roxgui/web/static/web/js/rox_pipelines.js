@@ -39,7 +39,7 @@ function set_pipe_tooltip(btn, tooltip){
 /* Remove the 'disabled' status of those buttons that already have functionality */
 function enable_detail_elements(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-add-service", "btn-send-msg"].forEach(function(btn){
+    ["btn-edit", "btn-add-service", "btn-send-msg", "btn-save"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -153,7 +153,7 @@ function add_service_to_pipe(){
         current_services.push(selected_service);
 
         //Update and save the new pipeline
-        save_pipe(pipe, current_services, update_pipe)
+        save_pipe_add_service(pipe, current_services, update_pipe)
 	});
 
 
@@ -167,6 +167,7 @@ function update_pipe(pipe, services){
 
     var new_detail = create_detail_view(pipe);
     add_detail_view(new_detail);
+    add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0],'get_pipelines');
 }
 
 
@@ -304,12 +305,21 @@ function get_preceding_service(container){
 
 }
 
+/* Retrieve the new information (pipe name and service list) and create a new pipeline (or save/overwrite) */
 function save_detail(){
+    var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
+    var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
+    var services = [];
+    jQuery.each(service_cards, function(i, val) {
+            services.push(val.innerHTML);
+        });
+    $("#detail_info")[0].dataset.name = pipe_name;
+    save_pipe(pipe_name, services);
 
 }
 
-/* Create and save (or overwrite if name already exists) the new pipe on the roxcomposer */
-function save_pipe(pipe, services, func){
+/* Overwrite an edited pipe on the roxcomposer after adding a service*/
+function save_pipe_add_service(pipe, services){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_pipeline", {
 		services: services,
@@ -317,9 +327,25 @@ function save_pipe(pipe, services, func){
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    if(data.success){
-	        func(pipe, services);
+	        update_pipe(pipe, services);
 	    }else{
 	        show_tooltip($("#btn-add-service")[0], data.success, "", "Adding service failed. \n "+data.message);
+	    }
+	});
+}
+
+/* Create and save (or overwrite if name already exists) the new pipe on the roxcomposer. */
+function save_pipe(pipe, services){
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("create_pipeline", {
+		services: services,
+		pipe_name: pipe,
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    if(data.success){
+	        update_pipe(pipe, services);
+	    }else{
+	        show_tooltip($("#btn-save")[0], data.success, "", "Saving the pipe failed. \n "+data.message);
 	    }
 	});
 }
