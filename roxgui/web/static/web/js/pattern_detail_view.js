@@ -83,6 +83,16 @@ function go_to_detail_view(elem){
     set_buttons(detail_info);
 }
 
+function go_to_new_detail_view(new_name){
+    set_detail_headline(new_name);
+    enable_detail_elements();
+
+    var detail_view = create_detail_view(new_name);
+    add_detail_view(detail_view);
+
+    set_buttons(detail_info);
+}
+
 /* Add the new detail view to the container. */
 function add_detail_view(elem){
     var detail_view = $("#data_detail_list");

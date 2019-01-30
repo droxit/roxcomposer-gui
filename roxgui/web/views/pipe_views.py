@@ -53,7 +53,8 @@ def get_pipeline_info(request):
     result = rox_request.get_pipelines() #get a list of all available pipelines
     if pipe_name in result.data:
         result.data = result.data[pipe_name]
-
+    else:
+        result.data = {}
     return create_rox_response(result)
 
 @require_http_methods(["POST"])

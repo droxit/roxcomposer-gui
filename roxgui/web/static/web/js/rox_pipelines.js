@@ -148,8 +148,14 @@ function add_service_to_pipe(){
 		pipe_name: pipe,
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
-	    //Get the current service list of the pipeline and add the new service
-	    var current_services = pipe_data.data.services;
+	    //if the pipeline already exists
+	    if(pipe_data.data.length){
+            //Get the current service list of the pipeline
+            var current_services = pipe_data.data.services;
+	    }else{
+	        var current_services = []; //if it doesn't exist, create a new one
+	    }
+	    //add the new service
         current_services.push(selected_service);
 
         //Update and save the new pipeline
@@ -195,7 +201,13 @@ function create_detail_view(pipeline){
 		pipe_name: pipeline,
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
+        //enable the searchbar and send message field so the user can edit the pipe and send messages
+        enable_search_bar();
+        enable_send_msg();
         var services_in_pipe = pipe_data.data.services;
+        if(!services_in_pipe){
+            return;
+        }
         $.post("get_service_info", {
             services: services_in_pipe,
             csrfmiddlewaretoken: CSRFtoken
@@ -216,13 +228,8 @@ function create_detail_view(pipeline){
                 }
                 add_service_card(service, service_info_single, inner_container);
             });
-        //enable the searchbar and send message field so the user can edit the pipe and send messages
-        enable_search_bar();
-        enable_send_msg();
 	    });
     });
-
-
     return detail_container;
 
 }
@@ -350,6 +357,15 @@ function save_pipe(pipe, services){
 	});
 }
 
+
+/* This is called when the user clicks the 'add new' button, it opens an empty detail view and
+    sets the pipeline name to 'new pipe'. */
+function add_new(elem){
+    if(check_disabled(elem)){
+        return;
+    }
+    go_to_new_detail_view("new pipe")
+}
 
 /* Send a message to the currently selected pipeline and show tooltip after */
 function send_msg_to_pipe(){
