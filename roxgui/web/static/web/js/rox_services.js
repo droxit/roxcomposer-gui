@@ -64,7 +64,7 @@ function set_service_info(elem){
 }
 
 /* When a service has been selected this function is called to create the detail view of this service. */
-function create_service_detail(service){
+function create_detail_view(service){
     var detail_container = document.createElement("div");
     detail_container.setAttribute("class", "container");
 

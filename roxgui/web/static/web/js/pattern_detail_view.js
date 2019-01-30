@@ -74,14 +74,8 @@ function set_param_field(param_val){
 /* Called when an element from the list is selected to show the detail
     view containing information on the selected element. */
 function go_to_detail_view(elem){
-    //var detail_info = $("#detail_info")[0];
-    //var set_specific_info = eval(detail_info.dataset.set_info)
-
-    //set_specific_info(elem);
     set_detail_headline(elem.dataset.name);
     enable_detail_elements();
-
-    var create_detail_view = eval(detail_info.dataset.func)
 
     var detail_view = create_detail_view(elem.dataset.name);
     add_detail_view(detail_view);

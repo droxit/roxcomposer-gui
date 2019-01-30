@@ -165,14 +165,14 @@ function update_pipe(pipe, services){
     var pipe_info = $("#detail_info")[0].dataset;
     pipe_info.name = pipe;
 
-    var new_detail = create_pipe_detail(pipe);
+    var new_detail = create_detail_view(pipe);
     add_detail_view(new_detail);
 }
 
 
 /* When a pipeline has been selected this function is called to create the detail view containing the service cards
    of the selected pipeline */
-function create_pipe_detail(pipeline){
+function create_detail_view(pipeline){
 
     //Create the container for the detail view
     var detail_container = document.createElement("div");
