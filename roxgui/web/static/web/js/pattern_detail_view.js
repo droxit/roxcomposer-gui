@@ -96,14 +96,6 @@ function add_detail_view(elem){
     detail_view[0].appendChild(elem);
 }
 
-/* When a detail view has been edited this function should be called (by the save button in the lower right corner). */
-function save_detail(){
-    var detail_info = $("#detail_info")[0];
-    var save_detail_specific = eval(detail_info.dataset.save_func);
-    save_detail_specific(detail_info);
-
-}
-
 /* Pattern to toggle a button. Func_enable is called if the buttons status is set to 0, func_disable else. */
 function toggle_services(btn, func_enable, func_disable){
     if(!check_disabled(btn)){
@@ -114,36 +106,6 @@ function toggle_services(btn, func_enable, func_disable){
             func_disable(detail_info);
         }
     }
-}
-
-/* Pattern to watch services.
-function watch_services(detail_info){
-    var watch_services_specific = eval(detail_info.dataset.watch_func)
-    watch_services_specific(detail_info);
-} */
-
-/* Pattern to unwatch services. */
-function unwatch_services(detail_info){
-    var unwatch_services_specific = eval(detail_info.dataset.unwatch_func)
-    unwatch_services_specific(detail_info);
-}
-
-/* Pattern to run services. */
-function run_services(detail_info){
-    var run_services_specific = eval(detail_info.dataset.run_func)
-    run_services_specific(detail_info);
-}
-
-/* Pattern to stop services. */
-function stop_services(detail_info){
-    var stop_services_specific = eval(detail_info.dataset.stop_func)
-    stop_services_specific(detail_info);
-}
-
-/* Pattern set the status of a button. */
-function set_buttons(detail_info){
-   var set_buttons_specific = eval(detail_info.dataset.set_buttons)
-   set_buttons_specific(detail_info);
 }
 
 /* Pattern to toggle the run button. */

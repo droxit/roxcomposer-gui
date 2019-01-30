@@ -304,6 +304,10 @@ function get_preceding_service(container){
 
 }
 
+function save_detail(){
+
+}
+
 /* Create and save (or overwrite if name already exists) the new pipe on the roxcomposer */
 function save_pipe(pipe, services, func){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
@@ -357,7 +361,7 @@ function watch_services(detail_info){
 }
 
 /* TODO */
-function unwatch_pipe(detail_info){
+function unwatch_services(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
@@ -373,7 +377,7 @@ function unwatch_pipe(detail_info){
 }
 
 /* TODO */
-function run_pipe(detail_info){
+function run_services(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
@@ -389,7 +393,7 @@ function run_pipe(detail_info){
 }
 
 /* TODO */
-function stop_pipe(detail_info){
+function stop_services(detail_info){
     var services = detail_info.dataset.services;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
@@ -406,7 +410,7 @@ function stop_pipe(detail_info){
 
 
 //TODO
-function set_pipe_buttons(detail_info){
+function set_buttons(detail_info){
     var pipe = detail_info.dataset.name;
     //set_pipe_run_button(pipe);
     //set_pipe_watch_button(pipe);

@@ -144,7 +144,7 @@ function get_params(container, service){
     return param_arr;
 }
 
-function save_service(service){
+function save_detail(){
     //TODO
 }
 
@@ -165,7 +165,7 @@ function watch_services(detail_info){
 }
 
 /* Unwatch a service */
-function unwatch_service(service){
+function unwatch_services(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
@@ -181,7 +181,7 @@ function unwatch_service(service){
 }
 
 /* Run a service */
-function run_service(detail_info){
+function run_services(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
@@ -197,7 +197,7 @@ function run_service(detail_info){
 }
 
 /* Stop a service */
-function stop_service(detail_info){
+function stop_services(detail_info){
     var service = detail_info.dataset.name;
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
@@ -214,7 +214,7 @@ function stop_service(detail_info){
 
 /* Sets the status of the run/stop and watch/unwatch buttons depending on
     the state of the service on the ROXcomposer server */
-function set_service_buttons(detail_info){
+function set_buttons(detail_info){
     var service = detail_info.dataset.name;
     set_run_button(service);
     set_watch_button(service);
