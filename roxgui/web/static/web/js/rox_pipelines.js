@@ -149,11 +149,11 @@ function add_service_to_pipe(){
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
 	    //if the pipeline already exists
-	    if(jQuery.isEmptyObject(pipe_data.data.length)){
+	    if(jQuery.isEmptyObject(pipe_data.data)){
+	        var current_services = []; //if it doesn't exist, create a new one
+	    }else{
             //Get the current service list of the pipeline
             var current_services = pipe_data.data.services;
-	    }else{
-	        var current_services = []; //if it doesn't exist, create a new one
 	    }
 	    //add the new service
         current_services.push(selected_service);
@@ -346,7 +346,7 @@ function save_pipe_add_service(pipe, services){
 	    if(data.success){
 	        update_pipe(pipe, services);
 	    }else{
-	        show_tooltip($("#btn-add-service")[0], data.success, "", "Adding service failed. \n "+data.message);
+	        show_tooltip($("#btn-add-service"), data.success, "", "Adding service failed. \n "+data.message);
 	    }
 	});
 }
@@ -362,7 +362,7 @@ function save_pipe(pipe, services){
 	    if(data.success){
 	        update_pipe(pipe, services);
 	    }else{
-	        show_tooltip($("#btn-save")[0], data.success, "", "Saving the pipe failed. \n "+data.message);
+	        show_tooltip($("#btn-save"), data.success, "", "Saving the pipe failed. \n "+data.message);
 	    }
 	});
 }

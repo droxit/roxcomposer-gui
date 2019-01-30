@@ -9,9 +9,8 @@
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from web.local_request import file_request, rox_request
+from web.local_request import rox_request
 from web.views.json_views import create_rox_response
-
 
 
 @require_http_methods(["POST"])
@@ -50,12 +49,13 @@ def get_pipeline_info(request):
     """
     # Get the pipe name
     pipe_name = request.POST.get("pipe_name", default="")
-    result = rox_request.get_pipelines() #get a list of all available pipelines
+    result = rox_request.get_pipelines()  # get a list of all available pipelines
     if pipe_name in result.data:
         result.data = result.data[pipe_name]
     else:
         result.data = {}
     return create_rox_response(result)
+
 
 @require_http_methods(["POST"])
 def send_msg(request):

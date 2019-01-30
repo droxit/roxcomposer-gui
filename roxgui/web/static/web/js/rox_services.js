@@ -29,7 +29,7 @@ function set_service_tooltips(){
 }
 
 /* Set the tooltip for a single button.
-    Also, the status is initialized to 0 as this function is only called when opening the service page anew*/
+    Also, the status is initialized to 0 as this function is only called when opening the service page anew */
 function set_service_tooltip(btn, tooltip){
     btn.status = "0";
     set_tooltip(btn, tooltip);
