@@ -45,14 +45,6 @@ def rox_pipelines(request):
     context = {
         "search_bar_text": "Search pipelines",
         "headline": "Pipelines",
-        "callback_func": "create_pipe_detail",
-        "callback_save": "save_pipe",
-        "callback_run": "run_pipe",
-        "callback_stop": "stop_pipe",
-        "callback_info": "set_pipe_info",
-        "callback_buttons": "set_pipe_buttons",
-        "callback_watch": "watch_pipe",
-        "callback_unwatch": "unwatch_pipe",
     }
     return render(request, "web/pages/pipelines/rox_pipelines.html", context)
 
@@ -63,14 +55,6 @@ def rox_services(request):
     context = {
         "search_bar_text": "Search services",
         "headline": "Services",
-        "callback_func" : "create_service_detail",
-        "callback_save": "save_service",
-        "callback_run": "run_service",
-        "callback_stop": "stop_service",
-        "callback_info": "set_service_info",
-        "callback_buttons": "set_service_buttons",
-        "callback_watch": "watch_service",
-        "callback_unwatch": "unwatch_service",
 
 
     }
