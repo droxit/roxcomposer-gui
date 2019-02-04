@@ -115,11 +115,11 @@ function toggle_services(btn, func_enable, func_disable){
 }
 
 /* Pattern to toggle the run button. */
-function toggle_run_button(btn, btn_status){
-    toggle_button(btn, btn_status, "fa-play", "fa-stop");
+function toggle_run_button(btn, btn_status, tooltip_off, tooltip_on){
+    toggle_button(btn, btn_status, "fa-play", "fa-stop", tooltip_off, tooltip_on);
 }
 
 /* Pattern to toggle the watch button. */
-function toggle_watch_button(btn, btn_status){
-    toggle_button(btn, btn_status, "fa-eye", "fa-eye-slash");
+function toggle_watch_button(btn, btn_status, tooltip_off, tooltip_on){
+    toggle_button(btn, btn_status, "fa-eye", "fa-eye-slash", tooltip_off, tooltip_on);
 }

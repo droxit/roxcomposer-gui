@@ -44,16 +44,24 @@ function show_tooltip(btn, success, successmsg, failmsg){
 /* toggles a specific button with two states (e.g. the watch or run buttons) to the other state.
     img1 is the icon for the first state and img2 for the second. These buttons must have a dataset.status info
     that can be either 0 or 1 (for on and off). */
-function toggle_button(btn, new_btn_status, img1, img2){
+function toggle_button(btn, new_btn_status, img1, img2, tooltip_off, tooltip_on){
     var btn_span = btn.childNodes[1];
     var old_btn_status = btn.dataset.status
     if(new_btn_status != old_btn_status){
         if(btn.dataset.status == "0"){
             btn.dataset.status = "1"
             btn_span.classList.replace(img1, img2);
+            $("#"+btn.id).tooltip('hide')
+          .attr('data-original-title', tooltip_on)
+          .tooltip('fixTitle')
+          .tooltip('show');
         }else{
             btn.dataset.status = "0"
             btn_span.classList.replace(img2, img1);
+            $("#"+btn.id).tooltip('hide')
+          .attr('data-original-title', tooltip_off)
+          .tooltip('fixTitle')
+          .tooltip('show');
         }
     }
 }
