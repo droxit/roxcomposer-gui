@@ -528,11 +528,14 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
                 res.data = rox_session
                 return res
 
+            #session could be expired, create a new session
             if r.status_code != 200:
                 error_msg = _create_http_status_error(r.status_code, r.text)
+
                 res = RoxResponse(False, error_msg)
-                res.data = rox_session
-                return res
+                res2 = create_new_sess(service_names, timeout)
+                res2.message = res.message
+                return res2
 
             response = r.json()
             rox_session['services'] = set(rox_session['services'])

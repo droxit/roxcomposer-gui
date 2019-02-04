@@ -163,7 +163,7 @@ function watch_services(detail_info){
 	}).done(function(data) {
 	    btn = $("#btn-watch");
 	    if(data.success){
-	        toggle_watch_button(btn[0], '1', data.success, "watch service", "unwatch service");
+	        toggle_watch_button(btn[0], '1', "watch service", "unwatch service");
 	    }
 		show_tooltip(btn, data.success, "Watching service.", "Watching failed. \n "+data.message);
 	});
@@ -179,7 +179,7 @@ function unwatch_services(detail_info){
 	}).done(function(data) {
 	    btn = $("#btn-watch");
 	    if(data.success){
-	        toggle_watch_button(btn[0], '0', data.success, "watch service", "unwatch service");
+	        toggle_watch_button(btn[0], '0', "watch service", "unwatch service");
 		}
 		show_tooltip(btn, data.success, "Unwatched service.", "Unwatching not successful.");
 	});
@@ -195,7 +195,7 @@ function run_services(detail_info){
 	}).done(function(data) {
 	    btn = $("#btn-run");
 	    if(data.success){
-	        toggle_run_button(btn[0], '1', data.success, "start service", "stop service");
+	        toggle_run_button(btn[0], '1', "start service", "stop service");
 		}
 		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service. \n "+data.message);
 	});
@@ -211,7 +211,7 @@ function stop_services(detail_info){
 	}).done(function(data) {
 	    btn = $("#btn-run");
 	    if(data.success){
-    	    toggle_run_button(btn[0], '0' , data.success, "start service", "stop service");
+    	    toggle_run_button(btn[0], '0' , "start service", "stop service");
 		}
 		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service. \n "+data.message);
 	});

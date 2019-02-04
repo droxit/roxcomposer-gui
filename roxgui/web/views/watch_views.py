@@ -63,7 +63,9 @@ def watch(request):
     """
     service_names = request.POST.getlist("services[]", default=[])
     cur_sess = request.session.get('current_session', None)
+
     res = rox_request.watch_services(service_names, rox_session=cur_sess)
+
     if res.success:  # the communication with ROXcomposer was successful: save the new session, update watch buttons
         new_sess = res.data
         request.session['current_session'] = new_sess
