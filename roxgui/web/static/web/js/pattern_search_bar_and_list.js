@@ -64,7 +64,7 @@ function add_data_entries(search_field, func, name_info_list, info_container) {
 	}
 }
 
-
+/* Adds data to a search field (html element Search field) */
 function add_data_entries_from_remote(search_field, func, info_container, relative_url) {
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post(relative_url, {
@@ -78,6 +78,10 @@ function add_data_entries_from_remote(search_field, func, info_container, relati
 	        var json = convert_to_json_string(data[i]);
 	        name_info_list.push([name, json]);
 	    }
+	    // Empty the data list of the search field
+	    var data_list = search_field.list;
+	    data_list.innerHTML = "";
+
 	    // Add service data to list.
 	    add_data_entries(search_field, func, name_info_list, info_container);
 	});
