@@ -135,7 +135,7 @@ function enable_search_bar(){
 /* Add a selected service to the currently viewed pipeline */
 function add_service_to_pipe(){
     var searchbar = $('#search_services')[0]
-    var pipe = $("#headline_detail")[0].dataset.name; //currently selected pipeline that is being edited
+    var pipe = $("#headline_detail")[0].dataset.name; // currently selected pipeline that is being edited
     var pipe_container = $("#services_in_pipe")[0]; // the container where service cards will be added
 
     //Retrieve the selected service that is to be added to pipe (and its information)
@@ -162,9 +162,36 @@ function add_service_to_pipe(){
         //Update and save the new pipeline
         save_pipe_add_service(pipe, current_services, update_pipe)
 	});
+}
+
+/* Remove the service that was clicked from current pipe. */
+function remove_service_from_pipe(service){
+    var pipe = $("#headline_detail")[0].dataset.name; // currently selected pipeline that is being edited
+    var pipe_container = $("#services_in_pipe")[0]; // the container where service cards are
 
 
+    //Get the pipeline info
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("get_pipeline_info", {
+		pipe_name: pipe,
+		csrfmiddlewaretoken: CSRFtoken,
+	}).done(function(pipe_data) {
+	    //if the pipeline already exists
+	    if(jQuery.isEmptyObject(pipe_data.data)){
+	        var current_services = []; //if it doesn't exist, create a new one
+	    }else{
+            //Get the current service list of the pipeline
+            var current_services = pipe_data.data.services;
+	    }
+	    //remove the selected service
+        var index = current_services.indexOf(service);
+        if (index > -1) {
+          current_services.splice(index, 1);
+        }
 
+        //Update and save the new pipeline
+        save_pipe_add_service(pipe, current_services, update_pipe)
+	});
 }
 
 /* update the detail view after an element has been changed in the pipe */
@@ -279,17 +306,18 @@ function add_service_card(service, serviceinfo, services_container){
     card_header.appendChild(btn_del);
 
     btn_watch.setAttribute("class", "btn btn-secondary disabled btn-sm");
-    btn_del.setAttribute("class", "btn btn-secondary disabled btn-sm");
+    btn_del.setAttribute("class", "btn btn-secondary btn-sm");
     btn_del.setAttribute("style", "margin-right:5px");
     btn_del.setAttribute("data-toggle", "tooltip");
     btn_del.setAttribute("data-placement", "top");
     btn_del.setAttribute("data-title", "delete from pipe");
+    btn_del.setAttribute("onclick", "remove_service_from_pipe('"+service+"')")
 
 
     var btn_watch_img = document.createElement("span");
     var btn_del_img = document.createElement("span");
     btn_watch_img.setAttribute("class", "fas fa-eye");
-    btn_del_img.setAttribute("class", "fas fa-trash");
+    btn_del_img.setAttribute("class", "fas fa-times");
     btn_watch.appendChild(btn_watch_img);
     btn_del.appendChild(btn_del_img);
 
