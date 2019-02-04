@@ -133,12 +133,16 @@ function get_params(container, service){
         }
         if(json_params.path){
             var key = "path";
-            var val = JSON.stringify(json_params.classpath, null, ' ');
+            var val = JSON.stringify(json_params.path, null, ' ');
             append_param(container, key, val);
         }
 
         jQuery.each(json_params.params, function(i, val) {
-            val = JSON.stringify(val, null, ' ');
+            if(typeof val === 'string' || val instanceof String){
+                val = JSON.stringify(val, null, ' ');
+            } else{
+                val = escapeHtml(convert_to_json_string(val));
+            }
             append_param(container, i, val);
         });
 	});

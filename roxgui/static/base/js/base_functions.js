@@ -48,11 +48,36 @@ function convert_to_json_string(json_instance) {
 }
 
 function escapeHtml(unsafe) {
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'"'/g, "&quot;").replace(/"'"/g, "&#039;");
+    unsafe = unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'"'/g, "&quot;").replace(/"'"/g, "&#039;");
+    unsafe = unsafe.replace(/\\n/g, "\\n")
+               .replace(/\\'/g, "\\'")
+               .replace(/\\"/g, '\\"')
+               .replace(/\\&/g, "\\&")
+               .replace(/\\r/g, "\\r")
+               .replace(/\\t/g, "\\t")
+               .replace(/\\b/g, "\\b")
+               .replace(/\\f/g, "\\f");
+    unsafe = unsafe.replace(/[\u0000-\u0019]+/g,"");
+    return unsafe
  }
 
 function set_tooltip(elem, tooltip){
     elem.toggle = "tooltip";
     elem.placement = "bottom";
     elem.title = tooltip;
+}
+
+/* Convert JSON to a string without slashes or ticks */
+function stringify(obj_from_json){
+    if(typeof obj_from_json !== "object" || Array.isArray(obj_from_json)){
+        // not an object, stringify using native function
+        return JSON.stringify(obj_from_json);
+    }
+    // Implements recursive object serialization according to JSON spec
+    // but without quotes around the keys.
+    let props = Object
+        .keys(obj_from_json)
+        .map(key => `${key}:${stringify(obj_from_json[key])}`)
+        .join(",");
+    return `{${props}}`;
 }
