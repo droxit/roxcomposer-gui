@@ -55,7 +55,7 @@ function edit_param_field(param_div, param){
 /* A new editable parameter field is created. */
 function create_param_field(val) {
     var param_div = document.createElement("div");
-    param_div.setAttribute("onclick", "edit_param_field(this, '"+ escapeHtml(val) +"')");
+    param_div.setAttribute("onclick", "edit_param_field(this, '"+ val +"')");
 
     var param_content = set_param_field(val);
     param_div.appendChild(param_content);

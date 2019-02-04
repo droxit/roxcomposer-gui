@@ -19,6 +19,7 @@ function create_input_field(text_node, placeholder, change_text_node){
     input_field.setAttribute("placeholder", placeholder);
     input_field.setAttribute("class","form-control");
     input_field.setAttribute("id", text_node.id);
+    input_field.value = placeholder;
 
     input_field.addEventListener("keyup", function(e){
         e.preventDefault();
