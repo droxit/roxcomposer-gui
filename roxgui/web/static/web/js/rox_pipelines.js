@@ -12,6 +12,7 @@
 function show_empty_detail_view(){
     $("#data_detail_list").html("");
     var detail_headline = $("#headline_detail");
+    detail_headline[0].setAttribute("onclick", "");
 
     detail_headline.html("<h4>Select a pipeline.</h4>");
 }
