@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Define HTTP responses concering service watching with JSON data.
+# Define HTTP responses concerning service watching with JSON data.
 #
 # devs@droxit.de
 #

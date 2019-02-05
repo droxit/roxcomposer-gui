@@ -1,4 +1,4 @@
-/* encoding: utf-8
+/*
 #
 # Define the pattern for a detail view that is similar for services and pipelines.
 #

@@ -1,3 +1,12 @@
+/*
+# Jasmin tests for the base functions.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
 describe('search_and_sort', function() {
 
 	// Search for keywords in list of strings.

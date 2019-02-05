@@ -1,4 +1,4 @@
-/* encoding: utf-8
+/*
 #
 # Define the pattern for popovers and togglable buttons.
 #

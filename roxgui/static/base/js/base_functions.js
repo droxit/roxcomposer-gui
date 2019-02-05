@@ -1,3 +1,12 @@
+/*
+# JS functions that are needed throughout the whole site.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
 /* Search for keywords in list of strings. */
 function keyword_search(search_list, item) {
 	if (search_list != null && item != null && item != "") {

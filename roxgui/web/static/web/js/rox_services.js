@@ -1,4 +1,4 @@
-/* encoding: utf-8
+/*
 #
 # Define the services functionality of the services page.
 #

@@ -1,4 +1,4 @@
-/* encoding: utf-8
+/*
 #
 # Define the the pattern of an editable input field (editable when clicked).
 #

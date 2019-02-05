@@ -1,4 +1,4 @@
-/* encoding: utf-8
+/*
 #
 # Define the dynamic pipeline functionality of the pipeline view.
 #
