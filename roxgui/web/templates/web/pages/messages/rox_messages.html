@@ -1,11 +1,4 @@
-{% extends "base/base.html" %}
-
-{% block title %}
-<title>ROXcomposer - Messages</title>
-{% endblock title %}
-
 <!--
-#
 #
 # Layout for the Message status accordion.
 #
@@ -15,20 +8,34 @@
 #
 -->
 
+{% extends "base/base.html" %}
+
 {% load static %}
+
+{% block title %}
+<title>ROXcomposer - Messages</title>
+{% endblock title %}
+
 
 {% block content %}
 {% csrf_token %}
-<div class="row pb-4">
-    <!-- Messages -->
-    <div class="col-md-4 scrollable-parent">
-        <h4><strong>Messages</strong></h4>
-        <div class="card w-auto" style="overflow-x:hidden;height:300px">
-            <div id="accordion"></div>
+
+<div class="container" id="content-container">
+    <div class="row">
+        <h1>ROXcomposer - Messages</h1>
+    </div>
+    <br>
+    <div class="row">
+        <!-- Messages -->
+        <div class="col-md-8 scrollable-parent">
+            <div class="card w-auto" style="overflow-x:hidden;height:600px;">
+                <div id="accordion"></div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock content %}
+
 
 <script src="{% static 'web/js/rox_messages.js'%}"></script>
 

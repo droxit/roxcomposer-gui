@@ -1,7 +1,6 @@
 /*
-# encoding: utf-8
 #
-# Define web views.
+# Rox messages helper functions.
 #
 # devs@droxit.de
 #
