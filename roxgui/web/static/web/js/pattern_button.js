@@ -46,7 +46,7 @@ function show_tooltip(btn, success, successmsg, failmsg){
     that can be either 0 or 1 (for on and off). */
 function toggle_button(btn, new_btn_status, img1, img2, tooltip_off, tooltip_on){
     var btn_span = btn.childNodes[1];
-    var old_btn_status = btn.dataset.status
+    var old_btn_status = btn.dataset.status;
     if(new_btn_status != old_btn_status){
         if(btn.dataset.status == "0"){
             btn.dataset.status = "1"
