@@ -10,9 +10,9 @@
 from django.db import models
 import datetime
 
-# Create your models here.
 
 class Logline(models.Model):
+    """ This model defines a single log line that is sent by the ROXconnector when watching a service. """
     service = models.CharField(max_length=200)
     msg = models.TextField()
     msg_id = models.CharField(max_length=200, default="")
@@ -34,22 +34,34 @@ class Logline(models.Model):
         return logline
 
     def to_dict(self):
-        return {"id":self.id, "service":self.service, "msg":self.msg, "level":self.level, "time":self.time.strftime("%B %d, %Y %H:%M"), "text": str(self)}
+        return {"id": self.id, "service": self.service,
+                "msg": self.msg, "level": self.level,
+                "time": self.time.strftime("%B %d, %Y %H:%M"),
+                "text": str(self)}
 
 
 class Message(models.Model):
+    """ This model defines a Message that is posted to a Pipeline,
+    it contains information on the pipeline and the time it was sent, the message content and ID. """
     id = models.CharField(max_length=200, primary_key=True)
     pipeline = models.CharField(max_length=200, default="")
     time = models.DateTimeField(default=datetime.datetime.now())
     message = models.TextField(default="")
 
     def __str__(self):
-        return "Message ID: {} to pipeline: {}, created at {} \n {}".format(self.id, self.pipeline, self.time, self.message)
+        return "Message ID: {} to pipeline: {}, created at {} \n {}".format(self.id,
+                                                                            self.pipeline,
+                                                                            self.time,
+                                                                            self.message)
 
     def to_dict(self):
-        return {"id":self.id, "pipeline":self.pipeline, "time":self.time.strftime("%B %d, %Y %H:%M"), "message":self.message}
+        return {"id": self.id, "pipeline": self.pipeline,
+                "time": self.time.strftime("%B %d, %Y %H:%M"),
+                "message": self.message}
+
 
 class MessageStatus(models.Model):
+    """ This Model defines the status of a message as is retrieved from the ROXcomposer Trace log. """
     msg_id = models.CharField(max_length=200, default="")
     event = models.CharField(max_length=200, default="")
     status = models.CharField(max_length=200, default="")
@@ -62,12 +74,15 @@ class MessageStatus(models.Model):
         return "Event: {}, Status: {}, Time: {}, Args: " \
                "Service_Name: {}, Message_ID: {}, Processing Time: {}, " \
                "Total Processing Time: {}".format(self.event, self.status, str(self.time),
-                                                     self.service_name, self.msg_id,
-                                                  str(self.processing_time), str(self.total_processing_time))
+                                                  self.service_name, self.msg_id,
+                                                  str(self.processing_time),
+                                                  str(self.total_processing_time))
 
     def to_dict(self):
-        return {"msg_id" : self.msg_id, "event": self.event, "status":self.status, "time":self.time.strftime("%B %d, %Y %H:%M"),
-                "service_name":self.service_name, "processing_time":self.processing_time, "total_processing_time":self.total_processing_time}
+        return {"msg_id": self.msg_id, "event": self.event, "status": self.status,
+                "time": self.time.strftime("%B %d, %Y %H:%M"),
+                "service_name": self.service_name, "processing_time": self.processing_time,
+                "total_processing_time": self.total_processing_time}
 
 
 class RoxSession(models.Model):
