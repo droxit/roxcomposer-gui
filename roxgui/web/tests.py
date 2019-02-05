@@ -7,6 +7,6 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-from django.test import TestCase
+# from django.test import TestCase
 
 # Create your base_tests here.

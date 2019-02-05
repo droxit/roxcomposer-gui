@@ -8,7 +8,7 @@
 #
 
 from django.urls import path
-from web.views import html_views, json_views, watch_views, service_views, pipe_views, message_views, log_views
+from web.views import html_views, watch_views, service_views, pipe_views, message_views, log_views
 
 urlpatterns = [
     # HTML views.

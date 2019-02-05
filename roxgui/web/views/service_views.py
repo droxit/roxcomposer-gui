@@ -20,12 +20,14 @@ def get_services(request):
     result = file_request.get_local_services()
     return JsonResponse(result.data)
 
+
 @require_http_methods(["POST"])
 def get_service_info(request):
     """
     Returns the info of services in a dictionary (their parameters etc.)
     :param request: contains a list "services" with the names of all services that the info should be retrieved of
-    :return: a JsonResponse context with key value pairs, where the key is the service name and value the corresponding service info
+    :return: a JsonResponse context with key value pairs,
+            where the key is the service name and value the corresponding service info
     """
     services = request.POST.getlist("services[]", default=[])
     result = file_request.get_local_services()
@@ -41,12 +43,14 @@ def get_service_info(request):
 
     return JsonResponse(info)
 
+
 @require_http_methods(["POST"])
 def check_running(request):
     """
     For a specified list of services returns which of those are running
     :param request: contains list of service names
-    :return: dictionary with service names as  keys and boolean as value, the boolean indicates if the service is running.
+    :return: dictionary with service names as  keys and boolean as value,
+            the boolean indicates if the service is running.
     """
     result = rox_request.get_running_services()
     running_services = result.data
@@ -83,7 +87,7 @@ def start_services(request):
             return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be started.
-            services_not_started = ", ".join(result.error_data)
+            # services_not_started = ", ".join(result.error_data)
             return JsonResponse(res.convert_to_json())
 
 
@@ -105,5 +109,5 @@ def stop_services(request):
             return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be stopped.
-            #services_not_stopped = ", ".join(res.error_data)
+            # services_not_stopped = ", ".join(res.error_data)
             return JsonResponse(res.convert_to_json())
