@@ -25,8 +25,8 @@ MSG_DELETE = datetime.timedelta(minutes=5)
 
 def get_messages():
     """
-    Retrieve the messages
-    :return:
+    Retrieve the currently relevant messages from Database.
+    :return: a Django QueryObject containing the current messages
     """
     # Get valid interval for messages.
     dt_end = timezone.now()
@@ -38,7 +38,17 @@ def get_messages():
     return msgs
 
 
-def get_message_statuses(request, messages):
+def get_message_statuses(request, messages) -> dict:
+    """
+    For the current messages retrieve the corresponding log lines from ROXcomposer trace log.
+    These contain information on the current status of the message (e.g. the last service in the
+    pipeline that was reached).
+
+    :param request: Contains the django session which is used to retrieve information on when the last
+                    message poll (from the log file) happened
+    :param messages: a Django QueryObject containing all currently relevant messages
+    :return: a dictionary that for each message in 'messages' contains all status information as 'MessageStatus' objects
+    """
     last_time = request.session.get('last_message_poll', None)
     res = rox_request.get_message_status(last_time=last_time)
     if res.success:
@@ -82,6 +92,11 @@ def get_message_statuses(request, messages):
 
 @require_http_methods(["POST"])
 def get_msg_status(request):
+    """
+    Retrieve the current messages and their status
+    :param request: contains the django session variable
+    :return: a JsonResponse containing all messages and their status as strings
+    """
     msgs = get_messages()
     msg_dict = get_message_statuses(request, msgs)
     msg_dict_str = {}
@@ -93,4 +108,9 @@ def get_msg_status(request):
 
 
 def epoch2dt(ts_epoch):
+    """
+    Converts an epoch timestamp to a human readable timestamp
+    :param ts_epoch: epoch int
+    :return: datetime timestamp
+    """
     return timezone.make_aware(datetime.datetime.fromtimestamp(ts_epoch))
