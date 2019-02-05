@@ -51,11 +51,11 @@ function toggle_button(btn, new_btn_status, img1, img2, tooltip_off, tooltip_on)
         if(btn.dataset.status == "0"){
             btn.dataset.status = "1"
             btn_span.classList.replace(img1, img2);
-            $("#"+btn.id).tooltip('hide').attr('data-original-title', tooltip_on);
+            $("#"+btn.id).tooltip('hide').attr('data-original-title', tooltip_on).tooltip('hide');
         }else{
             btn.dataset.status = "0"
             btn_span.classList.replace(img2, img1);
-            $("#"+btn.id).tooltip('hide').attr('data-original-title', tooltip_off);
+            $("#"+btn.id).tooltip('hide').attr('data-original-title', tooltip_off).tooltip('hide');
         }
     }
 }
