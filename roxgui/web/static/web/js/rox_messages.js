@@ -249,6 +249,6 @@ function reload_msgs(){
     log_win = document.getElementById("log");
     setInterval(function() {
         get_msg_status(acc);
-        update_log(log_win);
+        //update_log(log_win);
     }, 1000);
 }

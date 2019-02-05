@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import rox_request
 from web.views.json_views import create_rox_response
+from web.models import Message
+import datetime
 
 
 @require_http_methods(["POST"])
@@ -67,5 +69,14 @@ def send_msg(request):
     # Get the message and the pipe name
     pipe_name = request.POST.get("pipe", default="")
     msg = request.POST.get("msg", default="")
+    # Send message and retrieve response
     result = rox_request.post_to_pipeline(pipe_name, msg)
+
+    if result.success:
+        # Message was sent successfully.
+        m = Message(id=result.data, pipeline=pipe_name, message=msg,
+                    time=datetime.datetime.now())
+        m.save()
+        #log_views.update_logs(request, msg_id=result.data)
+
     return create_rox_response(result)

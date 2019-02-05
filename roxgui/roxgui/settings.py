@@ -70,7 +70,7 @@ if tmp_log_file is not None:
         # Log file is valid and can be used.
         ROX_COMPOSER_LOG_FILE = tmp_log_file
 else:
-    ROX_COMPOSER_LOG_FILE = "/roxcomposer/logs/trace.log"
+    ROX_COMPOSER_LOG_FILE = os.path.join(BASE_DIR, "roxcomposer/logs/trace.log")
 
 # Initialize ROXconnector connection data as specified in config file.
 tmp_ip = config.get("Default", "RoxConnectorIp", fallback=None)

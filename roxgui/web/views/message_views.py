@@ -86,6 +86,7 @@ def get_msg_status(request):
     msg_dict = get_message_statuses(request, msgs)
     msg_dict_str = {}
     for msg in msg_dict:
+        print("MESSAGE: ", msg_dict)
         msg_dict_str[msg.id] = {"message": msg.to_dict(), "status": msg_dict[msg].to_dict()}
 
     return JsonResponse(msg_dict_str)

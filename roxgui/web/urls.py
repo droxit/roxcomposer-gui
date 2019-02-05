@@ -8,7 +8,7 @@
 #
 
 from django.urls import path
-from web.views import html_views, json_views, watch_views, service_views, pipe_views
+from web.views import html_views, json_views, watch_views, service_views, pipe_views, message_views
 
 urlpatterns = [
     # HTML views.
@@ -37,4 +37,7 @@ urlpatterns = [
     path('check_watched', watch_views.check_watched, name="check_watched"),
     path('watch', watch_views.watch, name="watch"),
     path('unwatch', watch_views.unwatch, name="unwatch"),
+
+    #Message Views
+    path("get_msg_status", message_views.get_msg_status, name="web_get_msg_status"),
 ]
