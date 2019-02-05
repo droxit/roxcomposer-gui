@@ -1,5 +1,5 @@
 /*
-# Jasmin tests for the base functions.
+# Jasmine tests for the base functions.
 #
 # devs@droxit.de
 #

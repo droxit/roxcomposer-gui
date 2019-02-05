@@ -1,6 +1,5 @@
 /*
 #
-#
 # Define web views.
 #
 # devs@droxit.de

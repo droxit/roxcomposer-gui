@@ -1,5 +1,5 @@
 /*
-# JS functions that are needed throughout the whole site.
+# JavaScript functions that are needed throughout the whole site.
 #
 # devs@droxit.de
 #
