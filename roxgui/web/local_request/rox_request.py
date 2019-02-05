@@ -181,6 +181,7 @@ def get_running_service_jsons() -> RoxResponse:
         res.data = dict((key, value) for (key, value) in r.json().items() if key not in FORBIDDEN_SERVICES)
         return res
 
+
 def get_running_services() ->RoxResponse:
     """
     Get Names of all currently running services
@@ -434,11 +435,10 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
 def save_session(file_name: str) -> RoxResponse:
     """
     Save current session to specified file.
-    :param file_path: File name.
+    :param file_name: File name.
     :return: RoxResponse instance documenting if session could be saved.
     """
     file_path = os.path.join(SESSION_DIR, file_name)
-    fd = None
     try:
         fd = open(file_path, 'w')
     except OSError as err:
@@ -528,7 +528,7 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
                 res.data = rox_session
                 return res
 
-            #session could be expired, create a new session
+            # session could be expired, create a new session
             if r.status_code != 200:
                 error_msg = _create_http_status_error(r.status_code, r.text)
 
@@ -678,7 +678,7 @@ def get_message_status(last_time: int = None) -> RoxResponse:
                 # add new log lines only if they are newer than the last time logs were updated
                 if line_time > last_time:
                     logs.append(line)
-    except:
+    except FileNotFoundError:
         return RoxResponse(False, "Could not open trace file.")
 
     res = RoxResponse(True, "Message trace read.")
@@ -702,5 +702,5 @@ def reset_watchers():  # TODO
     pass
 
 
-def save_pipeline(file_name):  # TODO
+def save_pipeline():  # TODO
     pass

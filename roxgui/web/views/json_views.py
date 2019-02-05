@@ -8,8 +8,7 @@
 #
 
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from web.local_request import file_request, rox_request, rox_response
+from web.local_request import rox_response
 
 
 def _create_json_context(data) -> dict:

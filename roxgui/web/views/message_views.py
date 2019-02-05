@@ -54,17 +54,18 @@ def get_message_statuses(request, messages) -> dict:
     if res.success:
         tracelines = res.data
         for line in tracelines:
-            l = json.loads(line)
-            msg_status = MessageStatus(event=l['event'], status=l['status'], time=epoch2dt(l['time']),
-                                       msg_id=l['args']['message_id'], service_name=l['args']['service_name'])
-            if 'processing_time' in l['args']:
-                p_time = epoch2dt(l['args']['processing_time'])
+            new_logline = json.loads(line)
+            msg_status = MessageStatus(event=new_logline['event'], status=new_logline['status'],
+                                       time=epoch2dt(new_logline['time']), msg_id=new_logline['args']['message_id'],
+                                       service_name=new_logline['args']['service_name'])
+            if 'processing_time' in new_logline['args']:
+                p_time = epoch2dt(new_logline['args']['processing_time'])
                 if p_time.year == 1970:
                     msg_status.processing_time = p_time
                 else:
                     msg_status.processing_time_long = p_time
-            if 'total_processing_time' in l['args']:
-                p_time = epoch2dt(l['args']['total_processing_time'])
+            if 'total_processing_time' in new_logline['args']:
+                p_time = epoch2dt(new_logline['args']['total_processing_time'])
                 if p_time.year == 1970:
                     msg_status.total_processing_time = p_time
                 else:
