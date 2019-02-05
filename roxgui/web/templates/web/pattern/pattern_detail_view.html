@@ -11,22 +11,14 @@
             <div class="col-md-8">
                 <div id="headline_detail" onclick="edit_detail_headline()"> <h4>{{ headline_detail }} </h4> </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4"  id="button_headline">
 
                 <button type="button" id="btn-delete" class="btn btn-primary btn-round float-right disabled">
                     <span class="fas fa-trash"></span>
                 </button>
 
-                <button type="button" id="btn-watch" class="btn btn-primary btn-round float-right space-right disabled" onclick="toggle_services(this, watch_services, unwatch_services)">
-                    <span class="fas fa-eye"></span>
-                </button>
-
                 <button type="button" id="btn-edit" class="btn btn-primary btn-round float-right space-right disabled" onclick="edit_detail_headline(this)">
                     <span class="fas fa-pen"></span>
-                </button>
-
-                <button type="button" id="btn-run" class="btn btn-primary btn-round float-right space-right disabled" onclick="toggle_services(this, run_services, stop_services)">
-                    <span class="fas fa-play"></span>
                 </button>
 
             </div>

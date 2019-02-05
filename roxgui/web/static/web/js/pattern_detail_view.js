@@ -102,14 +102,14 @@ function add_detail_view(elem){
     detail_view[0].appendChild(elem);
 }
 
-/* Pattern to toggle a button. Func_enable is called if the buttons status is set to 0, func_disable else. */
-function toggle_services(btn, func_enable, func_disable){
+/* Pattern to toggle a button. Func_enable is called if the buttons status is set to 0, func_disable else.
+    info contains information such as 'name' e.g. when a service is started. */
+function toggle_services(info, btn, func_enable, func_disable){
     if(!check_disabled(btn)){
-        var detail_info = $("#detail_info")[0];
         if(btn.dataset.status == "0"){
-            func_enable(detail_info);
+            func_enable(info);
         }else if(btn.dataset.status == "1"){
-            func_disable(detail_info);
+            func_disable(info);
         }
     }
 }

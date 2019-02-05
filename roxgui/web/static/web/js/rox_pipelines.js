@@ -19,9 +19,7 @@ function show_empty_detail_view(){
 
 /* Set the tooltips for all pipeline view buttons*/
 function set_pipe_tooltips(){
-    set_pipe_tooltip($("#btn-watch")[0].dataset, "(un)watch all services in pipeline");
     set_pipe_tooltip($("#btn-edit")[0].dataset, "edit name");
-    set_pipe_tooltip($("#btn-run")[0].dataset, "run/stop all services in pipe");
     set_pipe_tooltip($("#btn-delete")[0].dataset, "delete pipe");
     set_pipe_tooltip($("#btn-save")[0].dataset, "save changes");
     set_pipe_tooltip($("#btn-add")[0].dataset, "add new pipe");
@@ -306,6 +304,7 @@ function add_service_card(service, serviceinfo, services_container){
     card_header.appendChild(btn_del);
 
     btn_watch.setAttribute("class", "btn btn-secondary disabled btn-sm");
+    btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)")
     btn_del.setAttribute("class", "btn btn-secondary btn-sm");
     btn_del.setAttribute("style", "margin-right:5px");
     btn_del.setAttribute("data-toggle", "tooltip");

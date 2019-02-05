@@ -153,6 +153,16 @@ function save_detail(){
     //TODO
 }
 
+function add_watch_and_run_buttons(){
+    var button_container = $("#button_headline");
+    var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
+    var btn_run = $("<button type='button' id='btn-run' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, run_services, stop_services)'><span class='fas fa-play'></span></button>");
+
+    button_container.append(btn_watch);
+    button_container.append(btn_run);
+}
+
+
 /* Watch a service */
 function watch_services(detail_info){
     var service = detail_info.dataset.name;

@@ -45,7 +45,7 @@ function show_tooltip(btn, success, successmsg, failmsg){
     img1 is the icon for the first state and img2 for the second. These buttons must have a dataset.status info
     that can be either 0 or 1 (for on and off). */
 function toggle_button(btn, new_btn_status, img1, img2, tooltip_off, tooltip_on){
-    var btn_span = btn.childNodes[1];
+    var btn_span = btn.childNodes[0];
     var old_btn_status = btn.dataset.status;
     if(new_btn_status != old_btn_status){
         if(btn.dataset.status == "0"){
