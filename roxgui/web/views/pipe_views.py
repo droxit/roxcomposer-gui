@@ -7,13 +7,14 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
+import datetime
+
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import rox_request
-from web.views.json_views import create_rox_response
-from web.views import log_views
 from web.models import Message
-import datetime
+from web.views import log_views
+from web.views.json_views import create_rox_response
 
 
 @require_http_methods(["POST"])

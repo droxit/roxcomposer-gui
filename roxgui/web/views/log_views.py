@@ -13,7 +13,6 @@ import logging
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
-
 from web.local_request import rox_request
 from web.models import Logline
 

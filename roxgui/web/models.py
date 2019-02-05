@@ -7,8 +7,9 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-from django.db import models
 import datetime
+
+from django.db import models
 
 
 class Logline(models.Model):

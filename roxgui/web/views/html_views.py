@@ -56,7 +56,6 @@ def rox_services(request):
         "search_bar_text": "Search services",
         "headline": "Services",
 
-
     }
     return render(request, "web/pages/services/rox_services.html", context)
 

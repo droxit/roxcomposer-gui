@@ -21,7 +21,7 @@ def _create_json_context(data) -> dict:
     return context
 
 
-def create_rox_response(rox_result: rox_response.RoxResponse) ->JsonResponse:
+def create_rox_response(rox_result: rox_response.RoxResponse) -> JsonResponse:
     """
     Create a JsonResponse object for js-side operations containing
     a RoxResponse object (with the same message/data/success structure)
