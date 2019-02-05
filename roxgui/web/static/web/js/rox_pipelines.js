@@ -275,7 +275,7 @@ function add_service_card(service, serviceinfo, services_container){
     var card = document.createElement("div");
     card.setAttribute("class", "card");
     card.classList.add("carddiv");
-    card.setAttribute("style", "width: min-content; margin-bottom:30px");
+    card.setAttribute("style", "width: min-content; margin-bottom:30px; min-width:150px");
     newrow.appendChild(card);
 
     set_tooltip(card, convert_to_json_string(serviceinfo));
@@ -297,15 +297,24 @@ function add_service_card(service, serviceinfo, services_container){
     btn_watch.setAttribute("style", "margin-right:5px");
     btn_watch.setAttribute("data-toggle", "tooltip");
     btn_watch.setAttribute("data-placement", "top");
-    btn_watch.setAttribute("data-title", "(un)watch");
+    btn_watch.setAttribute("data-original-title", "(un)watch");
+    btn_watch.setAttribute("class", "btn btn-secondary disabled btn-xs");
+    btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)");
 
+    var btn_run = document.createElement("button");
+    btn_run.setAttribute("style", "margin-right:5px");
+    btn_run.setAttribute("data-toggle", "tooltip");
+    btn_run.setAttribute("data-placement", "top");
+    btn_run.setAttribute("data-original-title", "run/start");
+    btn_run.setAttribute("class", "btn btn-secondary disabled btn-xs");
+    btn_run.setAttribute("onclick", "toggle_services('"+service+"',this, run_services, stop_services)");
+
+    card_header.appendChild(btn_run);
     card_header.appendChild(btn_watch);
     var btn_del = document.createElement("button");
     card_header.appendChild(btn_del);
 
-    btn_watch.setAttribute("class", "btn btn-secondary disabled btn-sm");
-    btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)")
-    btn_del.setAttribute("class", "btn btn-secondary btn-sm");
+    btn_del.setAttribute("class", "btn btn-secondary btn-xs");
     btn_del.setAttribute("style", "margin-right:5px");
     btn_del.setAttribute("data-toggle", "tooltip");
     btn_del.setAttribute("data-placement", "top");
@@ -315,10 +324,13 @@ function add_service_card(service, serviceinfo, services_container){
 
     var btn_watch_img = document.createElement("span");
     var btn_del_img = document.createElement("span");
-    btn_watch_img.setAttribute("class", "fas fa-eye");
-    btn_del_img.setAttribute("class", "fas fa-times");
+    var btn_run_img = document.createElement("span");
+    btn_watch_img.setAttribute("class", "fas fa-xs fa-eye");
+    btn_run_img.setAttribute("class", "fas fa-xs fa-play");
+    btn_del_img.setAttribute("class", "fas fa-xs fa-times");
     btn_watch.appendChild(btn_watch_img);
     btn_del.appendChild(btn_del_img);
+    btn_run.appendChild(btn_run_img);
 
 
     var card_text = document.createElement("p");
