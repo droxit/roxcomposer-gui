@@ -20,7 +20,7 @@ from web.models import Logline
 # Only show this number of messages in log.
 LOG_RELOAD = 100
 # Only show logs received within this interval.
-LOG_TIMEOUT = datetime.timedelta(minutes=1)
+LOG_TIMEOUT = datetime.timedelta(minutes=10)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(hours=1)
 
@@ -31,6 +31,9 @@ logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 @require_http_methods(["POST"])
 def get_watch_logs(request):
+    """ Retrieve the currently relevant logs from DB. New Loglines are added when a service is watched and a
+        Message is sent to a pipeline containing that service (the service must first receive the message, then
+        the ROXcomposer sends a new log line). """
     # Get current logs.
     update_logs(request)
     logs = get_current_watch_logs()
@@ -81,6 +84,7 @@ def get_current_watch_logs():
 
 
 def start_new_session(request):
+    """ Begin a new session if the old one expired. """
     status = request.session.get('watch_button_active', None)
     if status is not None:
         services = list(status.keys())

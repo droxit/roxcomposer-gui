@@ -9,6 +9,7 @@
 #
 */
 
+/* Retrieve the current logs from the server and create the corresponding text inside the log window. */
 function update_log(log_win) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("get_watch_logs", {
@@ -26,6 +27,7 @@ function update_log(log_win) {
 	});
 }
 
+/* Append the text node in the log window for one log line. */
 function create_logline(log_win, log) {
 	id = log.id;
 
@@ -36,12 +38,15 @@ function create_logline(log_win, log) {
 	log_win.appendChild(span);
 }
 
+/* Create the text node for one log line. */
 function make_logline_text(node, logline) {
 	var br = document.createElement("br");
 	node.appendChild(document.createTextNode(logline.text));
 	node.appendChild(br);
 }
 
+/* Check if the log window contains logs that were not sent by the server,
+    meaning they expired and should be removed. */
 function check_old_logs(log_win, log_data) {
 	var log_ids = [];
 	for (var log in log_data) {
@@ -61,7 +66,7 @@ function check_old_logs(log_win, log_data) {
 
 
 /* Reloads the log information every few seconds and updates the log window. */
-function reload_msgs(){
+function reload_logs(){
     // Update constantly reloaded elements.
     log_win = document.getElementById("log");
     setInterval(function() {
