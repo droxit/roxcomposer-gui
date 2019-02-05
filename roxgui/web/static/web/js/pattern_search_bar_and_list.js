@@ -39,24 +39,24 @@ function add_data_entry(search_field, func, data_name, data_info, info_container
 	search_field.list.appendChild(option);
 
 	// Append entry to data info list.
-	if(info_container != null){
-	    var li = document.createElement('li');
-        li.setAttribute("id", create_info_id(data_name));
-        li.setAttribute("class", "list-group-item");
-        li.setAttribute("title", data_info);
-        li.setAttribute("data-title", data_info);
-        li.setAttribute("data-name", data_name);
-        li.setAttribute("onclick", func); //go_to_detail_view(this)
-        li.appendChild(document.createTextNode(data_name));
-        info_container.appendChild(li);
+	if (info_container != null) {
+		var li = document.createElement('li');
+		li.setAttribute("id", create_info_id(data_name));
+		li.setAttribute("class", "list-group-item");
+		li.setAttribute("title", data_info);
+		li.setAttribute("data-title", data_info);
+		li.setAttribute("data-name", data_name);
+		li.setAttribute("onclick", func); //go_to_detail_view(this)
+		li.appendChild(document.createTextNode(data_name));
+		info_container.appendChild(li);
 	}
 
 }
 
 function add_data_entries(search_field, func, name_info_list, info_container) {
-    if(info_container != null){
-        info_container.innerHTML = "";
-    }
+	if (info_container != null) {
+		info_container.innerHTML = "";
+	}
 	for (var i = 0; i < name_info_list.length; i++) {
 		var name = name_info_list[i][0];
 		var info = name_info_list[i][1];
@@ -66,24 +66,24 @@ function add_data_entries(search_field, func, name_info_list, info_container) {
 
 /* Adds data to a search field (html element Search field) */
 function add_data_entries_from_remote(search_field, func, info_container, relative_url) {
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post(relative_url, {
-	    csrfmiddlewaretoken: CSRFtoken,
+		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
-	    // Create list to store converted data.
-	    name_info_list = [];
-	    // Convert JSON data to string.
-	    for (var i in data) {
-	        var name = i;
-	        var json = convert_to_json_string(data[i]);
-	        name_info_list.push([name, json]);
-	    }
-	    // Empty the data list of the search field
-	    var data_list = search_field.list;
-	    data_list.innerHTML = "";
+		// Create list to store converted data.
+		name_info_list = [];
+		// Convert JSON data to string.
+		for (var i in data) {
+			var name = i;
+			var json = convert_to_json_string(data[i]);
+			name_info_list.push([name, json]);
+		}
+		// Empty the data list of the search field
+		var data_list = search_field.list;
+		data_list.innerHTML = "";
 
-	    // Add service data to list.
-	    add_data_entries(search_field, func, name_info_list, info_container);
+		// Add service data to list.
+		add_data_entries(search_field, func, name_info_list, info_container);
 	});
 }
 
@@ -127,9 +127,16 @@ function set_single_hidden_status(data_name, hidden_status) {
 function set_all_hidden_status(elem_list, hidden_status) {
 	if (elem_list != null && (typeof hidden_status == 'boolean')) {
 		elem_list.childNodes.forEach(function(elem) {
-		    set_hidden_status(elem, hidden_status);
+			set_hidden_status(elem, hidden_status);
 		});
 	}
+}
+
+function enable_add_button(onclick_function_name) {
+	var btn_add = $("#btn-add")[0];
+	btn_add.classList.remove("disabled");
+	btn_add.setAttribute("data-name", "");
+	btn_add.setAttribute("onclick", onclick_function_name);
 }
 
 function search_data_list() {
@@ -168,7 +175,7 @@ function search_data_list() {
 	// Update list correspondingly.
 	set_all_hidden_status(name_list, true);
 	tuple_list.forEach(function(tuple) {
-	    var name = tuple[0];
+		var name = tuple[0];
 		set_single_hidden_status(name, false);
 	});
 }

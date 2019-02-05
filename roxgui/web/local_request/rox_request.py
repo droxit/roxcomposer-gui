@@ -181,7 +181,8 @@ def get_running_service_jsons() -> RoxResponse:
         res.data = dict((key, value) for (key, value) in r.json().items() if key not in FORBIDDEN_SERVICES)
         return res
 
-def get_running_services() ->RoxResponse:
+
+def get_running_services() -> RoxResponse:
     """
     Get Names of all currently running services
     :return: List of service names
@@ -219,10 +220,11 @@ def create_service(ip: str,
     # Store JSON file in service folder.
     file_path = os.path.join(SERVICE_DIR, file_name)
 
+    result_msg = ""
+
     # Check if given service already exists.
     if os.path.exists(file_path):
-        error_msg = "Service {} already exists.".format(name)
-        return RoxResponse(False, error_msg)
+        result_msg += "Service {} already exists, overwriting.".format(name)
 
     # Check if given IP is valid.
     ip_parts = ip.split('.')
@@ -267,10 +269,9 @@ def create_service(ip: str,
 
     # Return RoxResponse instance with corresponding warnings.
     if optional_params_warning:
-        warning_msg = "Skipped invalid optional parameters."
-        return RoxResponse(True, warning_msg)
-    else:
-        return RoxResponse(True)
+        result_msg += "Skipped invalid optional parameters."
+
+    return RoxResponse(True, result_msg)
 
 
 def start_service(service_json: dict) -> RoxResponse:
@@ -528,7 +529,7 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
                 res.data = rox_session
                 return res
 
-            #session could be expired, create a new session
+            # session could be expired, create a new session
             if r.status_code != 200:
                 error_msg = _create_http_status_error(r.status_code, r.text)
 

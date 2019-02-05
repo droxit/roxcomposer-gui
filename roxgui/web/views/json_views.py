@@ -8,8 +8,7 @@
 #
 
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from web.local_request import file_request, rox_request, rox_response
+from web.local_request import rox_response
 
 
 def _create_json_context(data) -> dict:
@@ -22,7 +21,7 @@ def _create_json_context(data) -> dict:
     return context
 
 
-def create_rox_response(rox_result: rox_response.RoxResponse) ->JsonResponse:
+def create_rox_response(rox_result: rox_response.RoxResponse) -> JsonResponse:
     """
     Create a JsonResponse object for js-side operations containing
     a RoxResponse object (with the same message/data/success structure)

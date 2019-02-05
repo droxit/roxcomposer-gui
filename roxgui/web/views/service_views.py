@@ -10,7 +10,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
-from web.views.json_views import _create_json_context
+from web.views import json_views
 
 
 @require_http_methods(["POST"])
@@ -19,6 +19,7 @@ def get_services(request):
     # Get JSON data of local services.
     result = file_request.get_local_services()
     return JsonResponse(result.data)
+
 
 @require_http_methods(["POST"])
 def get_service_info(request):
@@ -41,6 +42,7 @@ def get_service_info(request):
 
     return JsonResponse(info)
 
+
 @require_http_methods(["POST"])
 def check_running(request):
     """
@@ -58,7 +60,7 @@ def check_running(request):
         if service in running_services:
             service_is_running = True
         running[service] = service_is_running
-    context = _create_json_context(running)
+    context = json_views._create_json_context(running)
     return JsonResponse(context)
 
 
@@ -105,5 +107,19 @@ def stop_services(request):
             return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be stopped.
-            #services_not_stopped = ", ".join(res.error_data)
+            # services_not_stopped = ", ".join(res.error_data)
             return JsonResponse(res.convert_to_json())
+
+
+@require_http_methods(["POST"])
+def create_service(request):
+    """Create service with specified parameters."""
+    res = rox_request.create_service(
+        ip=request.POST.get("ip"),
+        port=request.POST.get("port"),
+        name=request.POST.get("name"),
+        class_path=request.POST.get("classpath"),
+        optional_param_keys=request.POST.get("optional_param_keys", default=[]),
+        optional_param_values=request.POST.get("optional_param_values", default=[])
+    )
+    return json_views.create_rox_response(res)

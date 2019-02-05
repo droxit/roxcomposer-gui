@@ -9,9 +9,8 @@
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from web.local_request import file_request, rox_request
+from web.local_request import rox_request
 from web.views.json_views import _create_json_context
-
 
 
 def update_watch_buttons(request, logsession):
@@ -36,6 +35,7 @@ def update_watch_buttons(request, logsession):
         for service in logsession['services']:
             # for every watched service in session set to watched
             request.session['watch_button_active'][service] = True
+
 
 @require_http_methods(["POST"])
 def check_watched(request):
@@ -89,4 +89,3 @@ def unwatch(request):
     update_watch_buttons(request, cur_sess)
     request.session.modified = True
     return JsonResponse(res.convert_to_json())
-
