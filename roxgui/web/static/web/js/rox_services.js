@@ -99,7 +99,7 @@ function append_param(container, key, val){
     container.appendChild(row);
 
     var col1 = document.createElement("div");
-    col1.setAttribute("class", "col-md-4");
+    col1.setAttribute("class", "col-md-2");
     //col1.setAttribute("align", "center");
 
     var col2 = document.createElement("div");
@@ -107,7 +107,7 @@ function append_param(container, key, val){
     //col2.setAttribute("align", "center");
 
     var col3 = document.createElement("div");
-    col3.setAttribute("class", "col-md-7");
+    col3.setAttribute("class", "col-md-9");
     //col3.setAttribute("align", "center");
 
     row.appendChild(col1);
@@ -115,7 +115,11 @@ function append_param(container, key, val){
     row.appendChild(col3);
 
     var param_field_key = create_param_field(key);
-    var param_field_value = create_param_field(val);
+    if(val.length < 50) {
+        var param_field_value = create_param_field(val);
+    }else{
+        var param_field_value = create_param_textarea(val);
+    }
     col1.appendChild(param_field_key);
     col2.appendChild(document.createTextNode(" : "));
     col3.appendChild(param_field_value);
