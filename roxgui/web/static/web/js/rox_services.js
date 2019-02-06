@@ -153,6 +153,7 @@ function save_detail(){
     //TODO
 }
 
+/* Delete a service. */
 function delete_this(elem){
     console.log("deleting");
     var service = $("#detail_info")[0].dataset.name;
@@ -169,6 +170,7 @@ function delete_this(elem){
 	});
 }
 
+/* Add watch and run buttons to the service detail headline. */
 function add_watch_and_run_buttons(){
     var button_container = $("#button_headline");
     var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
