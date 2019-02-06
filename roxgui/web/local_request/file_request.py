@@ -33,6 +33,14 @@ def get_local_services() -> RoxResponse:
     return res
 
 
+def delete_service(name: str) -> RoxResponse:
+    for f in os.scandir(SERVICE_DIR):
+        if f.is_file() and f.name == (name + ".json"):
+            print("Aha!")
+
+    return None
+
+
 def convert_to_service_json(service_name: str) -> RoxResponse:
     """
     Convert service name to corresponding JSON dictionary.

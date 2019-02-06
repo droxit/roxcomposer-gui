@@ -111,3 +111,11 @@ def stop_services(request):
             # Some services were specified but could not be stopped.
             # services_not_stopped = ", ".join(res.error_data)
             return JsonResponse(res.convert_to_json())
+
+
+@require_http_methods(["POST"])
+def delete_service(request):
+    # Get the service name of the service that should be deleted.
+    service = request.POST.get("service", default="")
+    res = file_request.delete_service(service)
+    return JsonResponse(res.convert_to_json())

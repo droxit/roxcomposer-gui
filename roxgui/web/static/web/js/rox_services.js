@@ -39,7 +39,7 @@ function set_service_tooltip(btn, tooltip){
 /* Enable certain buttons that already have functionality. */
 function enable_detail_elements(){
     //"btn-watch" ,"btn-delete", "btn-save"
-    ["btn-edit", "btn-run", "btn-watch"].forEach(function(btn){
+    ["btn-edit", "btn-run", "btn-watch", "btn-delete"].forEach(function(btn){
         btn_remove_disabled(btn);
     });
 }
@@ -151,6 +151,21 @@ function get_params(container, service){
 
 function save_detail(){
     //TODO
+}
+
+function delete_this(elem){
+    console.log("deleting");
+    var service = $("#detail_info")[0].dataset.name;
+
+    $.post("delete_service", {
+		service: service,
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+	    if(data.success){
+	        //toggle_watch_button(btn[0], '1', "watch service", "unwatch service");
+	    }
+		//show_tooltip(btn, data.success, "Watching service.", "Watching failed. \n "+data.message);
+	});
 }
 
 function add_watch_and_run_buttons(){
@@ -266,4 +281,3 @@ function set_watch_button(service){
 	    toggle_watch_button($("#btn-watch")[0], watched, "watch service", "unwatch service");
 	});
 }
-
