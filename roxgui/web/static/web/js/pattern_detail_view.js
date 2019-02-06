@@ -80,6 +80,7 @@ function go_to_detail_view(elem){
     var detail_view = create_detail_view(elem.dataset.name);
     add_detail_view(detail_view);
 
+    var detail_info = $("#detail_info")[0];
     set_buttons(detail_info);
 }
 
@@ -92,7 +93,9 @@ function go_to_new_detail_view(new_name){
     var detail_view = create_detail_view(new_name);
     add_detail_view(detail_view);
 
+    var detail_info = $("#detail_info")[0];
     set_buttons(detail_info);
+
 }
 
 /* Add the new detail view to the container. */
