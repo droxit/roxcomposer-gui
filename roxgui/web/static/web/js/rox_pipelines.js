@@ -579,6 +579,7 @@ function set_buttons(detail_info){
 //
 }
 
+/* Sets the detail headline status to inactive (and muted). */
 function set_status_disabled(){
     var pipe_status_span = $("#headline_status");
     pipe_status_span.html("");
@@ -586,9 +587,10 @@ function set_status_disabled(){
     pipe_status_span.attr("class", "form-text text-muted");
 }
 
+/* Sets the detail headline status to active (and unmuted). */
 function set_status_enabled(){
     var pipe_status_span = $("#headline_status");
     pipe_status_span.html("");
-    pipe_status_span.append("running");
+    pipe_status_span.append("active");
     pipe_status_span.attr("class", "form-text");
 }
