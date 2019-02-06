@@ -115,6 +115,7 @@ def stop_services(request):
 
 @require_http_methods(["POST"])
 def delete_service(request):
+    """ Delete a service from file system """
     # Get the service name of the service that should be deleted.
     service = request.POST.get("service", default="")
     res = file_request.delete_service(service)
