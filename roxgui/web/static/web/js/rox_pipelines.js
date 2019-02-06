@@ -247,6 +247,7 @@ function create_detail_view(pipeline){
             inner_container.setAttribute("id", "services_in_pipe");
             services_col.appendChild(inner_container);
 
+            set_status_enabled();
             services_in_pipe.forEach(function(service){
                 var service_info_single = "";
                 if(service_info[service]){
@@ -520,6 +521,7 @@ function update_watch_buttons(){
 
 /* Update all the start buttons of single service cards in the pipeline detail view. */
 function update_run_buttons(){
+    set_status_enabled();
     var services = get_service_buttons(".btn-run");
     services.forEach(function(btn){
         set_run_button(btn);
@@ -556,6 +558,8 @@ function set_run_button(btn){
         var running = "0";
         if(data.data[service_name] == true){
             running = "1";
+        }else{
+            set_status_disabled()
         }
 
         toggle_run_button(btn, running, "", "");
@@ -573,4 +577,18 @@ function get_service_buttons(identifier){
 /* Currently not used because  */
 function set_buttons(detail_info){
 //
+}
+
+function set_status_disabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("inactive");
+    pipe_status_span.attr("class", "form-text text-muted");
+}
+
+function set_status_enabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("running");
+    pipe_status_span.attr("class", "form-text");
 }

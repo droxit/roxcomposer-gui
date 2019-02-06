@@ -83,6 +83,7 @@ function create_detail_view(service){
     empty_row.appendChild(empty_col);
     detail_container.appendChild(empty_row);
 
+    set_status(service); // Set the 'status' span to running or not running
 
     //The detail view contains a list of (editable) parameter key-value pairs.
     get_params(detail_container, service);
@@ -261,6 +262,7 @@ function run_services(detail_info){
 	    btn = $("#btn-run");
 	    if(data.success){
 	        toggle_run_button(btn[0], '1', "start service", "stop service");
+	        set_status(service);
 		}
 		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service. \n "+data.message);
 	});
@@ -277,6 +279,7 @@ function stop_services(detail_info){
 	    btn = $("#btn-run");
 	    if(data.success){
     	    toggle_run_button(btn[0], '0' , "start service", "stop service");
+    	    set_status(service);
 		}
 		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service. \n "+data.message);
 	});
@@ -319,5 +322,24 @@ function set_watch_button(service){
             watched = "1";
 	    }
 	    toggle_watch_button($("#btn-watch")[0], watched, "watch service", "unwatch service");
+	});
+}
+
+/* Sets the status text in the detail headline. */
+function set_status(service){
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var service_status_span = $("#headline_status");
+    $.post("check_running", {
+		services: [service],
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+        service_status_span.html("");
+	    if(data.data[service] == true){
+            service_status_span.append("running");
+            service_status_span.attr("class", "form-text");
+	    }else{
+            service_status_span.append("inactive");
+            service_status_span.attr("class", "form-text text-muted");
+	    }
 	});
 }
