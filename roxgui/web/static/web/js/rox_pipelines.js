@@ -304,7 +304,7 @@ function add_service_card(service, serviceinfo, services_container){
     btn_watch.setAttribute("class", "btn btn-secondary btn-xs btn-watch");
     btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)");
 
-    set_watch_button(btn_watch);
+    set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
 
     var btn_run = document.createElement("button");
     btn_run.setAttribute("style", "margin-right:5px");
@@ -317,7 +317,7 @@ function add_service_card(service, serviceinfo, services_container){
     btn_run.setAttribute("class", "btn btn-secondary btn-xs btn-run");
     btn_run.setAttribute("onclick", "toggle_services('"+service+"',this, run_services, stop_services)");
 
-    set_run_button(btn_run);
+    set_run_button(btn_run); // update this buttons status (is the service running?)
 
     card_header.appendChild(btn_run);
     card_header.appendChild(btn_watch);
@@ -446,7 +446,7 @@ function send_msg_to_pipe(){
 	});
 }
 
-
+/* Watch a service and then update all the watch buttons in the pipeline detail view. */
 function watch_services(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
@@ -459,7 +459,7 @@ function watch_services(service){
 	});
 }
 
-
+/* Unwatch a service and then update all the watch buttons in the pipeline detail view. */
 function unwatch_services(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
@@ -472,7 +472,7 @@ function unwatch_services(service){
 	});
 }
 
-
+/* Start a service and then update all the watch buttons in the pipeline detail view. */
 function run_services(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
@@ -485,7 +485,7 @@ function run_services(service){
 	});
 }
 
-
+/* Stop a service and then update all the watch buttons in the pipeline detail view. */
 function stop_services(service){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
@@ -498,7 +498,7 @@ function stop_services(service){
 	});
 }
 
-
+/* Update all the watch buttons of single service cards in the pipeline detail view. */
 function update_watch_buttons(){
     var services = get_service_buttons(".btn-watch");
     services.forEach(function(btn){
@@ -506,6 +506,7 @@ function update_watch_buttons(){
     });
 }
 
+/* Update all the start buttons of single service cards in the pipeline detail view. */
 function update_run_buttons(){
     var services = get_service_buttons(".btn-run");
     services.forEach(function(btn){
@@ -513,6 +514,7 @@ function update_run_buttons(){
     });
 }
 
+/* For a single watch button of a service card set the status. */
 function set_watch_button(btn){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     var service_name = btn.dataset.name;
@@ -530,6 +532,7 @@ function set_watch_button(btn){
 
 }
 
+/* For a single start button of a service card set the status. */
 function set_run_button(btn){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
     var service_name = btn.dataset.name;
@@ -548,11 +551,14 @@ function set_run_button(btn){
 
 }
 
+/* Retrieve all the buttons with a certain identifier (e.g. '.btn-watch' for all watch buttons) from the
+    pipeline detail view. Careful though, the window needs to be loaded already or else the container
+    won't be found. Using $(window).on('load',..) did not work. */
 function get_service_buttons(identifier){
     return $("#services_in_pipe")[0].querySelectorAll(identifier);
 }
 
-
+/* Currently not used because  */
 function set_buttons(detail_info){
 //
 }
