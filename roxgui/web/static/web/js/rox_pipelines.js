@@ -280,7 +280,7 @@ function add_service_card(service, serviceinfo, services_container){
     card.setAttribute("style", "width: min-content; margin-bottom:30px; min-width:150px");
     newrow.appendChild(card);
 
-    //set_tooltip(card, convert_to_json_string(serviceinfo));
+    set_tooltip(card, convert_to_json_string(serviceinfo));
 
     var card_body = document.createElement("div");
     card_body.setAttribute("class", "card-body");
