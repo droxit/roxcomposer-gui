@@ -156,6 +156,7 @@ function save_detail(){
 function delete_this(elem){
     console.log("deleting");
     var service = $("#detail_info")[0].dataset.name;
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 
     $.post("delete_service", {
 		service: service,
