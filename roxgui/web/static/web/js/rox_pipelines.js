@@ -450,7 +450,6 @@ function send_msg_to_pipe(){
 function watch_services(info){
     var service = info[0];
     var btn = info[1];
-    console.log(info)
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
 		services: [service],
