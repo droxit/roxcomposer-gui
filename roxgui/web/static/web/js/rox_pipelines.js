@@ -302,20 +302,20 @@ function add_service_card(service, serviceinfo, services_container){
     btn_watch.setAttribute("data-name", service);
     btn_watch.setAttribute("data-status", "0");
     btn_watch.setAttribute("class", "btn btn-secondary btn-xs btn-watch");
-    btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)");
+    btn_watch.setAttribute("onclick", "toggle_services(['"+service+"','"+btn_watch.id+"'],this, watch_services, unwatch_services)");
 
     set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
 
     var btn_run = document.createElement("button");
     btn_run.setAttribute("style", "margin-right:5px");
-    btn_run.setAttribute("id", "btn-watch-"+i);
+    btn_run.setAttribute("id", "btn-run-"+i);
     btn_run.setAttribute("data-toggle", "tooltip");
     btn_run.setAttribute("data-placement", "top");
     btn_run.setAttribute("data-name", service);
     btn_run.setAttribute("data-status", "0");
-    btn_run.setAttribute("data-original-title", "run/start");
+    //btn_run.setAttribute("data-original-title", "run/start");
     btn_run.setAttribute("class", "btn btn-secondary btn-xs btn-run");
-    btn_run.setAttribute("onclick", "toggle_services('"+service+"',this, run_services, stop_services)");
+    btn_run.setAttribute("onclick", "toggle_services(['"+service+"','"+btn_run.id+"'],this, run_services, stop_services)");
 
     set_run_button(btn_run); // update this buttons status (is the service running?)
 
@@ -447,7 +447,10 @@ function send_msg_to_pipe(){
 }
 
 /* Watch a service and then update all the watch buttons in the pipeline detail view. */
-function watch_services(service){
+function watch_services(info){
+    var service = info[0];
+    var btn = info[1];
+    console.log(info)
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
 		services: [service],
@@ -456,11 +459,14 @@ function watch_services(service){
 	    if(data.success){
 	        update_watch_buttons();
 	    }
+	    show_tooltip($("#"+btn), data.success, "Watching.", "Failed to watch service. \n "+data.message);
 	});
 }
 
 /* Unwatch a service and then update all the watch buttons in the pipeline detail view. */
-function unwatch_services(service){
+function unwatch_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
 		services: [service],
@@ -469,11 +475,14 @@ function unwatch_services(service){
 	    if(data.success){
 	        update_watch_buttons();
 		}
+		show_tooltip($("#"+btn), data.success, "Unwatched.", "Failed to unwatch service. \n "+data.message);
 	});
 }
 
 /* Start a service and then update all the watch buttons in the pipeline detail view. */
-function run_services(service){
+function run_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
 		services: [service],
@@ -482,11 +491,14 @@ function run_services(service){
 	    if(data.success){
 	        update_run_buttons();
 	    }
+	    show_tooltip($("#"+btn), data.success, "Running.", "Failed to start service. \n "+data.message);
 	});
 }
 
 /* Stop a service and then update all the watch buttons in the pipeline detail view. */
-function stop_services(service){
+function stop_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
 		services: [service],
@@ -495,6 +507,7 @@ function stop_services(service){
 	    if(data.success){
 	        update_run_buttons();
 	    }
+	    show_tooltip($("#"+btn), data.success, "Stopped.", "Failed to stop service. \n "+data.message);
 	});
 }
 
@@ -527,7 +540,7 @@ function set_watch_button(btn){
         if(data.data[service_name] == true){
             watched = "1";
         }
-        toggle_watch_button(btn, watched, "watch service", "unwatch service");
+        toggle_watch_button(btn, watched, "", "");
     });
 
 }
@@ -546,7 +559,7 @@ function set_run_button(btn){
             running = "1";
         }
 
-        toggle_run_button(btn, running, "start service", "stop service");
+        toggle_run_button(btn, running, "", "");
     });
 
 }
