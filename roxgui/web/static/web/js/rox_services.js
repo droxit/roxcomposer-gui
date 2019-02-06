@@ -17,6 +17,12 @@ function show_empty_detail_view(){
     detail_headline[0].setAttribute("onclick", "");
 
     detail_headline.html("<h4>Select a service.</h4>");
+
+    set_detail_info("");
+}
+
+function set_detail_info(name){
+    $("#detail_info")[0].dataset.name = name;
 }
 
 /* Set the tooltips for all buttons on the services page. */
@@ -153,10 +159,37 @@ function save_detail(){
     //TODO
 }
 
-/* Delete a service. */
+/* Create a modal popup to ask the user if they really want to delete a service. */
 function delete_this(elem){
-    console.log("deleting");
     var service = $("#detail_info")[0].dataset.name;
+
+    var popup_warning = $("<div class='modal' tabindex='-1' role='dialog'> \
+  <div class='modal-dialog' role='document'> \
+    <div class='modal-content'> \
+      <div class='modal-header'> \
+        <h5 class='modal-title'>Delete "+service+"?</h5> \
+        <button type='button' class='close' data-dismiss='modal' aria-label='Close'> \
+          <span aria-hidden='true'>&times;</span> \
+        </button> \
+      </div> \
+      <div class='modal-body'> \
+        <p>Are you sure you want to delete this service?</p> \
+      </div> \
+      <div class='modal-footer'> \
+        <button type='button' class='btn btn-primary' onclick='delete_service(\""+service+"\")'>Delete</button> \
+        <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button> \
+      </div> \
+    </div> \
+  </div> \
+</div>");
+
+    popup_warning.modal("toggle");
+
+}
+
+/* Delete a service. */
+function delete_service(service){
+    var elem = $("#btn-delete")[0]
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 
     $.post("delete_service", {
@@ -164,9 +197,9 @@ function delete_this(elem){
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 	    if(data.success){
-	        //toggle_watch_button(btn[0], '1', "watch service", "unwatch service");
+	        location.reload();
 	    }
-		//show_tooltip(btn, data.success, "Watching service.", "Watching failed. \n "+data.message);
+		show_tooltip(elem, data.success, "", "Deleting service failed. \n "+data.message);
 	});
 }
 
