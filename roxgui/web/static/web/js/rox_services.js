@@ -99,16 +99,16 @@ function append_param(container, key, val){
     container.appendChild(row);
 
     var col1 = document.createElement("div");
-    col1.setAttribute("class", "col-md-5");
-    col1.setAttribute("align", "center");
+    col1.setAttribute("class", "col-md-4");
+    //col1.setAttribute("align", "center");
 
     var col2 = document.createElement("div");
     col2.setAttribute("class", "col-md-1");
-    col2.setAttribute("align", "center");
+    //col2.setAttribute("align", "center");
 
     var col3 = document.createElement("div");
-    col3.setAttribute("class", "col-md-5");
-    col3.setAttribute("align", "center");
+    col3.setAttribute("class", "col-md-7");
+    //col3.setAttribute("align", "center");
 
     row.appendChild(col1);
     row.appendChild(col2);
