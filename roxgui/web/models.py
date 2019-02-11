@@ -10,7 +10,7 @@
 import datetime
 
 from django.db import models
-
+from django.utils import timezone
 
 class Logline(models.Model):
     """ This model defines a single log line that is sent by the ROXconnector when watching a service. """
@@ -46,7 +46,7 @@ class Message(models.Model):
     it contains information on the pipeline and the time it was sent, the message content and ID. """
     id = models.CharField(max_length=200, primary_key=True)
     pipeline = models.CharField(max_length=200, default="")
-    time = models.DateTimeField(default=datetime.datetime.now())
+    time = models.DateTimeField(default=timezone.now)
     message = models.TextField(default="")
 
     def __str__(self):

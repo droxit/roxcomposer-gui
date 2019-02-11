@@ -11,6 +11,7 @@ import datetime
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.utils import timezone
 from web.local_request import rox_request
 from web.models import Message
 from web.views import log_views
@@ -77,7 +78,7 @@ def send_msg(request):
     if result.success:
         # Message was sent successfully.
         m = Message(id=result.data, pipeline=pipe_name, message=msg,
-                    time=datetime.datetime.now())
+                    time=timezone.now())
         m.save()
         log_views.update_logs(request, msg_id=result.data)
 
