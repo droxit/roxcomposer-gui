@@ -39,7 +39,7 @@ function set_service_tooltip(btn, tooltip) {
 /* Enable certain buttons that already have functionality. */
 function enable_detail_elements() {
 	//"btn-watch" ,"btn-delete", "btn-save"
-	["btn-edit", "btn-run", "btn-watch", "btn-add"].forEach(function(btn) {
+	["btn-edit", "btn-run", "btn-watch", "btn-save"].forEach(function(btn) {
 		btn_remove_disabled(btn);
 	});
 }
@@ -192,7 +192,11 @@ function get_empty_params(container) {
 	append_param(container, "name", "new name");
 }
 
-function save_detail() {
+function save_detail(elem) {
+    if(check_disabled(elem)){
+        return;
+    }
+
 	// Get detail container.
 	var detail_container = document.querySelector("#detail-container");
 	// Iterate through its child nodes, each

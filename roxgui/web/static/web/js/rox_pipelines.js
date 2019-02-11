@@ -352,7 +352,10 @@ function get_preceding_service(container) {
 }
 
 /* Retrieve the new information (pipe name and service list) and create a new pipeline (or save/overwrite) */
-function save_detail() {
+function save_detail(elem) {
+    if(check_disabled(elem)){
+        return;
+    }
 	var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
 	var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
 	var services = [];
