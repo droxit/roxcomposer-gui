@@ -192,9 +192,9 @@ function get_params(container, service) {
 		        return true;
 		    }
 			if (typeof val === 'string' || val instanceof String) {
-				value = val;
+				val = JSON.stringify(val, null, ' ');
 			} else {
-				value = escapeHtml(convert_to_json_string(val));
+				val = escapeHtml(convert_to_json_string(val));
 			}
 			append_param(container, i, val);
 		});
@@ -237,7 +237,9 @@ function save_detail(elem) {
 			} else if (key == "ip") {
 				ip_value = value;
 			} else if (key == "name") {
-			    // do nothing
+			    if(value != service_name) { // service name has been changed, delete the old service and save the new one
+			        delete_service(value);
+			    }
 				// name_value = value;
 			} else {
 				key_array.push(key);
