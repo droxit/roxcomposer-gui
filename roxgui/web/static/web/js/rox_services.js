@@ -234,7 +234,7 @@ function save_detail() {
 		"optional_param_values": value_array,
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-add");
+	    btn = $("#btn-save");
 	    show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 	});
 }
