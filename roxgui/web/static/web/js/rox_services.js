@@ -222,18 +222,20 @@ function save_detail() {
 			}
 		}
 	}
+
 	// Send parameters to backend in order to create specified service.
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_service", {
-		classpath: classpath_value,
-		ip: ip_value,
-		port: port_value,
-		name: name_value,
-		optional_param_keys: key_array,
-		optional_param_values: value_array,
-		csrfmiddlewaretoken: CSRFtoken
+		"classpath": classpath_value,
+		"ip": ip_value,
+		"port": port_value,
+		"name": name_value,
+		"optional_param_keys": key_array,
+		"optional_param_values": value_array,
+		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
-		console.log(data);
+	    btn = $("#btn-add");
+	    show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 	});
 }
 

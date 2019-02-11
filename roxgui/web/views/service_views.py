@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
 from web.views import json_views
+import json
 
 
 @require_http_methods(["POST"])
@@ -119,7 +120,7 @@ def create_service(request):
         port=request.POST.get("port"),
         name=request.POST.get("name"),
         class_path=request.POST.get("classpath"),
-        optional_param_keys=request.POST.get("optional_param_keys", default=[]),
-        optional_param_values=request.POST.get("optional_param_values", default=[])
+        optional_param_keys=request.POST.getlist("optional_param_keys[]", default=[]),
+        optional_param_values=request.POST.getlist("optional_param_values[]", default=[])
     )
     return json_views.create_rox_response(res)
