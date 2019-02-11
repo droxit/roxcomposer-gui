@@ -247,6 +247,7 @@ function create_detail_view(pipeline){
             inner_container.setAttribute("id", "services_in_pipe");
             services_col.appendChild(inner_container);
 
+            set_status_enabled();
             services_in_pipe.forEach(function(service){
                 var service_info_single = "";
                 if(service_info[service]){
@@ -279,7 +280,7 @@ function add_service_card(service, serviceinfo, services_container){
     card.setAttribute("style", "width: min-content; margin-bottom:30px; min-width:150px");
     newrow.appendChild(card);
 
-    //set_tooltip(card, convert_to_json_string(serviceinfo));
+    set_tooltip(card, convert_to_json_string(serviceinfo));
 
     var card_body = document.createElement("div");
     card_body.setAttribute("class", "card-body");
@@ -520,6 +521,7 @@ function update_watch_buttons(){
 
 /* Update all the start buttons of single service cards in the pipeline detail view. */
 function update_run_buttons(){
+    set_status_enabled();
     var services = get_service_buttons(".btn-run");
     services.forEach(function(btn){
         set_run_button(btn);
@@ -556,6 +558,8 @@ function set_run_button(btn){
         var running = "0";
         if(data.data[service_name] == true){
             running = "1";
+        }else{
+            set_status_disabled()
         }
 
         toggle_run_button(btn, running, "", "");
@@ -573,4 +577,20 @@ function get_service_buttons(identifier){
 /* Currently not used because  */
 function set_buttons(detail_info){
 //
+}
+
+/* Sets the detail headline status to inactive (and muted). */
+function set_status_disabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("inactive");
+    pipe_status_span.attr("class", "form-text text-muted");
+}
+
+/* Sets the detail headline status to active (and unmuted). */
+function set_status_enabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("active");
+    pipe_status_span.attr("class", "form-text");
 }

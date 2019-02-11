@@ -18,12 +18,15 @@
 <div class="card">
     <div class="card-header">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <div id="headline_detail" onclick="edit_detail_headline()"> <h4>{{ headline_detail }} </h4> </div>
+            </div>
+            <div class="col-md-2" style="padding:5px">
+                <small id="headline_status" class="form-text text-muted"></small>
             </div>
             <div class="col-md-4"  id="button_headline">
 
-                <button type="button" id="btn-delete" class="btn btn-primary btn-round float-right disabled">
+                <button type="button" id="btn-delete" class="btn btn-primary btn-round float-right disabled" onclick="delete_this(this)">
                     <span class="fas fa-trash"></span>
                 </button>
 
