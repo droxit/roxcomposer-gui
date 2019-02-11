@@ -181,12 +181,16 @@ function get_params(container, service) {
 			append_param(container, key, val);
 		}
 		if (json_params.name) {
-			var key = "name";
-			var val = json_params.name;
-			append_param(container, key, val);
+			// var key = "name";
+			// var val = json_params.name;
+			// don't append the name parameter
+			// append_param(container, key, val);
 		}
 
 		jQuery.each(json_params.params, function(i, val) {
+		    if(i == "name"){
+		        return true;
+		    }
 			if (typeof val === 'string' || val instanceof String) {
 				value = val;
 			} else {
@@ -211,12 +215,13 @@ function save_detail(elem) {
 
 	// Get detail container.
 	var detail_container = document.querySelector("#detail-container");
+	var service_name = document.querySelector("#headline_detail").dataset.name;
 	// Iterate through its child nodes, each
 	// containing a single key value pair.
 	classpath_value = null;
 	ip_value = null;
 	port_value = null;
-	name_value = null;
+	name_value = service_name;
 	key_array = []
 	value_array = []
 	for (var i = 0; i < detail_container.childNodes.length; i++) {
@@ -232,7 +237,8 @@ function save_detail(elem) {
 			} else if (key == "ip") {
 				ip_value = value;
 			} else if (key == "name") {
-				name_value = value;
+			    // do nothing
+				// name_value = value;
 			} else {
 				key_array.push(key);
 				value_array.push(value);
