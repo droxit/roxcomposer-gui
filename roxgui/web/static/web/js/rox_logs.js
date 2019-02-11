@@ -65,11 +65,11 @@ function check_old_logs(log_win, log_data) {
 
 
 /* Reloads the log information every few seconds and updates the log window. */
-function reload_logs(){
-    // Update constantly reloaded elements.
-    log_win = document.getElementById("log");
-    update_log(log_win);
-    setInterval(function() {
-        update_log(log_win);
-    }, 1000);
+function reload_logs() {
+	// Update constantly reloaded elements.
+	log_win = document.getElementById("log");
+	update_log(log_win);
+	setInterval(function() {
+		update_log(log_win);
+	}, 1000);
 }

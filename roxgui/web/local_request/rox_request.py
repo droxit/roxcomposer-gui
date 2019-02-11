@@ -182,7 +182,7 @@ def get_running_service_jsons() -> RoxResponse:
         return res
 
 
-def get_running_services() ->RoxResponse:
+def get_running_services() -> RoxResponse:
     """
     Get Names of all currently running services
     :return: List of service names
@@ -227,15 +227,18 @@ def create_service(ip: str,
         result_msg += "Service {} already exists, overwriting.".format(name)
 
     # Check if given IP is valid.
-    ip_parts = ip.split('.')
     error_msg = "Invalid IP address: {}.".format(ip)
-    for part in ip_parts:
-        try:
-            part = int(part)
-        except ValueError:
-            return RoxResponse(False, error_msg)
-        if not (0 <= part <= 255):
-            return RoxResponse(False, error_msg)
+    ip_parts = ip.split('.')
+    if len(ip_parts) == 4:
+        for part in ip_parts:
+            try:
+                part = int(part)
+            except ValueError:
+                return RoxResponse(False, error_msg)
+            if not (0 <= part <= 255):
+                return RoxResponse(False, error_msg)
+    else:
+        return RoxResponse(False, error_msg)
 
     # Check if given port is valid.
     error_msg = "Invalid port: {}.".format(port)
