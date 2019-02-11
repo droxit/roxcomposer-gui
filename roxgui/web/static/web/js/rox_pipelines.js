@@ -374,15 +374,18 @@ function get_preceding_service(container){
 }
 
 /* Retrieve the new information (pipe name and service list) and create a new pipeline (or save/overwrite) */
-function save_detail(){
-    var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
-    var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
-    var services = [];
-    jQuery.each(service_cards, function(i, val) {
-            services.push(val.innerHTML);
-        });
-    $("#detail_info")[0].dataset.name = pipe_name;
-    save_pipe(pipe_name, services);
+function save_detail(elem) {
+    if(check_disabled(elem)){
+        return;
+    }
+	var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
+	var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
+	var services = [];
+	jQuery.each(service_cards, function(i, val) {
+		services.push(val.innerHTML);
+	});
+	$("#detail_info")[0].dataset.name = pipe_name;
+	save_pipe(pipe_name, services);
 
 }
 

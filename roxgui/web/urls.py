@@ -33,6 +33,7 @@ urlpatterns = [
     path('stop_services', service_views.stop_services, name="web_stop_services"),
     path('get_service_info', service_views.get_service_info, name="web_get_service_info"),
     path('delete_service', service_views.delete_service, name="web_delete_service"),
+    path('create_service', service_views.create_service, name="web_create_service"),
 
     # Watch views
     path('check_watched', watch_views.check_watched, name="web_check_watched"),
