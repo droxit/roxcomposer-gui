@@ -11,18 +11,18 @@
 
 /* This function is called when the service view is first opened and no service is selected
     It shows an empty detail view with disabled buttons */
-function show_empty_detail_view(){
-    $("#data_detail_list").html("");
-    var detail_headline = $("#headline_detail");
-    detail_headline[0].setAttribute("onclick", "");
+function show_empty_detail_view() {
+	$("#data_detail_list").html("");
+	var detail_headline = $("#headline_detail");
+	detail_headline[0].setAttribute("onclick", "");
 
-    detail_headline.html("<h4>Select a service.</h4>");
+	detail_headline.html("<h4>Select a service.</h4>");
 
-    set_detail_info("");
+	set_detail_info("");
 }
 
-function set_detail_info(name){
-    $("#detail_info")[0].dataset.name = name;
+function set_detail_info(name) {
+	$("#detail_info")[0].dataset.name = name;
 }
 
 /* Set the tooltips for all buttons on the services page. */
@@ -76,41 +76,37 @@ function create_detail_view(service) {
 	detail_container.setAttribute("class", "container");
 	detail_container.setAttribute("id", "detail-container")
 
-	var empty_row = document.createElement("div");
-	empty_row.setAttribute("class", "row");
-	var empty_col = document.createElement("div");
-	empty_col.setAttribute("class", "col-md-12");
-	empty_col.appendChild(document.createElement("p"));
-	empty_row.appendChild(empty_col);
-	detail_container.appendChild(empty_row);
+    // Create buttons to add / delete key value pairs.
+	var btn_row = document.createElement("div");
+	btn_row.setAttribute("class", "row");
+    var plus_btn = document.createElement("button");
+    plus_btn.setAttribute("class", "btn btn-primary");
+    plus_btn.onclick = () => append_param(detail_container, "key", "value");
+    var plus_span = document.createElement("span");
+    plus_span.setAttribute("class", "fas fa-plus")
+    plus_btn.appendChild(plus_span);
+    btn_row.appendChild(plus_btn);
+    var minus_btn = document.createElement("button");
+    minus_btn.setAttribute("class", "btn btn-primary");
+    minus_btn.onclick = () => delete_last_param(detail_container);
+    var minus_span = document.createElement("span");
+    minus_span.setAttribute("class", "fas fa-minus")
+    minus_btn.appendChild(minus_span);
+    btn_row.appendChild(minus_btn);
+    detail_container.appendChild(btn_row)
 
-    set_status(service); // Set the 'status' span to running or not running
+	set_status(service); // Set the 'status' span to running or not running
 
 	if (service === "") {
 		// Service name is not given, so create empty detail view.
 		set_detail_headline("new service");
 		get_empty_params(detail_container);
-		var plus_btn = document.createElement("button");
-		plus_btn.setAttribute("class", "btn btn-primary");
-		plus_btn.onclick = () => append_param(detail_container, "key", "value");
-		var plus_span = document.createElement("span");
-		plus_span.setAttribute("class", "fas fa-plus")
-		plus_btn.appendChild(plus_span);
-		detail_container.appendChild(plus_btn);
-		var minus_btn = document.createElement("button");
-		minus_btn.setAttribute("class", "btn btn-primary");
-		minus_btn.onclick = () => delete_last_param(detail_container);
-		var minus_span = document.createElement("span");
-		minus_span.setAttribute("class", "fas fa-minus")
-		minus_btn.appendChild(minus_span);
-		detail_container.appendChild(minus_btn);
 	} else {
 		// Service name is given, so add corresponding parameters in detail view.
 		get_params(detail_container, service);
 	}
 
 	return detail_container;
-
 }
 
 /* append an editable key value pair to the container */
@@ -119,38 +115,37 @@ function append_param(container, key, val) {
 	row.setAttribute("class", "row");
 	container.appendChild(row);
 
-    var col1 = document.createElement("div");
-    col1.setAttribute("class", "col-md-2");
-    //col1.setAttribute("align", "center");
+	var col1 = document.createElement("div");
+	col1.setAttribute("class", "col-md-2");
+	//col1.setAttribute("align", "center");
 
-    var col2 = document.createElement("div");
-    col2.setAttribute("class", "col-md-1");
-    //col2.setAttribute("align", "center");
+	var col2 = document.createElement("div");
+	col2.setAttribute("class", "col-md-1");
+	//col2.setAttribute("align", "center");
 
-    var col3 = document.createElement("div");
-    col3.setAttribute("class", "col-md-9");
-    //col3.setAttribute("align", "center");
+	var col3 = document.createElement("div");
+	col3.setAttribute("class", "col-md-9");
+	//col3.setAttribute("align", "center");
 
 	row.appendChild(col1);
 	row.appendChild(col2);
 	row.appendChild(col3);
 
-    var param_field_key = create_param_field(key);
-    if(val.length < 50) {
-        var param_field_value = create_param_field(val);
-    }else{
-        var param_field_value = create_param_textarea(val);
-    }
-    col1.appendChild(param_field_key);
-    col2.appendChild(document.createTextNode(" : "));
-    col3.appendChild(param_field_value);
+	var param_field_key = create_param_field(key);
+	if (val.length < 50) {
+		var param_field_value = create_param_field(val);
+	} else {
+		var param_field_value = create_param_textarea(val);
+	}
+	col1.appendChild(param_field_key);
+	col2.appendChild(document.createTextNode(" : "));
+	col3.appendChild(param_field_value);
 }
 
 function delete_last_param(container) {
 	var detail_container = document.querySelector("#detail-container");
 	var last_child = detail_container.lastChild;
-	var cols = last_child.querySelectorAll(".col-md-5 h4");
-	if (cols.length == 2) {
+	if (last_child.children.length == 3) {
 		detail_container.removeChild(last_child);
 	}
 }
@@ -209,9 +204,9 @@ function get_empty_params(container) {
 }
 
 function save_detail(elem) {
-    if(check_disabled(elem)){
-        return;
-    }
+	if (check_disabled(elem)) {
+		return;
+	}
 
 	// Get detail container.
 	var detail_container = document.querySelector("#detail-container");
@@ -228,11 +223,10 @@ function save_detail(elem) {
 	var old_service_name = null;
 
 	for (var i = 0; i < detail_container.childNodes.length; i++) {
-		var child = detail_container.childNodes[i];
-		var cols = child.querySelectorAll(".col-md-5 h4");
-		if (cols.length == 2) {
-			key = cols[0].innerText;
-			value = cols[1].innerText;
+		var child = detail_container.childNodes[i].children;
+		if (child.length == 3) {
+			key = child[0].firstChild.innerText;
+			value = child[2].firstChild.innerText;
 			if (key == "classpath") {
 				classpath_value = value;
 			} else if (key == "port") {
@@ -284,14 +278,14 @@ function add_new(elem) {
 
 
 /* Create a modal popup to ask the user if they really want to delete a service. */
-function delete_this(elem){
-    var service = $("#detail_info")[0].dataset.name;
+function delete_this(elem) {
+	var service = $("#detail_info")[0].dataset.name;
 
-    var popup_warning = $("<div class='modal' tabindex='-1' role='dialog'> \
+	var popup_warning = $("<div class='modal' tabindex='-1' role='dialog'> \
   <div class='modal-dialog' role='document'> \
     <div class='modal-content'> \
       <div class='modal-header'> \
-        <h5 class='modal-title'>Delete "+service+"?</h5> \
+        <h5 class='modal-title'>Delete " + service + "?</h5> \
         <button type='button' class='close' data-dismiss='modal' aria-label='Close'> \
           <span aria-hidden='true'>&times;</span> \
         </button> \
@@ -300,41 +294,41 @@ function delete_this(elem){
         <p>Are you sure you want to delete this service?</p> \
       </div> \
       <div class='modal-footer'> \
-        <button type='button' class='btn btn-primary' onclick='delete_service(\""+service+"\")'>Delete</button> \
+        <button type='button' class='btn btn-primary' onclick='delete_service(\"" + service + "\")'>Delete</button> \
         <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button> \
       </div> \
     </div> \
   </div> \
 </div>");
 
-    popup_warning.modal("toggle");
+	popup_warning.modal("toggle");
 
 }
 
 /* Delete a service. */
-function delete_service(service){
-    var elem = $("#btn-delete")[0]
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+function delete_service(service) {
+	var elem = $("#btn-delete")[0]
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 
-    $.post("delete_service", {
+	$.post("delete_service", {
 		service: service,
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    if(data.success){
-	        location.reload();
-	    }
-		show_tooltip(elem, data.success, "", "Deleting service failed. \n "+data.message);
+		if (data.success) {
+			location.reload();
+		}
+		show_tooltip(elem, data.success, "", "Deleting service failed. \n " + data.message);
 	});
 }
 
 /* Add watch and run buttons to the service detail headline. */
-function add_watch_and_run_buttons(){
-    var button_container = $("#button_headline");
-    var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
-    var btn_run = $("<button type='button' id='btn-run' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, run_services, stop_services)'><span class='fas fa-play'></span></button>");
+function add_watch_and_run_buttons() {
+	var button_container = $("#button_headline");
+	var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
+	var btn_run = $("<button type='button' id='btn-run' class='btn btn-primary btn-round float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, run_services, stop_services)'><span class='fas fa-play'></span></button>");
 
-    button_container.append(btn_watch);
-    button_container.append(btn_run);
+	button_container.append(btn_watch);
+	button_container.append(btn_run);
 }
 
 
@@ -378,10 +372,10 @@ function run_services(detail_info) {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-run");
-	    if(data.success){
-	        toggle_run_button(btn[0], '1', "start service", "stop service");
-	        set_status(service);
+		btn = $("#btn-run");
+		if (data.success) {
+			toggle_run_button(btn[0], '1', "start service", "stop service");
+			set_status(service);
 		}
 		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service. \n " + data.message);
 	});
@@ -395,10 +389,10 @@ function stop_services(detail_info) {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-run");
-	    if(data.success){
-    	    toggle_run_button(btn[0], '0' , "start service", "stop service");
-    	    set_status(service);
+		btn = $("#btn-run");
+		if (data.success) {
+			toggle_run_button(btn[0], '0', "start service", "stop service");
+			set_status(service);
 		}
 		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service. \n " + data.message);
 	});
@@ -445,20 +439,20 @@ function set_watch_button(service) {
 }
 
 /* Sets the status text in the detail headline. */
-function set_status(service){
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    var service_status_span = $("#headline_status");
-    $.post("check_running", {
+function set_status(service) {
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	var service_status_span = $("#headline_status");
+	$.post("check_running", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-        service_status_span.html("");
-	    if(data.data[service] == true){
-            service_status_span.append("running");
-            service_status_span.attr("class", "form-text");
-	    }else{
-            service_status_span.append("inactive");
-            service_status_span.attr("class", "form-text text-muted");
-	    }
+		service_status_span.html("");
+		if (data.data[service] == true) {
+			service_status_span.append("running");
+			service_status_span.attr("class", "form-text");
+		} else {
+			service_status_span.append("inactive");
+			service_status_span.attr("class", "form-text text-muted");
+		}
 	});
 }

@@ -251,11 +251,11 @@ function refresh() {
 }
 
 /* Reloads the message information every few seconds and updates the message status. */
-function reload_msgs(){
-    // Update constantly reloaded elements.
-    acc = document.getElementById("accordion");
-    get_msg_status(acc);
-    setInterval(function() {
-        get_msg_status(acc);
-    }, 1000);
+function reload_msgs() {
+	// Update constantly reloaded elements.
+	acc = document.getElementById("accordion");
+	get_msg_status(acc);
+	setInterval(function() {
+		get_msg_status(acc);
+	}, 1000);
 }
