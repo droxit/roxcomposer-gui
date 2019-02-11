@@ -224,6 +224,9 @@ function save_detail(elem) {
 	name_value = service_name;
 	key_array = []
 	value_array = []
+	var delete_old_service = false;
+	var old_service_name = null;
+
 	for (var i = 0; i < detail_container.childNodes.length; i++) {
 		var child = detail_container.childNodes[i];
 		var cols = child.querySelectorAll(".col-md-5 h4");
@@ -238,7 +241,8 @@ function save_detail(elem) {
 				ip_value = value;
 			} else if (key == "name") {
 			    if(value != service_name) { // service name has been changed, delete the old service and save the new one
-			        delete_service(value);
+			        old_service_name = value;
+			        delete_old_service = true;
 			    }
 				// name_value = value;
 			} else {
@@ -259,8 +263,12 @@ function save_detail(elem) {
 		"optional_param_values": value_array,
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
+	    if(delete_old_service){
+	        delete_service(old_service_name);
+	    }
 	    btn = $("#btn-save");
 	    show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
+	    add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0],'get_services');
 	});
 }
 
