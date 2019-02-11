@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Define HTTP responses concering service watching with JSON data.
+# Define HTTP responses concerning service watching with JSON data.
 #
 # devs@droxit.de
 #
@@ -78,6 +78,7 @@ def watch(request):
 
 @require_http_methods(["POST"])
 def unwatch(request):
+
     """unwatch specified services """
     service_names = request.POST.getlist("services[]", default=[])
     cur_sess = request.session.get('current_session', None)

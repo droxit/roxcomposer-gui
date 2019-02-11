@@ -7,6 +7,6 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-from django.contrib import admin
+# from django.contrib import admin
 
 # Register your models here.

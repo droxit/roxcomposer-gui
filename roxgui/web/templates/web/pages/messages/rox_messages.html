@@ -1,13 +1,46 @@
+<!--
+#
+# Layout for the message status accordion.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
 {% extends "base/base.html" %}
+
+{% load static %}
 
 {% block title %}
 <title>ROXcomposer - Messages</title>
 {% endblock title %}
 
+
 {% block content %}
-<div class="container">
+{% csrf_token %}
+
+<div class="container" id="content-container">
     <div class="row">
         <h1>ROXcomposer - Messages</h1>
     </div>
+    <br>
+    <div class="row">
+        <!-- Messages -->
+        <div class="col-md-8 scrollable-parent">
+            <div class="card w-auto" style="overflow-x:hidden;height:600px;">
+                <div id="accordion"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="{% static 'web/js/rox_messages.js'%}"></script>
+<script>
+    reload_msgs()
+</script>
+
 {% endblock content %}
+
+
+

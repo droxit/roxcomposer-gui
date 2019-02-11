@@ -10,8 +10,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
-from web.views import json_views
-import json
+from web.views.json_views import _create_json_context
 
 
 @require_http_methods(["POST"])
@@ -27,7 +26,8 @@ def get_service_info(request):
     """
     Returns the info of services in a dictionary (their parameters etc.)
     :param request: contains a list "services" with the names of all services that the info should be retrieved of
-    :return: a JsonResponse context with key value pairs, where the key is the service name and value the corresponding service info
+    :return: a JsonResponse context with key value pairs,
+            where the key is the service name and value the corresponding service info
     """
     services = request.POST.getlist("services[]", default=[])
     result = file_request.get_local_services()
@@ -49,7 +49,8 @@ def check_running(request):
     """
     For a specified list of services returns which of those are running
     :param request: contains list of service names
-    :return: dictionary with service names as  keys and boolean as value, the boolean indicates if the service is running.
+    :return: dictionary with service names as  keys and boolean as value,
+            the boolean indicates if the service is running.
     """
     result = rox_request.get_running_services()
     running_services = result.data
@@ -61,7 +62,7 @@ def check_running(request):
         if service in running_services:
             service_is_running = True
         running[service] = service_is_running
-    context = json_views._create_json_context(running)
+    context = _create_json_context(running)
     return JsonResponse(context)
 
 
@@ -86,7 +87,7 @@ def start_services(request):
             return JsonResponse(res.convert_to_json())
         else:
             # Some services were specified but could not be started.
-            services_not_started = ", ".join(result.error_data)
+            # services_not_started = ", ".join(result.error_data)
             return JsonResponse(res.convert_to_json())
 
 
@@ -110,6 +111,15 @@ def stop_services(request):
             # Some services were specified but could not be stopped.
             # services_not_stopped = ", ".join(res.error_data)
             return JsonResponse(res.convert_to_json())
+
+
+@require_http_methods(["POST"])
+def delete_service(request):
+    """ Delete a service from file system """
+    # Get the service name of the service that should be deleted.
+    service = request.POST.get("service", default="")
+    res = file_request.delete_service(service)
+    return JsonResponse(res.convert_to_json())
 
 
 @require_http_methods(["POST"])

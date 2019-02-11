@@ -1,3 +1,13 @@
+<!--
+#
+# Layout for the services page.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
 {% extends "web/pattern/layout_detail_view_and_list.html" %}
 
 {% load static %}
@@ -22,6 +32,7 @@
 {% csrf_token %}
 {% include 'web/pattern/pattern_search_bar_and_list.html' %}
 <script>
+    add_watch_and_run_buttons()
     add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0],'get_services');
     set_service_tooltips();
     //enable_add_button("go_to_detail_view(this)");
