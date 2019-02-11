@@ -11,14 +11,11 @@
 {% endblock headline %}
 
 {% block detail_view %}
-<br>
-
 {% include 'web/pattern/pattern_detail_view.html' %}
 <script src="{% static 'web/js/rox_services.js' %}"></script>
 <script>
     show_empty_detail_view();
 </script>
-
 {% endblock detail_view %}
 
 {% block list %}

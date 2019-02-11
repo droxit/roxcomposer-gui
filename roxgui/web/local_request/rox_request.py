@@ -228,11 +228,23 @@ def create_service(ip: str,
 
     # Check if given IP is valid.
     ip_parts = ip.split('.')
+    error_msg = "Invalid IP address: {}.".format(ip)
     for part in ip_parts:
-        part = int(part)
-        if not (0 <= part <= 255):
-            error_msg = "Invalid IP address: {}.".format(ip)
+        try:
+            part = int(part)
+        except ValueError:
             return RoxResponse(False, error_msg)
+        if not (0 <= part <= 255):
+            return RoxResponse(False, error_msg)
+
+    # Check if given port is valid.
+    error_msg = "Invalid port: {}.".format(port)
+    try:
+        port = int(port)
+    except ValueError:
+        return RoxResponse(False, error_msg)
+    if not (0 <= port <= 65535):
+        return RoxResponse(False, error_msg)
 
     # Create JSON with mandatory parameters.
     json_dict = {
