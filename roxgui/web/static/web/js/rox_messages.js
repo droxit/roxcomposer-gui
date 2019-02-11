@@ -254,6 +254,7 @@ function refresh() {
 function reload_msgs(){
     // Update constantly reloaded elements.
     acc = document.getElementById("accordion");
+    get_msg_status(acc);
     setInterval(function() {
         get_msg_status(acc);
     }, 1000);
