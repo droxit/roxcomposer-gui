@@ -76,24 +76,24 @@ function create_detail_view(service) {
 	detail_container.setAttribute("class", "container");
 	detail_container.setAttribute("id", "detail-container")
 
-    // Create buttons to add / delete key value pairs.
+	// Create buttons to add / delete key value pairs.
 	var btn_row = document.createElement("div");
 	btn_row.setAttribute("class", "row");
-    var plus_btn = document.createElement("button");
-    plus_btn.setAttribute("class", "btn btn-primary");
-    plus_btn.onclick = () => append_param(detail_container, "key", "value");
-    var plus_span = document.createElement("span");
-    plus_span.setAttribute("class", "fas fa-plus")
-    plus_btn.appendChild(plus_span);
-    btn_row.appendChild(plus_btn);
-    var minus_btn = document.createElement("button");
-    minus_btn.setAttribute("class", "btn btn-primary");
-    minus_btn.onclick = () => delete_last_param(detail_container);
-    var minus_span = document.createElement("span");
-    minus_span.setAttribute("class", "fas fa-minus")
-    minus_btn.appendChild(minus_span);
-    btn_row.appendChild(minus_btn);
-    detail_container.appendChild(btn_row)
+	var plus_btn = document.createElement("button");
+	plus_btn.setAttribute("class", "btn btn-primary");
+	plus_btn.onclick = () => append_param(detail_container, "key", "value");
+	var plus_span = document.createElement("span");
+	plus_span.setAttribute("class", "fas fa-plus")
+	plus_btn.appendChild(plus_span);
+	btn_row.appendChild(plus_btn);
+	var minus_btn = document.createElement("button");
+	minus_btn.setAttribute("class", "btn btn-primary");
+	minus_btn.onclick = () => delete_last_param(detail_container);
+	var minus_span = document.createElement("span");
+	minus_span.setAttribute("class", "fas fa-minus")
+	minus_btn.appendChild(minus_span);
+	btn_row.appendChild(minus_btn);
+	detail_container.appendChild(btn_row)
 
 	set_status(service); // Set the 'status' span to running or not running
 
@@ -117,15 +117,12 @@ function append_param(container, key, val) {
 
 	var col1 = document.createElement("div");
 	col1.setAttribute("class", "col-md-2");
-	//col1.setAttribute("align", "center");
 
 	var col2 = document.createElement("div");
 	col2.setAttribute("class", "col-md-1");
-	//col2.setAttribute("align", "center");
 
 	var col3 = document.createElement("div");
 	col3.setAttribute("class", "col-md-9");
-	//col3.setAttribute("align", "center");
 
 	row.appendChild(col1);
 	row.appendChild(col2);
@@ -158,40 +155,26 @@ function get_params(container, service) {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 
-		var json_params = data[service];
+		var service_json = data[service];
 
-		if (json_params.classpath) {
+		if (service_json.classpath) {
 			var key = "classpath";
-			var val = json_params.classpath;
+			var val = service_json.classpath;
 			append_param(container, key, val);
-		}
-		if (json_params.ip) {
-			var key = "ip";
-			var val = json_params.ip;
-			append_param(container, key, val);
-		}
-		if (json_params.port) {
-			var key = "port";
-			var val = JSON.stringify(json_params.port);
-			append_param(container, key, val);
-		}
-		if (json_params.name) {
-			// var key = "name";
-			// var val = json_params.name;
-			// don't append the name parameter
-			// append_param(container, key, val);
 		}
 
-		jQuery.each(json_params.params, function(i, val) {
-		    if(i == "name"){
-		        return true;
-		    }
-			if (typeof val === 'string' || val instanceof String) {
-				val = JSON.stringify(val, null, ' ');
-			} else {
-				val = escapeHtml(convert_to_json_string(val));
+		var service_params = service_json.params;
+
+		jQuery.each(service_params, function(i, val) {
+			if (i == "name") {
+				return true;
 			}
-			append_param(container, i, val);
+			if (typeof val === 'string' || val instanceof String) {
+				value = val;
+			} else {
+				value = escapeHtml(convert_to_json_string(val));
+			}
+			append_param(container, i, value);
 		});
 	});
 }
@@ -200,7 +183,6 @@ function get_empty_params(container) {
 	append_param(container, "classpath", "new classpath");
 	append_param(container, "ip", "new ip");
 	append_param(container, "port", "new port");
-	append_param(container, "name", "new name");
 }
 
 function save_detail(elem) {
@@ -231,9 +213,6 @@ function save_detail(elem) {
 				port_value = value;
 			} else if (key == "ip") {
 				ip_value = value;
-			} else if (key == "name") {
-			    // do nothing
-				// name_value = value;
 			} else {
 				key_array.push(key);
 				value_array.push(value);
@@ -252,9 +231,9 @@ function save_detail(elem) {
 		"optional_param_values": value_array,
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-save");
-	    show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
-	    add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0],'get_services');
+		btn = $("#btn-save");
+		show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
+		add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_services');
 	});
 }
 
