@@ -1,0 +1,22 @@
+<!--
+#
+# Define the layout for the test page.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'base/css/jasmine/jasmine.css' %}">
+<script src="{% static 'base/js/jasmine/jasmine.js' %}"></script>
+<script src="{% static 'base/js/jasmine/jasmine-html.js' %}"></script>
+<script src="{% static 'base/js/jasmine/boot.js' %}"></script>
+{% block test_files %} {% endblock test_files %}
+{% endblock header %}
+

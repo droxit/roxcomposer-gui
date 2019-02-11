@@ -1,0 +1,63 @@
+<!-- Base template for HTML pages. -->
+
+{% load static %}
+
+<!doctype html>
+<html lang="de">
+
+<head>
+    <!-- Basic meta data. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Include custom header defined in sub-template. -->
+    {% block title %} {% endblock title %}
+
+    <!-- CSS stylesheets. -->
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/fontawesome/all.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
+
+    <!-- JQuery. -->
+    <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+</head>
+
+<body>
+<!-- Header. -->
+<header>
+    <p>ROXcomposer</p>
+</header>
+
+<!-- Main content. -->
+<div class="main">
+    <div class="container">
+        {% if messages %}
+        <div class="row">
+            {% for message in messages %}
+            {% if message.tags == 'debug' %}
+            <div class="alert alert-warning">{{ message }}</div>
+            {% elif message.tags == 'error' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Include custom body defined in sub-template. -->
+        {% block content %} {% endblock content %}
+    </div>
+</div>
+
+<!-- Footer. -->
+<footer>
+    <p>droxIT GmbH</p>
+</footer>
+
+<!-- JavaScript. -->
+<script src="{% static 'base/js/fontawesome/all.min.js' %}"></script>
+<script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'base/js/base.js' %}"></script>
+</body>
+
+</html>

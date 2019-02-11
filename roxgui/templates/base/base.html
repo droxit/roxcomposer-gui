@@ -1,4 +1,12 @@
-<!-- Base template for HTML pages. -->
+<!--
+#
+# Define the base layout for the site.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
 
 {% load static %}
 
@@ -6,50 +14,60 @@
 <html lang="de">
 
 <head>
-    <!-- Basic meta data. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Include custom header defined in sub-template. -->
     {% block title %} {% endblock title %}
-
-    <!-- Basic CSS stylesheets. -->
-    <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap.min.css' %}">
+    {% block header %} {% endblock header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/fontawesome/all.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'base/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/css/navbar.css' %}">
+    <script src="{% static 'base/js/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'base/js/base_functions.js' %}"></script>
+    <script src="{% static 'web/js/pattern_button.js' %}"></script>
 </head>
 
 <body>
-<!-- Header. -->
-<header>
-    <p>ROXcomposer</p>
-</header>
 
-<!-- Main content. -->
-<main>
-    {% if messages %}
-    {% for message in messages %}
-    {% if message.tags == 'debug' %}
-    <div class="alert alert-warning">{{ message }}</div>
-    {% elif message.tags == 'error' %}
-    <div class="alert alert-danger">{{ message }}</div>
-    {% else %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    <!-- Include custom body defined in sub-template. -->
-    {% block content %} {% endblock content %}
-</main>
+<div class="container-fluid fill">
+    <div class="row">
+        <div id="navigation" class="col-1">
+            <div class="sidenav">
+                <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i class="fas fa-home"></i></a>
+                <a class="non-active" data-toggle="tooltip" data-placement="right" title="Graph"><i
+                        class="fas fa-share-alt"></i></a>
+                <a href="messages" data-toggle="tooltip" data-placement="right" title="Messages"><i
+                        class="fas fa-envelope-open"></i></a>
+                <a href="logs" data-toggle="tooltip" data-placement="right" title="Logs"><i
+                        class="fas fa-archive"></i></a>
+                <a href="pipelines" data-toggle="tooltip" data-placement="right" title="Pipelines"><i
+                        class="fas fa-retweet"></i></a>
+                <a href="services" data-toggle="tooltip" data-placement="right" title="Services"><i
+                        class="fas fa-cogs"></i></a>
+                <a href="tests" data-toggle="tooltip" data-placement="right" title="Tests"><i class="fas fa-check"></i></a>
 
-<!-- Footer. -->
-<footer>
-    <p>droxIT GmbH</p>
-</footer>
 
-<!-- Basic JavaScript. -->
-<script src="{% static 'base/js/jquery.min.js'%}"></script>
-<script src="{% static 'base/js/bootstrap.min.js'%}"></script>
-<script src="{% static 'base/js/base.js'%}"></script>
+                <a href="https://github.com/droxit/roxcomposer-doc" target="_blank" data-toggle="tooltip"
+                   data-placement="right" title="Documentation"><i class="fas fa-book"></i></a>
+                <a href="http://www.droxit.de" target="_blank" data-toggle="tooltip" data-placement="right"
+                   style="padding-left:10%;"
+               title="Droxit website"><img
+                    src="{% static 'media/img/droxit_thumbnail.png' %}"
+                    class="img" alt="D"
+                    style="width:40px;height:auto;"></a>
+            </div>
+        </div>
+        <div id="content" class="col-11">
+            <br><br>
+            {% block content %} {% endblock content %}
+        </div>
+    </div>
+</div>
+<script src="{% static 'base/js/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'base/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'base/js/base.js' %}"></script>
+
+<script src="{% static 'base/js/navbar.js' %}"></script>
 </body>
 
 </html>

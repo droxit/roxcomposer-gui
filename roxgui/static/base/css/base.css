@@ -1,0 +1,21 @@
+/*
+#
+# Some styles that are needed throughout the whole site like round buttons.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+*/
+
+.not-active {
+  pointer-events: none;
+  cursor: default;
+  text-decoration: none;
+  color: black;
+}
+
+/* ===== Buttons. ===== */
+.btn-round {
+    border-radius: 100vmin;
+}

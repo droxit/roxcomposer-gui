@@ -1,0 +1,45 @@
+<!--
+# encoding: utf-8
+#
+# Layout for creating a new pipeline.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+-->
+
+{% load static %}
+
+<div class="row mb-2">
+    <div class="col-md-6">
+        <div class="row mb-2">
+            <div class="col-md-10" style="padding:0">
+                <input type="text" style="border:0" class="form-control" id="pipe_name" placeholder="Pipeline name">
+            </div>
+            <div class="col-md-2">
+                <button onclick="create_or_update_pipeline()" class="btn btn-primary"><span class="fas fa-plus"></span>
+                </button>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-12" style="padding:0">
+                <ul class="list-group" id="piped_service_list">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="row mb-2">
+            <div class="col-md-10" style="padding:0">
+                <input type="text" class="form-control" id="pipe_message_text" placeholder="Message">
+            </div>
+            <div class="col-md-2">
+                <button onclick="post_message_to_pipeline()" class="btn btn-primary"><span
+                        class="fas fa-paper-plane"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'web/js/pipeline_params.js'%}"></script>

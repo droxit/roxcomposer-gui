@@ -1,0 +1,31 @@
+<!--
+# encoding: utf-8
+#
+# Session saving/loading elements.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+-->
+
+<div class="row">
+    <div class="col-lg-4">
+        <form id="save_session" action="save_session" method="post">
+            {% csrf_token %}
+            <input type="text" class="form-control" name="save_file_name" placeholder="filename.json">
+        </form>
+    </div>
+    <div class="col-lg-2">
+        <button type="submit" form="save_session" class="btn btn-primary">Save session</button>
+    </div>
+    <div class="col-lg-4">
+        <form id="load_session" action="load_session" method="post">
+            {% csrf_token %}
+            <input type="text" class="form-control" name="load_file_name" placeholder="filename.json">
+        </form>
+    </div>
+    <div class="col-lg-2">
+        <button type="submit" form="load_session" class="btn btn-primary">Load session</button>
+    </div>
+</div>

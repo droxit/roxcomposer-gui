@@ -2,12 +2,13 @@
 #
 # encoding: utf-8
 #
-# Define URL patterns.
+# Main entry point for Django backend.
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
+
 import os
 import sys
 

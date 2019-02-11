@@ -1,0 +1,46 @@
+<!--
+#
+# Layout for the logs page.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block title %}
+<title>ROXcomposer - Logs</title>
+{% endblock title %}
+
+
+{% block content %}
+{% csrf_token %}
+
+<div class="container" id="content-container">
+    <div class="row">
+        <h1>ROXcomposer - Logs</h1>
+    </div>
+    <br>
+    <div class="row pb-4">
+        <div class="col">
+            <div class="card" style="height:600px;overflow-y:scroll">
+                <div class="card-body" id="log">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'web/js/rox_logs.js'%}"></script>
+<script>
+    reload_logs()
+</script>
+
+{% endblock content %}
+
+
+

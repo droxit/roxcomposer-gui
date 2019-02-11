@@ -1,0 +1,39 @@
+<!--
+#
+# Layout pattern for a search bar and a searchable list below.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
+{% load static %}
+
+<div class="card border-0">
+    <div class="card-body">
+        <div class="row">
+            <input id="search_field" class="form-control" type="text" onchange="search_data_list()"
+                   list="data_name_list" placeholder="{{ search_bar_text }}">
+            <datalist id="data_name_list"></datalist>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col">
+                <h4>{{ headline }}</h4>
+            </div>
+            <div class="col">
+                <button type="button" id="btn-add" class="btn btn-primary btn-round float-right disabled" onclick="add_new(this)">
+                    <span class="fas fa-plus"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <ul id="data_info_list" class="list-group list-group-flush" style="height: 400px; overflow-y: scroll;"></ul>
+    </div>
+</div>
+<script src="{% static 'web/js/pattern_search_bar_and_list.js' %}"></script>

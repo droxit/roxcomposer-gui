@@ -1,0 +1,24 @@
+<!--
+#
+#
+# Layout for the Message status accordion.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+-->
+
+{% load static %}
+
+<div class="row pb-4">
+    <!-- Messages -->
+    <div class="col-md-4 scrollable-parent">
+        <h4><strong>Messages</strong></h4>
+        <div class="card w-auto" style="overflow-x:hidden;height:300px">
+            <div id="accordion"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'web/js/rox_messages.js'%}"></script>

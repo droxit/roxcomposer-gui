@@ -1,10 +1,12 @@
 # encoding: utf-8
 #
-# tests.py
+# Define unit base_tests.
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
 
-# Create your tests here.
+# from django.test import TestCase
+
+# Create your base_tests here.

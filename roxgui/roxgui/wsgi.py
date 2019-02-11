@@ -1,3 +1,12 @@
+# encoding: utf-8
+#
+# Connect Django project to web server.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+
 """
 WSGI config for roxgui project.
 

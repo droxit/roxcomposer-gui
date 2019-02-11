@@ -1,10 +1,10 @@
 # encoding: utf-8
 #
-# apps.py
+# Define Django apps.
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
 
 from django.apps import AppConfig

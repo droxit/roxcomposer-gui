@@ -4,11 +4,9 @@
 #
 # devs@droxit.de
 #
-# Copyright (c) 2018 droxIT GmbH
+# Copyright (c) 2019 droxIT GmbH
 #
 
-from django.contrib import admin
+# from django.contrib import admin
 
-from .models import Service
-
-admin.site.register(Service)
+# Register your models here.

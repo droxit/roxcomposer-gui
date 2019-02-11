@@ -1,3 +1,12 @@
+# encoding: utf-8
+#
+# Define URL patterns for whole project.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+
 """roxgui URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

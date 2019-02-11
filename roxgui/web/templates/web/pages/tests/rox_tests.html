@@ -1,0 +1,25 @@
+<!--
+#
+# Layout for the tests page.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2019 droxIT GmbH
+#
+-->
+
+{% extends "base/base_tests.html" %}
+
+{% load static %}
+
+{% block title %}
+<title>Web tests</title>
+{% endblock title %}
+
+{% block test_files %}
+<!-- Source files. -->
+<script src="{% static 'base/js/base_functions.js' %}"></script>
+
+<!-- Test files. -->
+<script src="{% static 'base/tests/base_functions_test.js' %}"></script>
+{% endblock test_files %}
