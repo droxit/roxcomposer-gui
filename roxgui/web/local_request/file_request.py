@@ -33,6 +33,24 @@ def get_local_services() -> RoxResponse:
     return res
 
 
+def delete_service(name: str) -> RoxResponse:
+    """
+    Delete a service from file system.
+    :param name: Service name
+    :return: RoxResponse with information whether deleting worked
+    """
+    f_name = os.path.join(SERVICE_DIR, name + ".json")
+    try:
+        os.remove(f_name)
+        res = RoxResponse(True)
+    except FileNotFoundError:
+        res = RoxResponse(False, "File not found.")
+    except PermissionError:
+        res = RoxResponse(False, "No permission to delete file.")
+
+    return res
+
+
 def convert_to_service_json(service_name: str) -> RoxResponse:
     """
     Convert service name to corresponding JSON dictionary.

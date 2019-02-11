@@ -247,6 +247,7 @@ function create_detail_view(pipeline){
             inner_container.setAttribute("id", "services_in_pipe");
             services_col.appendChild(inner_container);
 
+            set_status_enabled();
             services_in_pipe.forEach(function(service){
                 var service_info_single = "";
                 if(service_info[service]){
@@ -266,6 +267,7 @@ function create_detail_view(pipeline){
    connecting lines between cards have not yet been implemented */
 function add_service_card(service, serviceinfo, services_container){
     var prev = get_preceding_service(services_container);
+    var i = services_container.childNodes.length + 1;
 
     var newrow = document.createElement("div");
     newrow.setAttribute("class","row");
@@ -295,19 +297,28 @@ function add_service_card(service, serviceinfo, services_container){
 
     var btn_watch = document.createElement("button");
     btn_watch.setAttribute("style", "margin-right:5px");
+    btn_watch.setAttribute("id", "btn-watch-"+i);
     btn_watch.setAttribute("data-toggle", "tooltip");
     btn_watch.setAttribute("data-placement", "top");
-    btn_watch.setAttribute("data-original-title", "(un)watch");
-    btn_watch.setAttribute("class", "btn btn-secondary disabled btn-xs");
-    btn_watch.setAttribute("onclick", "toggle_services('"+service+"',this, watch_services, unwatch_services)");
+    btn_watch.setAttribute("data-name", service);
+    btn_watch.setAttribute("data-status", "0");
+    btn_watch.setAttribute("class", "btn btn-secondary btn-xs btn-watch");
+    btn_watch.setAttribute("onclick", "toggle_services(['"+service+"','"+btn_watch.id+"'],this, watch_services, unwatch_services)");
+
+    set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
 
     var btn_run = document.createElement("button");
     btn_run.setAttribute("style", "margin-right:5px");
+    btn_run.setAttribute("id", "btn-run-"+i);
     btn_run.setAttribute("data-toggle", "tooltip");
     btn_run.setAttribute("data-placement", "top");
-    btn_run.setAttribute("data-original-title", "run/start");
-    btn_run.setAttribute("class", "btn btn-secondary disabled btn-xs");
-    btn_run.setAttribute("onclick", "toggle_services('"+service+"',this, run_services, stop_services)");
+    btn_run.setAttribute("data-name", service);
+    btn_run.setAttribute("data-status", "0");
+    //btn_run.setAttribute("data-original-title", "run/start");
+    btn_run.setAttribute("class", "btn btn-secondary btn-xs btn-run");
+    btn_run.setAttribute("onclick", "toggle_services(['"+service+"','"+btn_run.id+"'],this, run_services, stop_services)");
+
+    set_run_button(btn_run); // update this buttons status (is the service running?)
 
     card_header.appendChild(btn_run);
     card_header.appendChild(btn_watch);
@@ -436,104 +447,150 @@ function send_msg_to_pipe(){
 	});
 }
 
-/* TODO */
-function watch_services(detail_info){
-    var services = detail_info.dataset.services;
+/* Watch a service and then update all the watch buttons in the pipeline detail view. */
+function watch_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("watch", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-watch");
 	    if(data.success){
-	        toggle_watch_button(btn[0], '1', data.success);
+	        update_watch_buttons();
 	    }
-		show_tooltip(btn, data.success, "Watching service.", "Watching failed. \n "+data.message);
+	    show_tooltip($("#"+btn), data.success, "Watching.", "Failed to watch service. \n "+data.message);
 	});
 }
 
-/* TODO */
-function unwatch_services(detail_info){
-    var services = detail_info.dataset.services;
+/* Unwatch a service and then update all the watch buttons in the pipeline detail view. */
+function unwatch_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("unwatch", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-watch");
 	    if(data.success){
-	        toggle_watch_button(btn[0], '0', data.success);
+	        update_watch_buttons();
 		}
-		show_tooltip(btn, data.success, "Unwatched service.", "Unwatching not successful.");
+		show_tooltip($("#"+btn), data.success, "Unwatched.", "Failed to unwatch service. \n "+data.message);
 	});
 }
 
-/* TODO */
-function run_services(detail_info){
-    var services = detail_info.dataset.services;
+/* Start a service and then update all the watch buttons in the pipeline detail view. */
+function run_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("start_services", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-run");
 	    if(data.success){
-	        toggle_run_button(btn[0], '1', data.success);
-		}
-		show_tooltip(btn, data.success, "Started service successfully.", "Failed to start service. \n "+data.message);
+	        update_run_buttons();
+	    }
+	    show_tooltip($("#"+btn), data.success, "Running.", "Failed to start service. \n "+data.message);
 	});
 }
 
-/* TODO */
-function stop_services(detail_info){
-    var services = detail_info.dataset.services;
+/* Stop a service and then update all the watch buttons in the pipeline detail view. */
+function stop_services(info){
+    var service = info[0];
+    var btn = info[1];
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("stop_services", {
 		services: [service],
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
-	    btn = $("#btn-run");
 	    if(data.success){
-    	    toggle_run_button(btn[0], '0' , data.success);
-		}
-		show_tooltip(btn, data.success, "Stopped service successfully.", "Failed to stop service. \n "+data.message);
-	});
-}
-
-
-//TODO
-function set_buttons(detail_info){
-    var pipe = detail_info.dataset.name;
-    //set_pipe_run_button(pipe);
-    //set_pipe_watch_button(pipe);
-}
-
-//TODO
-function set_pipe_run_button(pipe){
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-    $.post("check_running", {
-		services: [services],
-		csrfmiddlewaretoken: CSRFtoken
-	}).done(function(data) {
-	    var running = "0";
-	    if(data.data[service] == true){
-            running = "1";
+	        update_run_buttons();
 	    }
-	    toggle_run_button($("#btn-run")[0], running);
+	    show_tooltip($("#"+btn), data.success, "Stopped.", "Failed to stop service. \n "+data.message);
 	});
 }
 
-/* TODO */
-function set_pipe_watch_button(pipe){
+/* Update all the watch buttons of single service cards in the pipeline detail view. */
+function update_watch_buttons(){
+    var services = get_service_buttons(".btn-watch");
+    services.forEach(function(btn){
+        set_watch_button(btn);
+    });
+}
+
+/* Update all the start buttons of single service cards in the pipeline detail view. */
+function update_run_buttons(){
+    set_status_enabled();
+    var services = get_service_buttons(".btn-run");
+    services.forEach(function(btn){
+        set_run_button(btn);
+    });
+}
+
+/* For a single watch button of a service card set the status. */
+function set_watch_button(btn){
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var service_name = btn.dataset.name;
+
     $.post("check_watched", {
-		services: [services],
-		csrfmiddlewaretoken: CSRFtoken
-	}).done(function(data) {
-	    var watched = "0";
-	    if(data.data[service] == true){
+        services: [service_name],
+        csrfmiddlewaretoken: CSRFtoken
+    }).done(function(data) {
+        var watched = "0";
+        if(data.data[service_name] == true){
             watched = "1";
-	    }
-	    toggle_watch_button($("#btn-watch")[0], watched);
-	});
+        }
+        toggle_watch_button(btn, watched, "", "");
+    });
+
+}
+
+/* For a single start button of a service card set the status. */
+function set_run_button(btn){
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var service_name = btn.dataset.name;
+
+    $.post("check_running", {
+        services: [service_name],
+        csrfmiddlewaretoken: CSRFtoken
+    }).done(function(data) {
+        var running = "0";
+        if(data.data[service_name] == true){
+            running = "1";
+        }else{
+            set_status_disabled()
+        }
+
+        toggle_run_button(btn, running, "", "");
+    });
+
+}
+
+/* Retrieve all the buttons with a certain identifier (e.g. '.btn-watch' for all watch buttons) from the
+    pipeline detail view. Careful though, the window needs to be loaded already or else the container
+    won't be found. Using $(window).on('load',..) did not work. */
+function get_service_buttons(identifier){
+    return $("#services_in_pipe")[0].querySelectorAll(identifier);
+}
+
+/* Currently not used because  */
+function set_buttons(detail_info){
+//
+}
+
+/* Sets the detail headline status to inactive (and muted). */
+function set_status_disabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("inactive");
+    pipe_status_span.attr("class", "form-text text-muted");
+}
+
+/* Sets the detail headline status to active (and unmuted). */
+function set_status_enabled(){
+    var pipe_status_span = $("#headline_status");
+    pipe_status_span.html("");
+    pipe_status_span.append("active");
+    pipe_status_span.attr("class", "form-text");
 }

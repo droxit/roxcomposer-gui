@@ -8,13 +8,27 @@
 #
 */
 
+/* Create an editable input field. */
+function create_input_field(text_node, placeholder, change_text_node){
+
+    var input_field = document.createElement("input");
+    create_editable_element(input_field, text_node, placeholder, change_text_node);
+}
+
+/* Create an editable text field. */
+function create_textarea(text_node, placeholder, change_text_node){
+
+    var input_field = document.createElement("textarea");
+    create_editable_element(input_field, text_node, placeholder, change_text_node);
+
+}
+
+
 /*  Create a new editable input field from an existing text node
     text_node is the place where the input field should reside (the text that gets replaced)
     placeholder is the text that was in the textnode first
     new_info_container is an html element with the correct format for the new output */
-function create_input_field(text_node, placeholder, change_text_node){
-
-    var input_field = document.createElement("input");
+function create_editable_element(input_field, text_node, placeholder, change_text_node){
     input_field.setAttribute("type", "text");
     input_field.setAttribute("placeholder", placeholder);
     input_field.setAttribute("class","form-control");
