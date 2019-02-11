@@ -123,4 +123,4 @@ def create_service(request):
         optional_param_keys=request.POST.getlist("optional_param_keys[]", default=[]),
         optional_param_values=request.POST.getlist("optional_param_values[]", default=[])
     )
-    return json_views.create_rox_response(res)
+    return json_views.create_rox_response(res.convert_to_json())

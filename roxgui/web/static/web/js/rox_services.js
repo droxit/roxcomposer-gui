@@ -39,7 +39,7 @@ function set_service_tooltip(btn, tooltip) {
 /* Enable certain buttons that already have functionality. */
 function enable_detail_elements() {
 	//"btn-watch" ,"btn-delete", "btn-save"
-	["btn-edit", "btn-run", "btn-watch"].forEach(function(btn) {
+	["btn-edit", "btn-run", "btn-watch", "btn-add"].forEach(function(btn) {
 		btn_remove_disabled(btn);
 	});
 }
@@ -80,6 +80,7 @@ function create_detail_view(service) {
 
 	if (service === "") {
 		// Service name is not given, so create empty detail view.
+		set_detail_headline("new service");
 		get_empty_params(detail_container);
 		var plus_btn = document.createElement("button");
 		plus_btn.setAttribute("class", "btn btn-primary");
@@ -238,6 +239,17 @@ function save_detail() {
 	    show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 	});
 }
+
+/* This is called when the user clicks the 'add new' button, it opens an empty detail view and
+    sets the pipeline name to 'new pipe'. */
+function add_new(elem) {
+	if (check_disabled(elem)) {
+		return;
+	}
+	elem.dataset.name = "";
+	go_to_detail_view(elem);
+}
+
 
 /* Watch a service */
 function watch_services(detail_info) {
