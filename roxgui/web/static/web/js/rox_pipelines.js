@@ -70,7 +70,7 @@ function add_search_bar() {
 	var search_btn_container = $("#search-btn-container");
 	var searchbar = $("<input id='search_services' class='form-control' type='text' onchange='add_service_to_pipe()' list='data-service-list' placeholder='Add service ...' disabled='disabled'></input>");
 	var service_datalist = $("<datalist id='data-service-list'></datalist>");
-	var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='add_service_to_pipe()'><span class='fas fa-plus'></span></button>")
+	var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-circle-big disabled' style='margin-left:-20px' onclick='add_service_to_pipe()'><span class='fas fa-plus'></span></button>")
 
 	search_container.append(searchbar);
 	search_container.append(service_datalist);
@@ -93,8 +93,8 @@ function add_send_message() {
 	msg_col.append(msg_input);
 
 
-	var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-round disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>")
-	var attach_btn = $("<button type='button' id='btn-attach' class='btn btn-primary btn-round disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
+	var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-circle-big disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>")
+	var attach_btn = $("<button type='button' id='btn-attach' class='btn btn-primary btn-circle-big disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
 	btn_col.append(msg_send_btn);
 	btn_col.append(attach_btn);
 
