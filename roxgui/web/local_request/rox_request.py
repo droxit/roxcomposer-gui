@@ -188,9 +188,9 @@ def get_running_services() -> RoxResponse:
     :return: List of service names
     """
     res = get_running_service_jsons()
-    service_names = []
+    service_names = {}
     for service in res.data:
-        service_names.append(service)
+        service_names[service] = service
     r = RoxResponse(res.success, res.message)
     r.data = service_names
     return r

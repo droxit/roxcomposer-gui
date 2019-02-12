@@ -25,7 +25,7 @@ def get_pipelines(request):
     """
     # Get JSON data of local pipelines.
     result = rox_request.get_pipelines()
-    return JsonResponse(result.data)
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])

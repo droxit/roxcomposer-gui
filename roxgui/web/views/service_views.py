@@ -18,14 +18,16 @@ def get_services(request):
     """get a list of all available services and their information"""
     # Get JSON data of local services.
     result = file_request.get_local_services()
-    return JsonResponse(result.data)
+    print(result)
+    return JsonResponse(result.convert_to_json())
 
 @require_http_methods(["POST"])
 def get_running_services(request):
     """get a list of all running services and their information"""
     # Get JSON data of local services.
     result = rox_request.get_running_services()
-    return JsonResponse(result.data)
+    print(result)
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])

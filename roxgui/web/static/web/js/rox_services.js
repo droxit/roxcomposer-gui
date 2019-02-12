@@ -82,6 +82,7 @@ function create_detail_view(service) {
 	var plus_btn = document.createElement("button");
 	plus_btn.setAttribute("class", "btn btn-primary btn-circle-big float-center");
 	plus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px; margin-right:10px");
+	plus_btn.setAttribute("id", "add-parameter")
 	plus_btn.onclick = () => append_param(detail_container, "key", "value");
 	var plus_span = document.createElement("span");
 	plus_span.setAttribute("class", "fas fa-plus")

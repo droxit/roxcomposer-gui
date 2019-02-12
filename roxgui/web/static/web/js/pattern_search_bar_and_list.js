@@ -70,14 +70,15 @@ function add_data_entries_from_remote(search_field, func, info_container, relati
 	$.post(relative_url, {
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
+	    var entries = data.data
 		// Create list to store converted data.
 		name_info_list = [];
 		// Convert JSON data to string.
-		for (var i in data) {
+		jQuery.each(entries, function(i, entry){
 			var name = i;
-			var json = convert_to_json_string(data[i]);
+			var json = convert_to_json_string(entry);
 			name_info_list.push([name, json]);
-		}
+		})
 		// Empty the data list of the search field
 		var data_list = search_field.list;
 		data_list.innerHTML = "";

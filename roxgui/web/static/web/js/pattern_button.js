@@ -41,6 +41,15 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 
 }
 
+function add_tooltip(btn_id, tooltip_string){
+    console.log($("#"+btn_id))
+    $("#"+btn_id).tooltip({
+        placement: "bottom",
+        toggle: "tooltip",
+        title: tooltip_string
+    });
+}
+
 /* toggles a specific button with two states (e.g. the watch or run buttons) to the other state.
     img1 is the icon for the first state and img2 for the second. These buttons must have a dataset.status info
     that can be either 0 or 1 (for on and off). */
