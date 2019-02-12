@@ -234,9 +234,6 @@ function save_detail(elem) {
 		}
 	}
 
-	console.log(key_array);
-	console.log(value_array);
-
 	// Send parameters to backend in order to create specified service.
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_service", {
@@ -248,7 +245,7 @@ function save_detail(elem) {
 		"optional_param_values": value_array,
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
-
+	    console.log(data);
 	    // If the service name was edited and a new service was created delete the old service
 	    var hidden_old_name = document.getElementById("hidden_old_name");
 		var old_name = hidden_old_name.dataset.name;

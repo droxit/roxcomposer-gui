@@ -266,21 +266,33 @@ def create_service(ip: str,
     # Add optional parameters ignoring empty ones.
     for i in range(len(optional_param_keys)):
         key = optional_param_keys[i]
-        value = optional_param_values[i]
-        if key and value:
-            # Key and value of current parameter is not empty.
+        val = optional_param_values[i]
+        # Check if provided key already exists.
+        if key in json_dict["params"]:
+            # Error: provided key already exists.
+            return RoxResponse(False, "Duplicate key: {}".format(key))
+        # Check if key and value are not empty.
+        if key and val:
             try:
-                # Try to convert current value to JSON.
-                # If it fails, given parameter is invalid.
-                json_value = json.loads(value)
-            except json.JSONDecodeError:
-                # Error: provided value is invalid.
-                return RoxResponse(False, "Invalid value: {}".format(value))
-            # Check if provided key already exists.
-            if key in json_dict["params"]:
-                # Error: provided key already exists.
-                return RoxResponse(False, "Duplicate key: {}".format(key))
-            json_dict["params"][key] = json_value
+                # Try to convert current value to float.
+                float_value = float(val)
+                # Check if value is actually an integer.
+                if (float_value % 1.0) == 0.0:
+                    # Value is a single integer.
+                    value = int(float_value)
+                else:
+                    # Value is a single float.
+                    value = float_value
+            except ValueError:
+                # Value is a single string.
+                value = val
+                try:
+                    # Try to convert it to JSON.
+                    json_value = json.loads(val)
+                    value = json_value
+                except json.JSONDecodeError:
+                    pass
+            json_dict["params"][key] = value
 
     # Write specified dictionary to JSON file.
     try:
