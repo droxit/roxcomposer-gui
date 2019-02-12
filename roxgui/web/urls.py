@@ -28,6 +28,7 @@ urlpatterns = [
 
     # Service views
     path('get_services', service_views.get_services, name="web_get_services"),
+    path('get_running_services', service_views.get_running_services, name="web_get_running_services"),
     path('check_running', service_views.check_running, name="web_check_running"),
     path('start_services', service_views.start_services, name="web_start_services"),
     path('stop_services', service_views.stop_services, name="web_stop_services"),
