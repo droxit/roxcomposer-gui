@@ -81,14 +81,14 @@ function create_detail_view(service) {
 	btn_row.setAttribute("class", "d-flex justify-content-center");
 	var plus_btn = document.createElement("button");
 	plus_btn.setAttribute("class", "btn btn-primary btn-round space-right float-center");
-	plus_btn.setAttribute("style", "margin:5px");
+	plus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px");
 	plus_btn.onclick = () => append_param(detail_container, "key", "value");
 	var plus_span = document.createElement("span");
 	plus_span.setAttribute("class", "fas fa-plus")
 	plus_btn.appendChild(plus_span);
 	btn_row.appendChild(plus_btn);
 	var minus_btn = document.createElement("button");
-	minus_btn.setAttribute("style", "margin:5px");
+	minus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px");
 	minus_btn.setAttribute("class", "btn btn-primary btn-round float-center");
 	minus_btn.onclick = () => delete_last_param(detail_container);
 	var minus_span = document.createElement("span");
