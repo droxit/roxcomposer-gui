@@ -220,11 +220,12 @@ def create_service(ip: str,
     # Store JSON file in service folder.
     file_path = os.path.join(SERVICE_DIR, file_name)
 
+    # Create empty result message.
     result_msg = ""
 
     # Check if given service already exists.
     if os.path.exists(file_path):
-        result_msg += "Service {} already exists, overwriting.".format(name)
+        result_msg = "Service {} already exists, overwriting.".format(name)
 
     # Check if given IP is valid.
     error_msg = "Invalid IP address: {}.".format(ip)
@@ -262,17 +263,24 @@ def create_service(ip: str,
     # Optional parameters.
     # ====================
 
-    # Add optional parameters ignoring missing or invalid ones.
-    optional_params_warning = False
+    # Add optional parameters ignoring empty ones.
     for i in range(len(optional_param_keys)):
         key = optional_param_keys[i]
         value = optional_param_values[i]
         if key and value:
             # Key and value of current parameter is not empty.
-            json_dict["params"][key] = value
-        else:
-            # Key or value of current parameter is empty.
-            optional_params_warning = True
+            try:
+                # Try to convert current value to JSON.
+                # If it fails, given parameter is invalid.
+                json_value = json.loads(value)
+            except json.JSONDecodeError:
+                # Error: provided value is invalid.
+                return RoxResponse(False, "Invalid value: {}".format(value))
+            # Check if provided key already exists.
+            if key in json_dict["params"]:
+                # Error: provided key already exists.
+                return RoxResponse(False, "Duplicate key: {}".format(key))
+            json_dict["params"][key] = json_value
 
     # Write specified dictionary to JSON file.
     try:
@@ -281,10 +289,6 @@ def create_service(ip: str,
     except OSError as err:
         error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
-
-    # Return RoxResponse instance with corresponding warnings.
-    if optional_params_warning:
-        result_msg += "Skipped invalid optional parameters."
 
     return RoxResponse(True, result_msg)
 

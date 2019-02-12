@@ -118,7 +118,7 @@ function create_detail_view(service) {
 	return detail_container;
 }
 
-/* append an editable key value pair to the container */
+/* Add editable key value pair to service container. */
 function append_param(container, key, val) {
 	var row = document.createElement("div");
 	row.setAttribute("class", "row");
@@ -190,12 +190,14 @@ function get_params(container, service) {
 	});
 }
 
+/* Add default parameter for new service to container. */
 function get_empty_params(container) {
 	append_param(container, "classpath", "new classpath");
 	append_param(container, "ip", "new ip");
 	append_param(container, "port", "new port");
 }
 
+/* Get all key-value pairs provided in current container and use them to create a new service. */
 function save_detail(elem) {
 	if (check_disabled(elem)) {
 		return;
@@ -230,6 +232,9 @@ function save_detail(elem) {
 			}
 		}
 	}
+
+	console.log(key_array);
+	console.log(value_array);
 
 	// Send parameters to backend in order to create specified service.
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
