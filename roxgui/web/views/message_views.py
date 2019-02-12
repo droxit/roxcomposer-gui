@@ -19,7 +19,7 @@ from web.local_request import rox_request
 from web.models import Message, MessageStatus
 
 # Delete all messages which are older than this interval,
-MSG_DELETE = datetime.timedelta(minutes=5)
+MSG_DELETE = datetime.timedelta(hours=5)
 
 
 def get_messages():
