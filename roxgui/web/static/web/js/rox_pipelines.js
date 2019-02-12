@@ -302,7 +302,7 @@ function add_service_card(service, serviceinfo, services_container) {
 	btn_watch.setAttribute("data-placement", "top");
 	btn_watch.setAttribute("data-name", service);
 	btn_watch.setAttribute("data-status", "0");
-	btn_watch.setAttribute("class", "btn btn-secondary btn-xs btn-watch");
+	btn_watch.setAttribute("class", "btn btn-secondary btn-watch btn-circle");
 	btn_watch.setAttribute("onclick", "toggle_services(['" + service + "','" + btn_watch.id + "'],this, watch_services, unwatch_services)");
 
 	set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
@@ -315,7 +315,7 @@ function add_service_card(service, serviceinfo, services_container) {
 	btn_run.setAttribute("data-name", service);
 	btn_run.setAttribute("data-status", "0");
 	//btn_run.setAttribute("data-original-title", "run/start");
-	btn_run.setAttribute("class", "btn btn-secondary btn-xs btn-run");
+	btn_run.setAttribute("class", "btn btn-secondary btn-run btn-circle");
 	btn_run.setAttribute("onclick", "toggle_services(['" + service + "','" + btn_run.id + "'],this, run_services, stop_services)");
 
 	set_run_button(btn_run); // update this buttons status (is the service running?)
@@ -325,7 +325,7 @@ function add_service_card(service, serviceinfo, services_container) {
 	var btn_del = document.createElement("button");
 	card_header.appendChild(btn_del);
 
-	btn_del.setAttribute("class", "btn btn-secondary btn-xs");
+	btn_del.setAttribute("class", "btn btn-secondary btn-circle");
 	btn_del.setAttribute("style", "margin-right:5px");
 	btn_del.setAttribute("data-toggle", "tooltip");
 	btn_del.setAttribute("data-placement", "top");

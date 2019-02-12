@@ -19,3 +19,23 @@
 .btn-round {
     border-radius: 100vmin;
 }
+
+.btn-circle {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding: 0px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 12px;
+}
+
+.btn-circle-big {
+  width: 35px;
+  height: 35px;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 16px;
+  line-height: 1.428571429;
+  border-radius: 25px;
+}
