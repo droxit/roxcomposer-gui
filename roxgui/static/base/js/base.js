@@ -7,7 +7,6 @@
 #
 */
 
-
 $('[data-toggle="tooltip"]').tooltip({ // Enable bootstrap tooltips
 	container: 'body'
 });

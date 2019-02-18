@@ -77,17 +77,6 @@ def _create_file_error(file_path: str, message: str):
     return "Unable to open file {}.\n{}.".format(file_path, message)
 
 
-# ROXcomposer log file path.
-# ==========================
-
-def get_rox_composer_log_file_path() -> str:
-    """
-    Create path to ROXcomposer log file.
-    :return: str - Path to ROXcomposer log file.
-    """
-    return os.path.join(ROX_COMPOSER_DIR, "build/roxcomposer-demo-0.4.0/logs/trace.log")
-
-
 # ROXconnector URL.
 # =================
 
@@ -107,6 +96,17 @@ def get_rox_connector_url(relative_path: str = "") -> str:
         return "http://{}:{}/{}".format(ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT, relative_path)
     else:
         return "http://{}:{}/{}".format(ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT, relative_path)
+
+
+# ROXcomposer log file path.
+# ==========================
+
+def get_rox_composer_log_file_path() -> str:
+    """
+    Create path to ROXcomposer log file.
+    :return: str - Path to ROXcomposer log file.
+    """
+    return os.path.join(ROX_COMPOSER_DIR, "build/roxcomposer-demo-0.4.0/logs/trace.log")
 
 
 # Requests to ROXconnector.
