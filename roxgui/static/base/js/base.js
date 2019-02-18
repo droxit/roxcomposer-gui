@@ -23,7 +23,7 @@ $('[data-toggle="tooltip"]').tooltip({ // Enable bootstrap tooltips
 function check_rox_running() {
 
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.get("check_rox_settings", {
+	$.post("check_rox_settings", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(res) {
 		var text = "";
@@ -140,10 +140,10 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
 
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("update_rox_settings", {
+		csrfmiddlewaretoken: CSRFtoken,
 		ip: specified_ip,
 		port: specified_port,
-		path: specified_path,
-		csrfmiddlewaretoken: CSRFtoken,
+		path: specified_path
 	}).done(function(data) {
 
 		if(!data.success){

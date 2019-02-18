@@ -34,7 +34,7 @@ def check_rox_composer_log_file_path(file_path: str) -> bool:
     return os.path.isfile(file_path)
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["POST"])
 def check_rox_settings(request) -> RoxResponse:
     """
     Check if parameters specified
