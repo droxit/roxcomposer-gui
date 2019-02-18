@@ -1,4 +1,3 @@
-import logging
 import os
 
 import requests
@@ -7,12 +6,6 @@ from django.views.decorators.http import require_http_methods
 from roxgui.local_settings import update_local_settings, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-fh = logging.StreamHandler()
-fh.setLevel(logging.DEBUG)
-logger.addHandler(fh)
 
 
 def check_rox_connector_url(url: str) -> bool:
@@ -96,8 +89,6 @@ def update_rox_settings(request):
     path = request.POST.get("path", default=None)
     if path is not None:
         new_settings[ROX_COMPOSER_DIR] = path
-
-    logger.debug(path)
 
     result_flag = update_local_settings(new_settings)
 
