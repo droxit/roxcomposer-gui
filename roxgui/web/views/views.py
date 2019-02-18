@@ -6,17 +6,6 @@ from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
 
 
-def check_rox_composer_log_file_path(file_path: str) -> bool:
-    """
-    Check if ROXcomposer log file is
-    available using specified path.
-    :param file_path: str - Path to ROXcomposer log file.
-    :return: True if ROXcomposer log file is available
-        using specified path and False otherwise.
-    """
-    return os.path.isfile(file_path)
-
-
 def check_rox_connector_url(url: str) -> bool:
     """
     Check if ROXconnector is
@@ -32,6 +21,17 @@ def check_rox_connector_url(url: str) -> bool:
         return False
 
 
+def check_rox_composer_log_file_path(file_path: str) -> bool:
+    """
+    Check if ROXcomposer log file is
+    available using specified path.
+    :param file_path: str - Path to ROXcomposer log file.
+    :return: True if ROXcomposer log file is available
+        using specified path and False otherwise.
+    """
+    return os.path.isfile(file_path)
+
+
 def check(request) -> RoxResponse:
     """
     Check if parameters specified
@@ -43,17 +43,19 @@ def check(request) -> RoxResponse:
     result = dict()
     success = False
 
-    # Check ROXcomposer directory.
-    log_file_path = rox_request.get_rox_composer_log_file_path()
-    res = check_rox_composer_log_file_path(log_file_path)
-    result["log_file_path"] = (res, log_file_path)
-    if not res:
-        success = False
-
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
     res = check_rox_composer_log_file_path(url)
-    result["url"] = (res, url)
+    result["running"] = res
+    result["ip"] = res
+    result["port"] = res
+    if not res:
+        success = False
+
+    # Check ROXcomposer directory.
+    log_file_path = rox_request.get_rox_composer_log_file_path()
+    res = check_rox_composer_log_file_path(log_file_path)
+    result["path"] = res
     if not res:
         success = False
 

@@ -245,14 +245,12 @@ function save_detail(elem) {
 		"optional_param_values": value_array,
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
-	    console.log(data);
 	    // If the service name was edited and a new service was created delete the old service
 	    var hidden_old_name = document.getElementById("hidden_old_name");
 		var old_name = hidden_old_name.dataset.name;
 		if(old_name != name_value){
 		    delete_service(old_name);
 		}
-
 		btn = $("#btn-save");
 		show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 		add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_services');
