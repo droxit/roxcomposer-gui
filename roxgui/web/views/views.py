@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -6,6 +7,12 @@ from django.views.decorators.http import require_http_methods
 from roxgui.local_settings import update_local_settings, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+fh = logging.StreamHandler()
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 def check_rox_connector_url(url: str) -> bool:
@@ -73,24 +80,26 @@ def update_rox_settings(request):
     Update local settings using parameters specified in given request.
     :param request: HTTP request.
     """
-    new_local_settings = dict()
+    new_settings = dict()
 
     # Get updated IP.
-    ip = request.GET.get("ip", default=None)
+    ip = request.POST.get("ip", default=None)
     if ip is not None:
-        update_rox_settings[ROX_CONNECTOR_IP] = ip
+        new_settings[ROX_CONNECTOR_IP] = ip
 
     # Get updated port.
-    port = request.GET.get("port", default=None)
+    port = request.POST.get("port", default=None)
     if port is not None:
-        new_local_settings[ROX_CONNECTOR_PORT] = port
+        new_settings[ROX_CONNECTOR_PORT] = port
 
     # Get updated path.
-    path = request.GET.get("path", default=None)
+    path = request.POST.get("path", default=None)
     if path is not None:
-        new_local_settings[ROX_COMPOSER_DIR] = path
+        new_settings[ROX_COMPOSER_DIR] = path
 
-    result_flag = update_local_settings(new_local_settings)
+    logger.debug(path)
+
+    result_flag = update_local_settings(new_settings)
 
     response = RoxResponse(result_flag)
     return JsonResponse(response.convert_to_json())

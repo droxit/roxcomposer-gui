@@ -11,8 +11,8 @@ import configparser
 import logging
 
 # Logging.
-logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
-# logger = logging.getLogger(__name__)
+# ========
+logger = logging.getLogger(__name__)
 
 # Constants.
 LOCAL_SETTINGS_FILE_NAME = "config.ini"
@@ -51,21 +51,17 @@ def _write_local_settings_param(key: str, value: str) -> bool:
         return True
     elif key == ROX_CONNECTOR_PORT:
         # ROXconnector port.
-        try:
-            port = int(value)
-        except ValueError:
-            return False
-        LOCAL_SETTINGS[ROX_CONNECTOR_PORT] = port
+        LOCAL_SETTINGS[ROX_CONNECTOR_PORT] = value
         return True
     else:
         # Invalid parameter.
         return False
 
 
-def update_local_settings(updated_local_settings: dict) -> bool:
+def update_local_settings(new_settings: dict) -> bool:
     """
     Validate and update given parameters in local settings.
-    :param updated_local_settings: dict - Dictionary mapping
+    :param new_settings: dict - Dictionary mapping
         parameter key to its value.
     :return: bool - True if all parameters could be updated and False otherwise.
     """
@@ -75,8 +71,7 @@ def update_local_settings(updated_local_settings: dict) -> bool:
 
     # Update parameters.
     success = True
-    for key, value in updated_local_settings.items():
-        logging.debug(key, value)
+    for key, value in new_settings.items():
         res = _write_local_settings_param(key, value)
         if res:
             config.set("Default", key, value)
@@ -94,7 +89,7 @@ def read_local_settings() -> bool:
     :return: bool - True if local settings could be read and False otherwise.
     """
     # Store local settings.
-    local_settings = dict()
+    new_settings = dict()
 
     # Read settings from config.ini file.
     config = configparser.ConfigParser()
@@ -108,7 +103,7 @@ def read_local_settings() -> bool:
         return False
     else:
         # Service file directory is specified.
-        local_settings[SERVICE_DIR] = service_dir
+        new_settings[SERVICE_DIR] = service_dir
 
     # Get session file directory.
     session_dir = config.get("Default", SESSION_DIR, fallback=None)
@@ -118,7 +113,7 @@ def read_local_settings() -> bool:
         return False
     else:
         # Session file directory is specified.
-        local_settings[SESSION_DIR] = session_dir
+        new_settings[SESSION_DIR] = session_dir
 
     # Get ROXcomposer directory.
     rox_composer_dir = config.get("Default", ROX_COMPOSER_DIR, fallback=None)
@@ -128,7 +123,7 @@ def read_local_settings() -> bool:
         return False
     else:
         # ROXcomnposer directory is specified.
-        local_settings[ROX_COMPOSER_DIR] = rox_composer_dir
+        new_settings[ROX_COMPOSER_DIR] = rox_composer_dir
 
     # Get ROXconnector IP.
     rox_connector_ip = config.get("Default", ROX_CONNECTOR_IP, fallback=None)
@@ -138,7 +133,7 @@ def read_local_settings() -> bool:
         return False
     else:
         # ROXconnector IP is specified.
-        local_settings[ROX_CONNECTOR_IP] = rox_connector_ip
+        new_settings[ROX_CONNECTOR_IP] = rox_connector_ip
 
     # Get ROXconnector port.
     rox_connector_port = config.get("Default", ROX_CONNECTOR_PORT, fallback=None)
@@ -148,6 +143,8 @@ def read_local_settings() -> bool:
         return False
     else:
         # ROXconnector port is specified.
-        local_settings[ROX_CONNECTOR_PORT] = rox_connector_port
+        new_settings[ROX_CONNECTOR_PORT] = rox_connector_port
 
-    return update_local_settings(local_settings)
+    for key, value in new_settings.items():
+        _write_local_settings_param(key, value)
+    return True
