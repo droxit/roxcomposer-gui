@@ -17,6 +17,7 @@
 {% endblock title %}
 
 {% block content %}
+{% csrf_token %}
 <div class="container">
     <div class="row">
         <img src="{% static 'media/img/droxit_logo.jpg' %}" class="img-fluid">

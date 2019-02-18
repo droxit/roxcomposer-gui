@@ -120,10 +120,10 @@ function open_modal(text, path_flag, port_flag, ip_flag) {
 /* Set the rox settings in the modal with the specified values in the inputs.
     Depending on which flags (path, port, ip) are set to true these values are checked and
     submitted to the server. */
-function set_rox_settings(path_flag, port_flag, ip_flag) {
-	var specified_port = "";
-	var specified_path = "";
-	var specified_ip = "";
+function set_rox_settings(path_flag, port_flag, ip_flag){
+    var specified_port = null;
+    var specified_path = null;
+    var specified_ip = null;
 
 	if (ip_flag) {
 		var ip_input = document.getElementById("rox_ip");
