@@ -125,38 +125,59 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
     var specified_path = null;
     var specified_ip = null;
 
+    var show_empty_error = false;
+
 	if (ip_flag) {
 		var ip_input = document.getElementById("rox_ip");
 		specified_ip = ip_input.value;
+		if(specified_ip == ""){
+		    show_empty_error = true;
+		}
 	}
 	if (port_flag) {
 		var port_input = document.getElementById("rox_port");
 		specified_port = port_input.value;
+		if(specified_port == ""){
+		    show_empty_error = true;
+		}
 	}
 	if (path_flag) {
 		var path_input = document.getElementById("rox_path");
 		specified_path = path_input.value;
+		if(specified_path == ""){
+		    show_empty_error = true;
+		}
 	}
 
-	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("update_rox_settings", {
-		csrfmiddlewaretoken: CSRFtoken,
-		ip: specified_ip,
-		port: specified_port,
-		path: specified_path
-	}).done(function(data) {
+	var btn = $("#settings_btn");
+    btn.popover();
+    var popover = btn.data('bs.popover');
+    popover.config.placement = "bottom";
+    // popover.config.content = data.message;
+    //btn.popover('show');
 
-		if(!data.success){
-		    // show red tooltip with error message
-		    var btn = $("#settings_btn");
-            btn.popover();
-            var popover = btn.data('bs.popover');
-            popover.config.content = data.message;
-            popover.config.placement = "bottom";
-            btn.popover('show');
-            btn.data('bs.popover').tip.classList.add('popover-danger');
-		} else {
-			$('#settings_modal').modal('hide');
-		}
-	});
+	if(show_empty_error){
+	    popover.config.content = "Input in all fields is required.";
+        btn.popover('show');
+        btn.data('bs.popover').tip.classList.add('popover-danger');
+	} else{
+
+        var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+        $.post("update_rox_settings", {
+            csrfmiddlewaretoken: CSRFtoken,
+            ip: specified_ip,
+            port: specified_port,
+            path: specified_path
+        }).done(function(data) {
+
+            if(!data.success){
+                // show red tooltip with error message
+                popover.config.content = data.message;
+                btn.popover('show');
+                btn.data('bs.popover').tip.classList.add('popover-danger');
+            } else {
+                $('#settings_modal').modal('hide');
+            }
+        });
+    }
 }
