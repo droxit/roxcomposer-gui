@@ -20,10 +20,10 @@ $('[data-toggle="tooltip"]').tooltip({ // Enable bootstrap tooltips
      - path_set : boolean | true if the path to the roxcomposer is set in the config file
      - running : boolean | true if the roxcomposer was identified as running on the specified port
 */
-function check_rox_running(){
+function check_rox_running() {
 
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("check", {
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.get("check_rox_settings", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(res) {
 		var text = "";
@@ -32,65 +32,63 @@ function check_rox_running(){
 		var ip_input = false;
 		var open_modal_flag = false;
 
-		console.log(res)
-
-		if(!res.data.running){
-		    text += "<div><p><h4><b>Attention!</b></h4> The ROXcomposer is <b>not running</b>. Please start the ROXcomposer. </p></div>";
-		    open_modal_flag = true;
+		if (!res.data.running) {
+			text += "<div><p><h4><b>Attention!</b></h4> The ROXcomposer is <b>not running</b>. Please start the ROXcomposer. </p></div>";
+			open_modal_flag = true;
 		}
-		if(!res.data.path){
-		    text += "<div><p>The <b>path</b> to the ROXcomposer is not set correctly, please provide a valid path below.</p></div>";
-		    path_input = true;
-		    open_modal_flag = true;
+		if (!res.data.ip) {
+			text += "<div><p>The <b>IP</b> is not set, please provide a valid IP.</p></div>";
+			ip_input = true;
+			open_modal_flag = true;
 		}
-		if(!res.data.port){
-		    text += "<div><p>The <b>port</b> on which the ROXcomposer can be found is not set, please provide a valid port.</p></div>";
-		    port_input = true;
-		    open_modal_flag = true;
+		if (!res.data.port) {
+			text += "<div><p>The <b>port</b> on which the ROXcomposer can be found is not set, please provide a valid port.</p></div>";
+			port_input = true;
+			open_modal_flag = true;
 		}
-		if(!res.data.ip){
-		    text += "<div><p>The <b>IP</b> is not set, please provide a valid IP.</p></div>";
-		    ip_input = true;
-		    open_modal_flag = true;
+		if (!res.data.path) {
+			text += "<div><p>The <b>path</b> to the ROXcomposer is not set correctly, please provide a valid path below.</p></div>";
+			path_input = true;
+			open_modal_flag = true;
 		}
 
-        if(!res.success){
-		    open_modal(text, path_input, port_input, ip_input);
-        }
+		if (!res.success) {
+			open_modal(text, path_input, port_input, ip_input);
+		}
 
 	});
 }
 
 /* Opens a Modal that shows the specified text and input fields. */
-function open_modal(text, path_flag, port_flag, ip_flag){
+function open_modal(text, path_flag, port_flag, ip_flag) {
 
-   var inputs = ""
-   if(path_flag){
-       inputs += "<div class='col-md-4'> \
+	var inputs = ""
+	if (path_flag) {
+		inputs += "<div class='col-md-4'> \
                     <p> Path: </p> \
                   </div> \
                   <div class='col-md-8'> \
                     <input class='form-control' type='text' id='rox_path' placeholder='Path to ROXcomposer installation..'></input> \
                  </div>";
-   }
-   if(port_flag){
-       inputs += "<div class='col-md-4'> \
+	}
+	if (port_flag) {
+		inputs += "<div class='col-md-4'> \
                     <p> Port: </p> \
                   </div> \
                   <div class='col-md-8'> \
                     <input class='form-control' type='number' id='rox_port' placeholder='Port of ROXcomposer..'></input> \
                  </div>";
-   }
-   if(ip_flag){
-       inputs += "<div class='col-md-4'> \
+	}
+	if (ip_flag) {
+		inputs += "<div class='col-md-4'> \
                     <p> IP: </p> \
                   </div> \
                   <div class='col-md-8'> \
                     <input class='form-control' type='text' id='rox_ip' placeholder='IP of ROXcomposer..'></input> \
                  </div>";
-   }
+	}
 
-   var modal_warning = $("<div class='modal' tabindex='-1' role='dialog' id='settings_modal'> \
+	var modal_warning = $("<div class='modal' tabindex='-1' role='dialog' id='settings_modal'> \
   <div class='modal-dialog' role='document' style='min-width:800px'> \
     <div class='modal-content'> \
       <div class='modal-header'> \
@@ -101,14 +99,14 @@ function open_modal(text, path_flag, port_flag, ip_flag){
       </div> \
       <div class='modal-body'> \
           <div> \
-            <p>"+ text +"</p> \
+            <p>" + text + "</p> \
           </div> \
           <div class='row'> \
-            "+ inputs +" \
+            " + inputs + " \
           </div> \
       </div> \
       <div class='modal-footer'> \
-        <button type='button' id='settings_btn' class='btn btn-primary' onclick='set_rox_settings("+path_flag+","+port_flag+","+ip_flag+")'>Set</button> \
+        <button type='button' id='settings_btn' class='btn btn-primary' onclick='set_rox_settings(" + path_flag + "," + port_flag + "," + ip_flag + ")'>Set</button> \
         <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button> \
       </div> \
     </div> \
@@ -122,44 +120,43 @@ function open_modal(text, path_flag, port_flag, ip_flag){
 /* Set the rox settings in the modal with the specified values in the inputs.
     Depending on which flags (path, port, ip) are set to true these values are checked and
     submitted to the server. */
-function set_rox_settings(path_flag, port_flag, ip_flag){
-    var specified_port = "";
-    var specified_path = "";
-    var specified_ip = "";
+function set_rox_settings(path_flag, port_flag, ip_flag) {
+	var specified_port = "";
+	var specified_path = "";
+	var specified_ip = "";
 
-    if(path_flag){
-        var path_input = document.getElementById("rox_path");
-        specified_path = path_input.value;
-    }
+	if (ip_flag) {
+		var ip_input = document.getElementById("rox_ip");
+		specified_ip = ip_input.value;
+	}
+	if (port_flag) {
+		var port_input = document.getElementById("rox_port");
+		specified_port = port_input.value;
+	}
+	if (path_flag) {
+		var path_input = document.getElementById("rox_path");
+		specified_path = path_input.value;
+	}
 
-    if(port_flag){
-        var port_input = document.getElementById("rox_port");
-        specified_port = port_input.value;
-    }
-    if(ip_flag){
-        var ip_input = document.getElementById("rox_ip");
-        specified_ip = ip_input.value;
-    }
-    console.log("settings: ", specified_path, specified_port, specified_ip);
-
-
-    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("set_rox_settings", {
-		csrfmiddlewaretoken: CSRFtoken,
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("update_rox_settings", {
+		ip: specified_ip,
 		port: specified_port,
 		path: specified_path,
-		ip: specified_ip
+		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(data) {
-
-		if(!data.success){
-		    // show red tooltip with error message
-		    var btn = $("#settings_btn");
-            btn.popover({content: data.message, title:"Error"});
-            btn.next('.popover').addClass('popover-danger');
-            btn.popover('show');
+	    console.log(data);
+		if (!data.success) {
+			// show red tooltip with error message
+			var btn = $("#settings_btn");
+			btn.popover({
+				content: data.message,
+				title: "Error"
+			});
+			btn.next('.popover').addClass('popover-danger');
+			btn.popover('show');
 		} else {
-		    $('#settings_modal').modal('hide');
+			$('#settings_modal').modal('hide');
 		}
-
 	});
 }

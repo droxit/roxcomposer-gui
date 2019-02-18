@@ -8,17 +8,12 @@
 #
 
 import json
-import logging
 import os
 
 import requests
 from roxgui.local_settings import LOCAL_SETTINGS, SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, \
     ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
-
-# Logging.
-# ========
-logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 # Constants.
 # ==========
