@@ -39,3 +39,13 @@
   line-height: 1.428571429;
   border-radius: 25px;
 }
+
+.popover-danger {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    color: white;
+}
+
+.popover-danger.right .arrow:after {
+    border-right-color: #d9534f;
+}
