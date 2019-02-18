@@ -32,8 +32,6 @@ function check_rox_running(){
 		var ip_input = false;
 		var open_modal_flag = false;
 
-		console.log(res)
-
 		if(!res.data.running){
 		    text += "<div><p><h4><b>Attention!</b></h4> The ROXcomposer is <b>not running</b>. Please start the ROXcomposer. </p></div>";
 		    open_modal_flag = true;
@@ -140,8 +138,6 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
         var ip_input = document.getElementById("rox_ip");
         specified_ip = ip_input.value;
     }
-    console.log("settings: ", specified_path, specified_port, specified_ip);
-
 
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("set_rox_settings", {
@@ -154,9 +150,12 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
 		if(!data.success){
 		    // show red tooltip with error message
 		    var btn = $("#settings_btn");
-            btn.popover({content: data.message, title:"Error"});
-            btn.next('.popover').addClass('popover-danger');
+            btn.popover();
+            var popover = btn.data('bs.popover');
+            popover.config.content = data.message;
+            popover.config.placement = "bottom";
             btn.popover('show');
+            btn.data('bs.popover').tip.classList.add('popover-danger');
 		} else {
 		    $('#settings_modal').modal('hide');
 		}

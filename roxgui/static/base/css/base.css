@@ -41,11 +41,15 @@
 }
 
 .popover-danger {
-    background-color: #d9534f;
-    border-color: #d43f3a;
-    color: white;
+    background-color: tomato;
+    border-color: tomato;
+    border-bottom-color:tomato;
 }
 
-.popover-danger.right .arrow:after {
-    border-right-color: #d9534f;
+.popover-danger .arrow:after {
+    border-bottom-color: tomato;
+}
+
+.popover-danger .popover-body{
+    color: white;
 }
