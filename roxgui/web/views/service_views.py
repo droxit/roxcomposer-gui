@@ -20,6 +20,7 @@ def get_services(request):
     result = file_request.get_local_services()
     return JsonResponse(result.convert_to_json())
 
+
 @require_http_methods(["POST"])
 def get_running_services(request):
     """get a list of all running services and their information"""

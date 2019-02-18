@@ -13,9 +13,6 @@
 # Local static root folder.
 /roxgui/static_root/**
 
-# ROXcomposer files.
-/roxgui/roxcomposer/**
-
 # PyCache folder.
 **/__pycache__/*
 
@@ -26,4 +23,4 @@
 **/.idea/*
 
 # Old files.
-/archive/
+/archive/**

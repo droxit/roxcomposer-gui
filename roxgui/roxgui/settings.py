@@ -23,71 +23,49 @@ import configparser
 import logging
 import os
 
-import requests
-
+# Logging.
 logger = logging.getLogger(__name__)
 
 # Base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Read user specific settings from config.ini file.
+# Read settings from config.ini file.
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-# Initialize default service directory.
-SERVICE_DIR = os.path.join(BASE_DIR, "services")
-# Update service directory as specified in config file.
-tmp_service_dir = config.get("Default", "ServiceDir", fallback=None)
-if tmp_service_dir is not None:
-    # Custom service directory is specified.
-    if os.path.isdir(tmp_service_dir):
-        # Custom service directory is valid and can be used.
-        SERVICE_DIR = tmp_service_dir
-    else:
-        # Exit with error: Custom service directory is invalid.
-        logger.error("Service directory specified in config file is invalid.")
-        exit(1)
+# Get service file directory.
+SERVICE_DIR = config.get("Default", "ServiceDir", fallback=None)
+if SERVICE_DIR is None:
+    # Service file directory is not specified.
+    logger.error('Specify service file directory ("ServiceDir") in config.ini file.')
+    exit(1)
 
-# Initialize default session directory.
-SESSION_DIR = os.path.join(BASE_DIR, "sessions")
-# Update session directory as specified in config file.
-tmp_session_dir = config.get("Default", "SessionDir", fallback=None)
-if tmp_session_dir is not None:
-    # Custom session directory is specified.
-    if os.path.isdir(tmp_session_dir):
-        # Custom session directory is valid and can be used.
-        SESSION_DIR = tmp_session_dir
-    else:
-        # Exit with error: Custom service directory is invalid.
-        logger.error("Session directory specified in config file is invalid.")
-        exit(1)
+# Get session file directory.
+SESSION_DIR = config.get("Default", "SessionDir", fallback=None)
+if SESSION_DIR is None:
+    # Session file directory is not specified.
+    logger.error('Specify session file directory ("SessionDir") in config.ini file.')
+    exit(1)
 
-# Initialize path to ROXcomposer log file.
-tmp_log_file = config.get("Default", "RoxComposerLogFile", fallback=None)
-if tmp_log_file is not None:
-    # ROXComposer log file is specified.
-    if os.path.isfile(tmp_log_file):
-        # Log file is valid and can be used.
-        ROX_COMPOSER_LOG_FILE = tmp_log_file
-else:
-    ROX_COMPOSER_LOG_FILE = os.path.join(BASE_DIR, "roxcomposer/logs/trace.log")
+# Get ROXcomposer directory.
+ROX_COMPOSER_DIR = config.get("Default", "RoxComposerDir", fallback=None)
+if ROX_COMPOSER_DIR is None:
+    # ROXcomposer directory is not specified.
+    logger.error('Specify ROXcomposer directory ("RoxComposerDir") in config.ini file.')
+    exit(1)
 
-# Initialize ROXconnector connection data as specified in config file.
-tmp_ip = config.get("Default", "RoxConnectorIp", fallback=None)
-if tmp_ip is not None:
-    # ROXconnector connection data is specified.format(service_name))
-    ROX_CONNECTOR_IP = tmp_ip
-    # Check if ROXconnector is actually running.
-    try:
-        requests.get("http://{}".format(tmp_ip))
-    except requests.exceptions.ConnectionError:
-        # Exit with error: ROXconnector is not running.
-        logger.error("ROXconnector is not running.")
-        # TODO: Uncomment for production.
-        # exit(1)
-else:
-    # Exit with error: ROXconnector connection data is not specified.
-    logger.error("ROXconnector connection data specified in config file is invalid.")
+# Get ROXconnector IP.
+ROX_CONNECTOR_IP = config.get("Default", "RoxConnectorIp", fallback=None)
+if ROX_CONNECTOR_IP is None:
+    # ROXconnector IP is not specified.
+    logger.error('Specify ROXconnector IP ("RoxConnectorIp") in config.ini file.')
+    exit(1)
+
+# Get ROXconnector port.
+ROX_CONNECTOR_PORT = config.get("Default", "RoxConnectorPort", fallback=None)
+if ROX_CONNECTOR_PORT is None:
+    # ROXconnector port is not specified.
+    logger.error('Specify ROXconnector port ("RoxConnectorPort") in config.ini file.')
     exit(1)
 
 # Quick-start development settings - unsuitable for production
