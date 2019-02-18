@@ -77,17 +77,17 @@ def update_rox_settings(request):
 
     # Get updated IP.
     ip = request.POST.get("ip", default=None)
-    if ip is not None:
+    if ip:
         new_settings[ROX_CONNECTOR_IP] = ip
 
     # Get updated port.
     port = request.POST.get("port", default=None)
-    if port is not None:
+    if port:
         new_settings[ROX_CONNECTOR_PORT] = port
 
     # Get updated path.
     path = request.POST.get("path", default=None)
-    if path is not None:
+    if path:
         new_settings[ROX_COMPOSER_DIR] = path
 
     result_flag = update_local_settings(new_settings)
