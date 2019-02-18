@@ -84,12 +84,12 @@ function open_modal(text, path_flag, port_flag){
           <div> \
             <p>"+ text +"</p> \
           </div> \
-          <div id='modal_inputs'> \
+          <div> \
             "+ inputs +" \
           </div> \
       </div> \
       <div class='modal-footer'> \
-        <button type='button' class='btn btn-primary' onclick='set_rox_settings("+path_flag+","+port_flag+",\"modal_inputs\")'>Delete</button> \
+        <button type='button' class='btn btn-primary' onclick='set_rox_settings(this, "+path_flag+","+port_flag+")'>Delete</button> \
         <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button> \
       </div> \
     </div> \
@@ -102,6 +102,30 @@ function open_modal(text, path_flag, port_flag){
 
 
 
-function set_rox_settings(path_flag, port_flag, modal_inputs_id){
+function set_rox_settings(btn, path_flag, port_flag){
+    var specified_port = "";
+    var specified_path = "";
 
+    if(path_flag){
+        var path_input = document.getElementById("path_input");
+        var specified_path = path_input.value();
+    }
+
+    if(port_flag){
+        var port_input = document.getElementById("port_input");
+        var specified_port = port_input.value();
+    }
+
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("set_rox_settings", {
+		csrfmiddlewaretoken: CSRFtoken,
+		port: specified_port,
+		path: specified_path
+	}).done(function(data) {
+
+		if(!data.success){
+		    // show red tooltip with error message
+		}
+
+	});
 }
