@@ -11,15 +11,16 @@ import configparser
 import logging
 
 # Logging.
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
+# logger = logging.getLogger(__name__)
 
 # Constants.
 LOCAL_SETTINGS_FILE_NAME = "config.ini"
-SERVICE_DIR = "ServiceDir"
-SESSION_DIR = "SessionDir"
-ROX_COMPOSER_DIR = "RoxComposerDir"
-ROX_CONNECTOR_IP = "RoxConnectorIp"
-ROX_CONNECTOR_PORT = "RoxConnectorPort"
+SERVICE_DIR = "service_dir"
+SESSION_DIR = "session_dir"
+ROX_COMPOSER_DIR = "rox_composer_dir"
+ROX_CONNECTOR_IP = "rox_connector_ip"
+ROX_CONNECTOR_PORT = "rox_connector_port"
 
 # Local settings.
 LOCAL_SETTINGS = dict()
@@ -75,11 +76,15 @@ def update_local_settings(updated_local_settings: dict) -> bool:
     # Update parameters.
     success = True
     for key, value in updated_local_settings.items():
+        logging.debug(key, value)
         res = _write_local_settings_param(key, value)
         if res:
             config.set("Default", key, value)
         else:
             success = False
+    if success:
+        with open(LOCAL_SETTINGS_FILE_NAME, 'w') as fd:
+            config.write(fd)
     return success
 
 
