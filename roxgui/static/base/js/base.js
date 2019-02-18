@@ -138,7 +138,6 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
     }
     if(ip_flag){
         var ip_input = document.getElementById("rox_ip");
-        console.log(ip_input)
         specified_ip = ip_input.value;
     }
     console.log("settings: ", specified_path, specified_port, specified_ip);
@@ -150,7 +149,7 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
 		port: specified_port,
 		path: specified_path,
 		ip: specified_ip
-	}).done(function(data) { console.log(data);
+	}).done(function(data) {
 
 		if(!data.success){
 		    // show red tooltip with error message
