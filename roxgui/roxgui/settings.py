@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Global Django settings.
+# Global settings.
 #
 # devs@droxit.de
 #
@@ -19,54 +19,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import configparser
-import logging
 import os
 
-# Logging.
-logger = logging.getLogger(__name__)
+from roxgui import local_settings
+
+# Read local settings.
+res = local_settings.read_local_settings()
+if not res:
+    exit(1)
 
 # Base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Read settings from config.ini file.
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-# Get service file directory.
-SERVICE_DIR = config.get("Default", "ServiceDir", fallback=None)
-if SERVICE_DIR is None:
-    # Service file directory is not specified.
-    logger.error('Specify service file directory ("ServiceDir") in config.ini file.')
-    exit(1)
-
-# Get session file directory.
-SESSION_DIR = config.get("Default", "SessionDir", fallback=None)
-if SESSION_DIR is None:
-    # Session file directory is not specified.
-    logger.error('Specify session file directory ("SessionDir") in config.ini file.')
-    exit(1)
-
-# Get ROXcomposer directory.
-ROX_COMPOSER_DIR = config.get("Default", "RoxComposerDir", fallback=None)
-if ROX_COMPOSER_DIR is None:
-    # ROXcomposer directory is not specified.
-    logger.error('Specify ROXcomposer directory ("RoxComposerDir") in config.ini file.')
-    exit(1)
-
-# Get ROXconnector IP.
-ROX_CONNECTOR_IP = config.get("Default", "RoxConnectorIp", fallback=None)
-if ROX_CONNECTOR_IP is None:
-    # ROXconnector IP is not specified.
-    logger.error('Specify ROXconnector IP ("RoxConnectorIp") in config.ini file.')
-    exit(1)
-
-# Get ROXconnector port.
-ROX_CONNECTOR_PORT = config.get("Default", "RoxConnectorPort", fallback=None)
-if ROX_CONNECTOR_PORT is None:
-    # ROXconnector port is not specified.
-    logger.error('Specify ROXconnector port ("RoxConnectorPort") in config.ini file.')
-    exit(1)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/

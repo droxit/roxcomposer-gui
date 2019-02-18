@@ -12,7 +12,8 @@ import logging
 import os
 
 import requests
-from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
+from roxgui.local_settings import LOCAL_SETTINGS, SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, \
+    ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
 
 # Logging.
@@ -89,24 +90,29 @@ def get_rox_connector_url(relative_path: str = "") -> str:
     """
     if not relative_path:
         # Relative path is empty.
-        return "http://{}:{}".format(ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT)
+        return "http://{}:{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                     LOCAL_SETTINGS[ROX_CONNECTOR_PORT])
     elif relative_path.endswith('/'):
         # Relative path ends with slash.
         relative_path = relative_path[:-1]
-        return "http://{}:{}/{}".format(ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT, relative_path)
+        return "http://{}:{}/{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                        LOCAL_SETTINGS[ROX_CONNECTOR_PORT],
+                                        relative_path)
     else:
-        return "http://{}:{}/{}".format(ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT, relative_path)
+        return "http://{}:{}/{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                        LOCAL_SETTINGS[ROX_CONNECTOR_PORT],
+                                        relative_path)
 
+        # ROXcomposer log file path.
+        # ==========================
 
-# ROXcomposer log file path.
-# ==========================
 
 def get_rox_composer_log_file_path() -> str:
     """
     Create path to ROXcomposer log file.
     :return: str - Path to ROXcomposer log file.
     """
-    return os.path.join(ROX_COMPOSER_DIR, "build/roxcomposer-demo-0.4.0/logs/trace.log")
+    return os.path.join(LOCAL_SETTINGS[ROX_COMPOSER_DIR], "build/roxcomposer-demo-0.4.0/logs/trace.log")
 
 
 # Requests to ROXconnector.
@@ -230,7 +236,7 @@ def create_service(ip: str,
     # Use service name as JSON file name.
     file_name = name + ".json"
     # Store JSON file in service folder.
-    file_path = os.path.join(SERVICE_DIR, file_name)
+    file_path = os.path.join(LOCAL_SETTINGS[SERVICE_DIR], file_name)
 
     # Create empty result message.
     result_msg = ""

@@ -150,7 +150,7 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
 		port: specified_port,
 		path: specified_path,
 		ip: specified_ip
-	}).done(function(data) {
+	}).done(function(data) { console.log(data);
 
 		if(!data.success){
 		    // show red tooltip with error message
