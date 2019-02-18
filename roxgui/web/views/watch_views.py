@@ -78,7 +78,6 @@ def watch(request):
 
 @require_http_methods(["POST"])
 def unwatch(request):
-
     """unwatch specified services """
     service_names = request.POST.getlist("services[]", default=[])
     cur_sess = request.session.get('current_session', None)

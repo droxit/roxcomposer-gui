@@ -8,7 +8,7 @@
 #
 
 from django.urls import path
-from web.views import html_views, watch_views, service_views, pipe_views, message_views, log_views
+from web.views import views, html_views, watch_views, service_views, pipe_views, message_views, log_views
 
 urlpatterns = [
     # HTML views.
@@ -46,4 +46,7 @@ urlpatterns = [
 
     # Message Views
     path("get_msg_status", message_views.get_msg_status, name="web_get_msg_status"),
+
+    # Check config file.
+    path("check", views.check, name="web_check"),
 ]
