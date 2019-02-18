@@ -21,11 +21,7 @@ $('[data-toggle="tooltip"]').tooltip({ // Enable bootstrap tooltips
      - running : boolean | true if the roxcomposer was identified as running on the specified port
 */
 function check_rox_running() {
-
-	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("check_rox_settings", {
-		csrfmiddlewaretoken: CSRFtoken
-	}).done(function(res) {
+	$.get("check_rox_settings", {}).done(function(res) {
 		var text = "";
 		var port_input = false;
 		var path_input = false;
