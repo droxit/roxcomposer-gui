@@ -139,23 +139,6 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
         specified_ip = ip_input.value;
     }
 
-    var btn = $("#settings_btn");
-    btn.popover();
-    var popover = btn.data('bs.popover');
-    popover.config.content = "bla";
-    popover.config.placement = "bottom";
-    btn.popover('show');
-    /*
-    console.log(btn.data('bs.popover').tip)
-    btn.data('bs.popover').tip.classList.add('popover-danger');
-    btn.data('bs.popover').tip.id ='error-popup';
-    console.log(btn.data('bs.popover').tip.children[0])
-    */
-    $('.popover').css('background-color', 'tomato');
-    $('.popover').css('text-color', 'white');
-    $('.popover.bottom .arrow:after').css('border-bottom-color','tomato');
-
-
     var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("set_rox_settings", {
 		csrfmiddlewaretoken: CSRFtoken,
@@ -167,9 +150,12 @@ function set_rox_settings(path_flag, port_flag, ip_flag){
 		if(!data.success){
 		    // show red tooltip with error message
 		    var btn = $("#settings_btn");
-            btn.popover({content: data.message, title:"Error"});
-            btn.next('.popover').addClass('popover-danger');
+            btn.popover();
+            var popover = btn.data('bs.popover');
+            popover.config.content = data.message;
+            popover.config.placement = "bottom";
             btn.popover('show');
+            btn.data('bs.popover').tip.classList.add('popover-danger');
 		} else {
 		    $('#settings_modal').modal('hide');
 		}

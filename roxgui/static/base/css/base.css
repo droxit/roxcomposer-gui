@@ -43,9 +43,13 @@
 .popover-danger {
     background-color: tomato;
     border-color: tomato;
-    color: white;
+    border-bottom-color:tomato;
 }
 
-.popover-danger.bottom .arrow:after {
+.popover-danger .arrow:after {
     border-bottom-color: tomato;
+}
+
+.popover-danger .popover-body{
+    color: white;
 }
