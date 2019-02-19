@@ -25,7 +25,7 @@ from roxgui import local_settings
 
 # Read local settings.
 res = local_settings.read_local_settings()
-if not res:
+if not res.success:
     exit(1)
 
 # Base directory.

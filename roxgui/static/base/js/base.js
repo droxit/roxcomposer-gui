@@ -47,7 +47,7 @@ function check_rox_running() {
 			path_input = true;
 			open_modal_flag = true;
 		}
-
+        console.log(res)
 		if (!res.success) {
 			open_modal(text, path_input, port_input, ip_input);
 		}

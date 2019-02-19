@@ -47,6 +47,10 @@ def check_rox_settings(request) -> JsonResponse:
     :return: RoxResponse - Indicate if parameters
         in config.ini file are valid.
     """
+    return check()
+
+
+def check() -> JsonResponse:
     result = dict()
     success = True
 
@@ -56,6 +60,7 @@ def check_rox_settings(request) -> JsonResponse:
     result["running"] = res.success
     result["ip"] = res.success
     result["port"] = res.success
+    print(res)
     if not res.success:
         return JsonResponse(res.convert_to_json())
 
@@ -95,6 +100,6 @@ def update_rox_settings(request):
         new_settings[ROX_COMPOSER_DIR] = path
 
     result_flag = update_local_settings(new_settings)
-
-    response = RoxResponse(result_flag)
-    return JsonResponse(response.convert_to_json())
+    return check()
+    # response = RoxResponse(result_flag)
+    # return JsonResponse(response.convert_to_json())
