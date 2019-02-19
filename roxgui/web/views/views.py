@@ -51,25 +51,47 @@ def check_rox_settings(request) -> JsonResponse:
 
 
 def check() -> JsonResponse:
+    """
+    Check function that does not require HTTP request. Check if parameters specified
+    in config.ini file are valid.
+    :return: RoxResponse - Indicate if parameters
+        in config.ini file are valid.
+    """
     result = dict()
     success = True
 
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
-    res = check_rox_connector_url(url)
-    result["running"] = res.success
-    result["ip"] = res.success
-    result["port"] = res.success
-    print(res)
-    if not res.success:
-        return JsonResponse(res.convert_to_json())
+    res_url = check_rox_connector_url(url)
+    if res_url.success:
+        result["running"] = res_url.success
+        result["ip_set"] = res_url.success
+        result["port_set"] = res_url.success
+
+    domain = url.strip("http://").strip("https://")
+    if len(domain.split(":")) > 1:
+        port = domain.split(":")[-1]
+        ip = domain.split(":")[0]
+    else:
+        port = domain.split("/")[-1]
+        ip = domain.split("/")[0]
+
+    result["ip"] = ip
+    result["port"] = port
 
     # Check ROXcomposer directory.
+    rox_path = rox_request.get_file_path()
     log_file_path = rox_request.get_rox_composer_log_file_path()
     res = check_rox_composer_log_file_path(log_file_path)
-    result["path"] = res.success
+    result["path_set"] = res.success
+    result["path"] = rox_path
     if not res.success:
+        res.data = result
         return JsonResponse(res.convert_to_json())
+
+    if not res_url.success:
+        res_url.data = result
+        return JsonResponse(res_url.convert_to_json())
 
     response = RoxResponse(success)
     response.data = result

@@ -28,35 +28,43 @@ function check_rox_running() {
 		var ip_input = false;
 		var open_modal_flag = false;
 
+        var current_ip = ""
+		var current_port = "";
+		var current_path = "";
+
+
 		if (!res.data.running) {
 			text += "<div><p><h4><b>Attention!</b></h4> The ROXcomposer is <b>not running</b>. Please start the ROXcomposer. </p></div>";
 			open_modal_flag = true;
 		}
-		if (!res.data.ip) {
+		if (!res.data.ip_set) {
 			text += "<div><p>The <b>IP</b> is not set, please provide a valid IP.</p></div>";
 			ip_input = true;
 			open_modal_flag = true;
+			current_ip = res.data.ip;
 		}
-		if (!res.data.port) {
+		if (!res.data.port_set) {
 			text += "<div><p>The <b>port</b> on which the ROXcomposer can be found is not set, please provide a valid port.</p></div>";
 			port_input = true;
 			open_modal_flag = true;
+			current_port = res.data.port
 		}
-		if (!res.data.path) {
+		if (!res.data.path_set) {
 			text += "<div><p>The <b>path</b> to the ROXcomposer is not set correctly, please provide a valid path below.</p></div>";
 			path_input = true;
 			open_modal_flag = true;
+			current_path = res.data.path;
 		}
-        console.log(res)
+
 		if (!res.success) {
-			open_modal(text, path_input, port_input, ip_input);
+			open_modal(text, path_input, port_input, ip_input, current_path, current_port, current_ip);
 		}
 
 	});
 }
 
 /* Opens a Modal that shows the specified text and input fields. */
-function open_modal(text, path_flag, port_flag, ip_flag) {
+function open_modal(text, path_flag, port_flag, ip_flag, current_path, current_port, current_ip) {
 
 	var inputs = ""
 	if (path_flag) {
@@ -64,7 +72,7 @@ function open_modal(text, path_flag, port_flag, ip_flag) {
                     <p> Path: </p> \
                   </div> \
                   <div class='col-md-8'> \
-                    <input class='form-control' type='text' id='rox_path' placeholder='Path to ROXcomposer installation..'></input> \
+                    <input class='form-control' value="+current_path+" type='text' id='rox_path' placeholder='Path to ROXcomposer installation..'></input> \
                  </div>";
 	}
 	if (port_flag) {
@@ -72,7 +80,7 @@ function open_modal(text, path_flag, port_flag, ip_flag) {
                     <p> Port: </p> \
                   </div> \
                   <div class='col-md-8'> \
-                    <input class='form-control' type='number' id='rox_port' placeholder='Port of ROXcomposer..'></input> \
+                    <input class='form-control' value="+current_port+" type='number' id='rox_port' placeholder='Port of ROXcomposer..'></input> \
                  </div>";
 	}
 	if (ip_flag) {
@@ -80,7 +88,7 @@ function open_modal(text, path_flag, port_flag, ip_flag) {
                     <p> IP: </p> \
                   </div> \
                   <div class='col-md-8'> \
-                    <input class='form-control' type='text' id='rox_ip' placeholder='IP of ROXcomposer..'></input> \
+                    <input class='form-control' value="+current_ip+" type='text' id='rox_ip' placeholder='IP of ROXcomposer..'></input> \
                  </div>";
 	}
 

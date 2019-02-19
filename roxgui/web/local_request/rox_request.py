@@ -116,6 +116,14 @@ def get_rox_composer_log_file_path() -> str:
     return os.path.join(LOCAL_SETTINGS[ROX_COMPOSER_DIR], RELATIVE_ROX_COMPOSER_LOG_FILE_PATH)
 
 
+def get_file_path() -> str:
+    """
+    Get the path to the ROXcomposer directory
+    :return: str - Path to ROXcomposer main directory
+    """
+    return LOCAL_SETTINGS[ROX_COMPOSER_DIR]
+
+
 # Requests to ROXconnector.
 # =========================
 
