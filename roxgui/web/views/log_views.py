@@ -23,10 +23,6 @@ LOG_TIMEOUT = datetime.timedelta(days=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(days=1)
 
-# Logging.
-# ========
-logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
-
 
 @require_http_methods(["POST"])
 def get_watch_logs(request):
