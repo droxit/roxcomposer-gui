@@ -20,7 +20,7 @@ def check_rox_connector_url(url: str) -> RoxResponse:
         requests.get(url)
         return RoxResponse(True, "Pinging successful")
     except requests.exceptions.ConnectionError as e:
-        return RoxResponse(False, e)
+        return RoxResponse(False, str(e))
 
 
 def check_rox_composer_log_file_path(file_path: str) -> RoxResponse:
@@ -48,23 +48,23 @@ def check_rox_settings(request) -> JsonResponse:
         in config.ini file are valid.
     """
     result = dict()
-    success = False
+    success = True
 
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
     res = check_rox_connector_url(url)
-    result["running"] = res
-    result["ip"] = res
-    result["port"] = res
-    if not res:
-        success = False
+    result["running"] = res.success
+    result["ip"] = res.success
+    result["port"] = res.success
+    if not res.success:
+        return JsonResponse(res.convert_to_json())
 
     # Check ROXcomposer directory.
     log_file_path = rox_request.get_rox_composer_log_file_path()
     res = check_rox_composer_log_file_path(log_file_path)
-    result["path"] = res
-    if not res:
-        success = False
+    result["path"] = res.success
+    if not res.success:
+        return JsonResponse(res.convert_to_json())
 
     response = RoxResponse(success)
     response.data = result
