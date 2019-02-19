@@ -8,7 +8,7 @@ from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
 
 
-def check_rox_connector_url(url: str) -> bool:
+def check_rox_connector_url(url: str) -> RoxResponse:
     """
     Check if ROXconnector is
     available using specified URL.
@@ -18,12 +18,12 @@ def check_rox_connector_url(url: str) -> bool:
     """
     try:
         requests.get(url)
-        return True
-    except requests.exceptions.ConnectionError:
-        return False
+        return RoxResponse(True, "Pinging successful")
+    except requests.exceptions.ConnectionError as e:
+        return RoxResponse(False, e)
 
 
-def check_rox_composer_log_file_path(file_path: str) -> bool:
+def check_rox_composer_log_file_path(file_path: str) -> RoxResponse:
     """
     Check if ROXcomposer log file is
     available using specified path.
@@ -31,11 +31,15 @@ def check_rox_composer_log_file_path(file_path: str) -> bool:
     :return: True if ROXcomposer log file is available
         using specified path and False otherwise.
     """
-    return os.path.isfile(file_path)
+    is_trace_file = os.path.isfile(file_path)
+    if is_trace_file:
+        return RoxResponse(True, "Tracefile was found")
+    else:
+        return RoxResponse(False, "Tracelog file could not be found")
 
 
 @require_http_methods(["POST"])
-def check_rox_settings(request) -> RoxResponse:
+def check_rox_settings(request) -> JsonResponse:
     """
     Check if parameters specified
     in config.ini file are valid.
@@ -48,12 +52,13 @@ def check_rox_settings(request) -> RoxResponse:
 
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
-    res = check_rox_composer_log_file_path(url)
+    res = check_rox_composer_log_file_path(url)  # Trace file check
+
     result["running"] = res
     result["ip"] = res
     result["port"] = res
-    if not res:
-        success = False
+    if not res.success:
+        return res
 
     # Check ROXcomposer directory.
     log_file_path = rox_request.get_rox_composer_log_file_path()

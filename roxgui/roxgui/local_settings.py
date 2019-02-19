@@ -9,6 +9,7 @@
 
 import configparser
 import logging
+from web.local_request.rox_response import RoxResponse
 
 # Logging.
 # ========
@@ -83,7 +84,7 @@ def update_local_settings(new_settings: dict) -> bool:
     return success
 
 
-def read_local_settings() -> bool:
+def read_local_settings() -> RoxResponse:
     """
     Read local settings specified in config.ini file.
     :return: bool - True if local settings could be read and False otherwise.
@@ -99,8 +100,9 @@ def read_local_settings() -> bool:
     service_dir = config.get("Default", SERVICE_DIR, fallback=None)
     if service_dir is None:
         # Service file directory is not specified.
-        logger.error('Specify service file directory ("{}") in config.ini file.'.format(SERVICE_DIR))
-        return False
+        err = 'Specify service file directory ("{}") in config.ini file.'.format(SERVICE_DIR)
+        logger.error(err)
+        return RoxResponse(False, err)
     else:
         # Service file directory is specified.
         new_settings[SERVICE_DIR] = service_dir
@@ -109,8 +111,9 @@ def read_local_settings() -> bool:
     session_dir = config.get("Default", SESSION_DIR, fallback=None)
     if session_dir is None:
         # Session file directory is not specified.
-        logger.error('Specify session file directory ("{}") in config.ini file.'.format(SESSION_DIR))
-        return False
+        err = 'Specify session file directory ("{}") in config.ini file.'.format(SESSION_DIR)
+        logger.error(err)
+        return RoxResponse(False, err)
     else:
         # Session file directory is specified.
         new_settings[SESSION_DIR] = session_dir
@@ -119,8 +122,9 @@ def read_local_settings() -> bool:
     rox_composer_dir = config.get("Default", ROX_COMPOSER_DIR, fallback=None)
     if rox_composer_dir is None:
         # ROXcomposer directory is not specified.
-        logger.error('Specify ROXcomposer directory ("{}") in config.ini file.'.format(ROX_COMPOSER_DIR))
-        return False
+        err = 'Specify ROXcomposer directory ("{}") in config.ini file.'.format(ROX_COMPOSER_DIR)
+        logger.error(err)
+        return RoxResponse(False, err)
     else:
         # ROXcomnposer directory is specified.
         new_settings[ROX_COMPOSER_DIR] = rox_composer_dir
@@ -129,8 +133,9 @@ def read_local_settings() -> bool:
     rox_connector_ip = config.get("Default", ROX_CONNECTOR_IP, fallback=None)
     if rox_connector_ip is None:
         # ROXconnector IP is not specified.
-        logger.error('Specify ROXconnector IP ("{}") in config.ini file.'.format(ROX_CONNECTOR_IP))
-        return False
+        err ='Specify ROXconnector IP ("{}") in config.ini file.'.format(ROX_CONNECTOR_IP)
+        logger.error(err)
+        return RoxResponse(False, err)
     else:
         # ROXconnector IP is specified.
         new_settings[ROX_CONNECTOR_IP] = rox_connector_ip
@@ -139,12 +144,13 @@ def read_local_settings() -> bool:
     rox_connector_port = config.get("Default", ROX_CONNECTOR_PORT, fallback=None)
     if rox_connector_port is None:
         # ROXconnector port is not specified.
-        logger.error('Specify ROXconnector port ("{}") in config.ini file.'.format(ROX_CONNECTOR_PORT))
-        return False
+        err = 'Specify ROXconnector port ("{}") in config.ini file.'.format(ROX_CONNECTOR_PORT)
+        logger.error(err)
+        return RoxResponse(False, err)
     else:
         # ROXconnector port is specified.
         new_settings[ROX_CONNECTOR_PORT] = rox_connector_port
 
     for key, value in new_settings.items():
         _write_local_settings_param(key, value)
-    return True
+    return RoxResponse(True, "")
