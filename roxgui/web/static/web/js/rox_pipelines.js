@@ -425,9 +425,8 @@ function save_pipe(pipe, services) {
 	}).done(function(data) {
 		if (data.success) {
 			update_pipe(pipe, services);
-		} else {
-			show_tooltip($("#btn-save"), data.success, "", "Saving the pipe failed. \n " + data.message);
-		}
+	    }
+		show_tooltip($("#btn-save"), data.success, "Saved pipeline", "Saving the pipe failed. \n " + data.message);
 	});
 }
 
