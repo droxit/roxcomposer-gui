@@ -83,6 +83,7 @@ function create_detail_view(service) {
 	plus_btn.setAttribute("class", "btn btn-primary btn-circle-big float-center");
 	plus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px; margin-right:10px");
 	plus_btn.setAttribute("id", "add-parameter")
+	$(plus_btn).tooltip({title:"add custom parameter"})
 	plus_btn.onclick = () => append_param(detail_container, "key", "value");
 	var plus_span = document.createElement("span");
 	plus_span.setAttribute("class", "fas fa-plus")
@@ -91,6 +92,7 @@ function create_detail_view(service) {
 	var minus_btn = document.createElement("button");
 	minus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px");
 	minus_btn.setAttribute("class", "btn btn-primary btn-circle-big float-center");
+	$(minus_btn).tooltip({title:"remove parameter"})
 	minus_btn.onclick = () => delete_last_param(detail_container);
 	var minus_span = document.createElement("span");
 	minus_span.setAttribute("class", "fas fa-minus")
@@ -160,17 +162,31 @@ function delete_last_param(container) {
 /* Retrieve the parameter key-value pairs of a service from the hidden dataset */
 function get_params(container, service) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("get_service_info", {
-		services: [service],
+	$.post("get_service_info_specific_service", {
+		service: service,
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 
-		var service_json = data[service];
+		var service_json = data;
 
 		if (service_json.classpath) {
 			var key = "classpath";
 			var val = service_json.classpath;
 			append_param(container, key, val);
+		}
+
+		if(service_json.params.ip){
+		    var key = "ip";
+		    var val = service_json.params.ip;
+		    append_param(container, key, val);
+		    delete service_json.params.ip
+		}
+
+		if(service_json.params.port){
+		    var key = "port";
+		    var val = service_json.params.port;
+		    append_param(container, key, val);
+		    delete service_json.params.port
 		}
 
 		var service_params = service_json.params;

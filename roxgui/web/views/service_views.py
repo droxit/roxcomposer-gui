@@ -53,6 +53,26 @@ def get_service_info(request):
 
 
 @require_http_methods(["POST"])
+def get_service_info_specific_service(request):
+    """
+    Returns the info of services in a dictionary (their parameters etc.)
+    :param request: contains a list "services" with the names of all services that the info should be retrieved of
+    :return: a JsonResponse context with key value pairs,
+            where the key is the a service parameter name and value the corresponding parameter value
+    """
+    service = request.POST.get("service", default="")
+    result = file_request.get_local_services()
+
+    info = {}
+
+    for entry in result.data:
+        if service == entry:
+            info = result.data[entry]
+
+    return JsonResponse(info)
+
+
+@require_http_methods(["POST"])
 def check_running(request):
     """
     For a specified list of services returns which of those are running
