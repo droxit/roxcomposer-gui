@@ -14,32 +14,40 @@
    If there is a tooltip on the element it will be removed for the duration of the popover,
    but will be reinitialised after. */
 function show_tooltip(btn, success, successmsg, failmsg) {
-	btn.attr("data-toggle", "popover");
-	btn.attr("data-placement", "top");
-	btn.attr("data-container", "body");
-	var oldTooltip = "";
+    // delete old tooltip and save the content
+    var oldTooltip = "";
 	if (btn[0].dataset.title) {
 		oldTooltip = btn[0].dataset.title;
+		btn[0].dataset.title = "";
 	}
+	btn.tooltip('dispose');
+    btn.popover('dispose');
 
+    // create popover
+    var jbtn = $(btn);
+    btn.popover({placement:'bottom', title:''});
+    var popover = btn.data('bs.popover');
+
+    // depending on success set the color and content of popover
 	if (success) {
-		btn.attr("data-content", successmsg);
+	    popover.config.title = "";
+		popover.config.content = successmsg;
+        btn.popover('show');
+        btn.data('bs.popover').tip.classList.add('popover-success');
 	} else {
-		btn.attr("data-content", failmsg);
+        popover.config.content = failmsg;
+        btn.popover('show');
+        btn.data('bs.popover').tip.classList.add('popover-danger');
 	}
-	btn.tooltip("hide");
-	btn.popover("show");
 
+    // delete popover and put tooltip back in place
 	setTimeout(function() {
 		btn.popover('dispose');
-		btn.attr("data-placement", "bottom");
-		if (oldTooltip != "") {
-			btn.attr("data-title", oldTooltip);
-			btn.attr("data-toggle", "tooltip");
-		}
+		btn.tooltip({title: oldTooltip, placement:'bottom'})
 	}, 5000)
-
 }
+
+
 
 function add_tooltip(btn_id, tooltip_string){
     console.log($("#"+btn_id))
@@ -60,11 +68,15 @@ function toggle_button(btn, new_btn_status, img1, img2, tooltip_off, tooltip_on)
 		if (btn.dataset.status == "0") {
 			btn.dataset.status = "1"
 			btn_span.classList.replace(img1, img2);
-			$("#" + btn.id).tooltip('hide').attr('data-original-title', tooltip_on).tooltip('hide');
+			$(btn).tooltip('hide');
+			$(btn).tooltip({title: tooltip_on});
+			$(btn).tooltip('hide');
 		} else {
 			btn.dataset.status = "0"
 			btn_span.classList.replace(img2, img1);
-			$("#" + btn.id).tooltip('hide').attr('data-original-title', tooltip_off).tooltip('hide');
+			$(btn).tooltip('hide');
+			$(btn).tooltip({title: tooltip_off});
+			$(btn).tooltip('hide');
 		}
 	}
 }

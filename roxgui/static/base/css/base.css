@@ -43,7 +43,7 @@
 .popover-danger {
     background-color: tomato;
     border-color: tomato;
-    border-bottom-color:tomato;
+    border-bottom-color: tomato;
 }
 
 .popover-danger .arrow:after {
@@ -53,3 +53,21 @@
 .popover-danger .popover-body{
     color: white;
 }
+
+.popover-success {
+    background-color: mediumseagreen;
+    border-color: mediumseagreen;
+    border-bottom-color: mediumseagreen;
+    border-top-color: mediumseagreen;
+}
+
+.popover-success .arrow:after {
+    border-bottom-color: mediumseagreen;
+    border-top-color: mediumseagreen;
+}
+
+.popover-success .popover-body{
+    color: white;
+}
+
+.popover-title { display: none; }
