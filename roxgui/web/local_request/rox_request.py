@@ -18,8 +18,11 @@ from web.local_request.rox_response import RoxResponse
 # Constants.
 # ==========
 
-# Relative path to log file.
-RELATIVE_PATH_TO_LOG_FILE = "build/roxcomposer-demo-0.4.0/logs/trace.log"
+# Relative path to ROXcomposer build folder.
+RELATIVE_ROX_COMPOSER_BUILD_PATH = "build/roxcomposer-demo-0.4.0"
+
+# Relative path to ROXcomposer log file.
+RELATIVE_ROX_COMPOSER_LOG_FILE_PATH = os.path.join(RELATIVE_ROX_COMPOSER_BUILD_PATH, "logs/trace.log")
 
 # Header for JSON data.
 JSON_HEADER = {"Content-Type": "application/json"}
@@ -102,7 +105,7 @@ def get_rox_connector_url(relative_path: str = "") -> str:
                                         relative_path)
 
 
-# ROXcomposer log file path.
+# ROXcomposer log file.
 # ==========================
 
 def get_rox_composer_log_file_path() -> str:
@@ -110,7 +113,7 @@ def get_rox_composer_log_file_path() -> str:
     Create path to ROXcomposer log file.
     :return: str - Path to ROXcomposer log file.
     """
-    return os.path.join(LOCAL_SETTINGS[ROX_COMPOSER_DIR], RELATIVE_PATH_TO_LOG_FILE)
+    return os.path.join(LOCAL_SETTINGS[ROX_COMPOSER_DIR], RELATIVE_ROX_COMPOSER_LOG_FILE_PATH)
 
 
 # Requests to ROXconnector.
