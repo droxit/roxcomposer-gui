@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -6,6 +7,11 @@ from django.views.decorators.http import require_http_methods
 from roxgui.local_settings import update_local_settings, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
+
+logger = logging.getLogger("test")
+sh = logging.StreamHandler()
+sh.setLevel(logging.ERROR)
+logger.addHandler(sh)
 
 
 def check_rox_connector_url(url: str) -> RoxResponse:
@@ -38,7 +44,7 @@ def check_rox_composer_log_file_path(file_path: str) -> RoxResponse:
         return RoxResponse(False, "Tracelog file could not be found")
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def check_rox_settings(request) -> JsonResponse:
     """
     Check if parameters specified

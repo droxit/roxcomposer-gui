@@ -21,5 +21,5 @@ mkdir -p sessions
 
 # Install ROXcomposer-GUI.
 ./manage.py makemigrations
-./manage.py migrate
+./manage.py migrate --run-syncdb
 ./manage.py collectstatic
