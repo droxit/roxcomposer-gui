@@ -15,6 +15,10 @@
 sudo apt-get install python3 python3-pip
 pip3 install -r requirements.txt
 
+# Install service and session folders.
+mkdir -p services
+mkdir -p sessions
+
 # Install ROXcomposer-GUI.
 ./manage.py makemigrations
 ./manage.py migrate

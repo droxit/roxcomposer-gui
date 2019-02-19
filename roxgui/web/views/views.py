@@ -52,13 +52,12 @@ def check_rox_settings(request) -> JsonResponse:
 
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
-    res = check_rox_composer_log_file_path(url)  # Trace file check
-
+    res = check_rox_connector_url(url)
     result["running"] = res
     result["ip"] = res
     result["port"] = res
-    if not res.success:
-        return res
+    if not res:
+        success = False
 
     # Check ROXcomposer directory.
     log_file_path = rox_request.get_rox_composer_log_file_path()
