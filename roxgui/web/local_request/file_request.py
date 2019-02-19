@@ -23,7 +23,7 @@ def get_local_services() -> RoxResponse:
     local_services = {}
     for f in os.scandir(LOCAL_SETTINGS[SERVICE_DIR]):
         if f.is_file() and f.name.endswith(".json"):
-            fd = open(os.path.join(SERVICE_DIR, f.name), 'r')
+            fd = open(os.path.join(LOCAL_SETTINGS[SERVICE_DIR], f.name), 'r')
             service_name = f.name[:-5]
             service_json = json.load(fd)
             local_services[service_name] = service_json
@@ -39,7 +39,7 @@ def delete_service(name: str) -> RoxResponse:
     :param name: Service name
     :return: RoxResponse with information whether deleting worked
     """
-    f_name = os.path.join(SERVICE_DIR, name + ".json")
+    f_name = os.path.join(LOCAL_SETTINGS[SERVICE_DIR], name + ".json")
     try:
         os.remove(f_name)
         res = RoxResponse(True)
@@ -60,7 +60,7 @@ def convert_to_service_json(service_name: str) -> RoxResponse:
     fd = None
     name_with_ext = service_name + ".json"
     try:
-        fd = open(os.path.join(SERVICE_DIR, name_with_ext))
+        fd = open(os.path.join(LOCAL_SETTINGS[SERVICE_DIR], name_with_ext))
         json_data = json.load(fd)
     except OSError:
         error_msg = "Could not open JSON file for service {}.".format(service_name)

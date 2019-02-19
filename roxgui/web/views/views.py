@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -6,6 +7,11 @@ from django.views.decorators.http import require_http_methods
 from roxgui.local_settings import update_local_settings, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request import rox_request
 from web.local_request.rox_response import RoxResponse
+
+logger = logging.getLogger("test")
+sh = logging.StreamHandler()
+sh.setLevel(logging.ERROR)
+logger.addHandler(sh)
 
 
 def check_rox_connector_url(url: str) -> bool:
@@ -19,7 +25,7 @@ def check_rox_connector_url(url: str) -> bool:
     try:
         requests.get(url)
         return True
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError as err:
         return False
 
 
@@ -48,7 +54,7 @@ def check_rox_settings(request) -> RoxResponse:
 
     # Check ROXconnector URL.
     url = rox_request.get_rox_connector_url()
-    res = check_rox_composer_log_file_path(url)
+    res = check_rox_connector_url(url)
     result["running"] = res
     result["ip"] = res
     result["port"] = res
