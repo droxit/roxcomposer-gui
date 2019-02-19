@@ -7,10 +7,9 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-import datetime
-
 from django.db import models
 from django.utils import timezone
+
 
 class Logline(models.Model):
     """ This model defines a single log line that is sent by the ROXconnector when watching a service. """

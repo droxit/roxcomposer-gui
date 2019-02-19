@@ -38,7 +38,7 @@ def check_rox_composer_log_file_path(file_path: str) -> RoxResponse:
         return RoxResponse(False, "Tracelog file could not be found")
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def check_rox_settings(request) -> JsonResponse:
     """
     Check if parameters specified
