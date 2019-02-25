@@ -9,6 +9,7 @@
 
 import configparser
 import logging
+
 from web.local_request.rox_response import RoxResponse
 
 # Logging.
@@ -133,7 +134,7 @@ def read_local_settings() -> RoxResponse:
     rox_connector_ip = config.get("Default", ROX_CONNECTOR_IP, fallback=None)
     if rox_connector_ip is None:
         # ROXconnector IP is not specified.
-        err ='Specify ROXconnector IP ("{}") in config.ini file.'.format(ROX_CONNECTOR_IP)
+        err = 'Specify ROXconnector IP ("{}") in config.ini file.'.format(ROX_CONNECTOR_IP)
         logger.error(err)
         return RoxResponse(False, err)
     else:
