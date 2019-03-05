@@ -175,6 +175,12 @@ function get_params(container, service) {
 			append_param(container, key, val);
 		}
 
+		if (service_json.path) {
+			var key = "path";
+			var val = service_json.path;
+			append_param(container, key, val);
+		}
+
 		if(service_json.params.ip){
 		    var key = "ip";
 		    var val = service_json.params.ip;
@@ -226,7 +232,8 @@ function save_detail(elem) {
 	// Iterate through its child nodes, each
 	// containing a single key value pair.
 	classpath_value = null;
-	ip_value = null;
+    path_value = null;
+    ip_value = null;
 	port_value = null;
 	name_value = service_name;
 	key_array = []
@@ -239,6 +246,8 @@ function save_detail(elem) {
 			value = child[2].firstChild.innerText;
 			if (key == "classpath") {
 				classpath_value = value;
+			} else if (key == "path") {
+				path_value = value;
 			} else if (key == "port") {
 				port_value = value;
 			} else if (key == "ip") {
@@ -254,6 +263,7 @@ function save_detail(elem) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_service", {
 		"classpath": classpath_value,
+		"path": path_value,
 		"ip": ip_value,
 		"port": port_value,
 		"name": name_value,

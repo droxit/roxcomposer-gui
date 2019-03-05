@@ -71,3 +71,7 @@
 }
 
 .popover-title { display: none; }
+
+span.bold-red {
+    color: red;
+    font-weight: bold;

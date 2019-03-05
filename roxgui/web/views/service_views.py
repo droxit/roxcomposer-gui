@@ -158,6 +158,7 @@ def create_service(request):
         port=request.POST.get("port"),
         name=request.POST.get("name"),
         class_path=request.POST.get("classpath"),
+        path=request.POST.get("path"),
         optional_param_keys=request.POST.getlist("optional_param_keys[]", default=[]),
         optional_param_values=request.POST.getlist("optional_param_values[]", default=[])
     )
