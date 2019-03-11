@@ -215,9 +215,9 @@ function get_params(container, service) {
 
 /* Add default parameter for new service to container. */
 function get_empty_params(container) {
-	append_param(container, "classpath", "new classpath");
-	append_param(container, "ip", "new ip");
-	append_param(container, "port", "new port");
+	append_param(container, "path", "path/to/file.py");
+	append_param(container, "ip", "127.0.0.1");
+	append_param(container, "port", "some port");
 }
 
 /* Get all key-value pairs provided in current container and use them to create a new service. */
