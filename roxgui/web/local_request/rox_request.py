@@ -227,6 +227,7 @@ def create_service(ip: str,
                    port: int,
                    name: str,
                    class_path: str,
+                   path: str,
                    optional_param_keys: list,
                    optional_param_values: list) -> RoxResponse:
     """
@@ -235,6 +236,8 @@ def create_service(ip: str,
     :param port: Port number.
     :param name: Service name.
     :param class_path: Classpath of service implementation.
+    :param path: If no classpath is given this path (absolute path to python file) can be provided and the service is
+                 loaded from there.
     :param optional_param_keys: List of optional parameter keys (default: []).
     :param optional_param_values: List of optional parameter values (default: []).
     :return: RoxResponse instance documenting if service could be created.
@@ -277,9 +280,15 @@ def create_service(ip: str,
     if not (0 <= port <= 65535):
         return RoxResponse(False, error_msg)
 
+    path_key = "classpath"
+    path_val = class_path
+    if path:
+        path_key = "path"
+        path_val = path
+
     # Create JSON with mandatory parameters.
     json_dict = {
-        "classpath": class_path,
+        path_key: path_val,
         "params": {
             "ip": ip,
             "port": port,

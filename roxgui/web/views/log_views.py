@@ -19,7 +19,7 @@ from web.models import Logline
 # Only show this number of messages in log.
 LOG_RELOAD = 100
 # Only show logs received within this interval.
-LOG_TIMEOUT = datetime.timedelta(days=1)
+LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(days=1)
 

@@ -32,6 +32,9 @@ function create_logline(log_win, log) {
 
 	var span = document.createElement("span");
 	span.setAttribute("id", "log-" + id);
+	if(log.text.includes("ERROR")){
+	    span.setAttribute("class", "bold-red");
+	}
 	//span.setAttribute("style", "font-size:0.7em");
 	make_logline_text(span, log);
 	log_win.appendChild(span);
@@ -72,4 +75,9 @@ function reload_logs() {
 	setInterval(function() {
 		update_log(log_win);
 	}, 1000);
+}
+
+
+function clear_all(){
+    
 }
