@@ -379,13 +379,15 @@ def start_services(service_json_list: list) -> RoxResponse:
     # Collect names of all services which could not be started.
     not_started_json_list = []
     all_services_started = True
+    err_message = ""
     for service_json in service_json_list:
         res = start_service(service_json)
         if not res.success:
             not_started_json_list.append(service_json["params"]["name"])
             all_services_started = False
+            err_message = res.message
 
-    res = RoxResponse(all_services_started)
+    res = RoxResponse(all_services_started, err_message)
     res.error_data = not_started_json_list
     return res
 
@@ -468,8 +470,28 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
         return res
 
 
-def remove_pipeline() -> RoxResponse:  # TODO after functionality has been implemented in ROXcomposer
-    raise NotImplementedError
+def remove_pipeline(pipe_name: str) -> RoxResponse:
+    """
+    Remove the specified pipeline from ROXcomposer
+    :param pipe_name: Name of pipeline.
+    :returns: RoxResponse instance documenting if pipeline could be deleted.
+    """
+
+    url = get_rox_connector_url("delete_pipeline")
+    content = {'name': pipe_name}
+
+    try:
+        r = requests.delete(url, data=json.dumps(content), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    else:
+        res = RoxResponse(True)
+        return res
 
 
 def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:

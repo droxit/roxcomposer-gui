@@ -105,18 +105,7 @@ def start_services(request):
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
     result = rox_request.start_services(service_json_list)
-    if result.success:
-        # All services could be started.
-        return JsonResponse(res.convert_to_json())
-    else:
-        # Some services could not be started.
-        if not result.error_data:
-            # No services were specified.
-            return JsonResponse(res.convert_to_json())
-        else:
-            # Some services were specified but could not be started.
-            # services_not_started = ", ".join(result.error_data)
-            return JsonResponse(res.convert_to_json())
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])

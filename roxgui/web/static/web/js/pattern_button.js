@@ -47,6 +47,11 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 	}, 5000)
 }
 
+/* Remove the popover from this element */
+function remove_tooltip(elem){
+    elem.popover('dispose')
+}
+
 
 
 function add_tooltip(btn_id, tooltip_string){
