@@ -38,7 +38,7 @@ function set_pipe_tooltip(btn, tooltip) {
 /* Remove the 'disabled' status of those buttons that already have functionality */
 function enable_detail_elements() {
 	//"btn-watch" ,"btn-delete", "btn-save"
-	["btn-edit", "btn-add-service", "btn-send-msg", "btn-save"].forEach(function(btn) {
+	["btn-edit", "btn-add-service", "btn-send-msg", "btn-save", "btn-delete"].forEach(function(btn) {
 		btn_remove_disabled(btn);
 	});
 }
@@ -210,6 +210,7 @@ function update_pipe(pipe, services) {
 	var new_detail = create_detail_view(pipe);
 	add_detail_view(new_detail);
 	add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_pipelines');
+	save_pipe_status()
 }
 
 
@@ -275,7 +276,8 @@ function create_detail_view(pipeline) {
 
 /* Adds a single service card to the services_container and sets the tooltip info to serviceinfo
    connecting lines between cards have not yet been implemented */
-function add_service_card(service, serviceinfo, services_container) {
+function add_service_card(service_obj, serviceinfo, services_container) {
+    var service = service_obj["service"]
 	var prev = get_preceding_service(services_container);
 	var i = services_container.childNodes.length + 1;
 
@@ -388,35 +390,43 @@ function save_detail(elem) {
 	if (check_disabled(elem)) {
 		return;
 	}
-	var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
-	var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
-	var services = [];
-	jQuery.each(service_cards, function(i, val) {
-		services.push(val.innerHTML);
-	});
+	var pipe_name = get_pipe_name();
+	var services = get_services();
 	$("#detail_info")[0].dataset.name = pipe_name;
-	save_pipe(pipe_name, services);
+	save_pipe(pipe_name, services, [$("#btn-save"), "Saved pipeline", "Saving the pipe failed. \n "]);
 
 }
 
 /* Overwrite an edited pipe on the roxcomposer after adding a service*/
 function save_pipe_add_service(pipe, services) {
-	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("create_pipeline", {
-		services: services,
-		pipe_name: pipe,
-		csrfmiddlewaretoken: CSRFtoken
-	}).done(function(data) {
-		if (data.success) {
-			update_pipe(pipe, services);
-		} else {
-			show_tooltip($("#btn-add-service"), data.success, "", "Adding service failed. \n " + data.message);
-		}
+	save_pipe(pipe, services, [$("#btn-add-service"), "", "Adding service failed. \n "])
+}
+
+/* Save the pipeline as it currently is in the detail view. */
+function save_pipe_status(){
+	var pipe_name = get_pipe_name();
+	var services = get_services();
+	save_pipe(pipe_name, services, [$("#btn-save"), "", ""])
+}
+
+
+/* Retrieve the pipeline name  */
+function get_pipe_name(){
+    return  document.getElementById("headline_detail").lastElementChild.innerHTML;
+}
+
+/* Retrieve service list from detail view */
+function get_services(){
+    var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
+	var services = [];
+	jQuery.each(service_cards, function(i, val) {
+		services.push(val.innerHTML);
 	});
+	return services
 }
 
 /* Create and save (or overwrite if name already exists) the new pipe on the roxcomposer. */
-function save_pipe(pipe, services) {
+function save_pipe(pipe, services, tooltip_info) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_pipeline", {
 		services: services,
@@ -426,7 +436,51 @@ function save_pipe(pipe, services) {
 		if (data.success) {
 			update_pipe(pipe, services);
 	    }
-		show_tooltip($("#btn-save"), data.success, "Saved pipeline", "Saving the pipe failed. \n " + data.message);
+	    show_tooltip(tooltip_info[0], data.success, tooltip_info[1], tooltip_info[2] + data.message)
+	});
+}
+
+/* Create a modal popup to ask the user if they really want to delete a service. */
+function delete_this(elem) {
+    save_pipe_status()
+	var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
+
+	var popup_warning = $("<div class='modal' tabindex='-1' role='dialog'> \
+  <div class='modal-dialog' role='document'> \
+    <div class='modal-content'> \
+      <div class='modal-header'> \
+        <h5 class='modal-title'>Delete " + pipe_name + "?</h5> \
+        <button type='button' class='close' data-dismiss='modal' aria-label='Close'> \
+          <span aria-hidden='true'>&times;</span> \
+        </button> \
+      </div> \
+      <div class='modal-body'> \
+        <p>Are you sure you want to delete this pipeline?</p> \
+      </div> \
+      <div class='modal-footer'> \
+        <button type='button' class='btn btn-primary' onclick='delete_pipeline(\"" + pipe_name + "\")'>Delete</button> \
+        <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button> \
+      </div> \
+    </div> \
+  </div> \
+</div>");
+
+	popup_warning.modal("toggle");
+
+}
+
+/* Delete this pipeline on the ROXcomposer if it exists. */
+function delete_pipeline(pipe) {
+    var elem = $("#btn-delete")
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post("delete_pipeline", {
+		pipe_name: pipe,
+		csrfmiddlewaretoken: CSRFtoken
+	}).done(function(data) {
+		if (data.success) {
+			location.reload();
+	    }
+		show_tooltip(elem, data.success, "", "Deleting pipeline failed. \n " + data.message);
 	});
 }
 
