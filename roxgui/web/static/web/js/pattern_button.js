@@ -27,7 +27,6 @@ function show_tooltip(btn, success, successmsg, failmsg) {
     var jbtn = $(btn);
     btn.popover({placement:'bottom', title:''});
     var popover = btn.data('bs.popover');
-    popover.tip()
 
     // depending on success set the color and content of popover
 	if (success) {
@@ -56,7 +55,6 @@ function remove_tooltip(elem){
 
 
 function add_tooltip(btn_id, tooltip_string){
-    console.log($("#"+btn_id))
     $("#"+btn_id).tooltip({
         placement: "bottom",
         toggle: "tooltip",

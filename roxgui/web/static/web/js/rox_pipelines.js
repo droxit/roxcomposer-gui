@@ -339,7 +339,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 
 	btn_del.setAttribute("class", "btn btn-secondary btn-circle");
 	btn_del.setAttribute("style", "margin-right:5px");
-    btn_watch.setAttribute("id", "btn-del-" + i);
+    btn_del.setAttribute("id", "btn-del-" + i);
 	btn_del.setAttribute("data-toggle", "tooltip");
 	btn_del.setAttribute("data-placement", "top");
 	btn_del.setAttribute("data-title", "delete from pipe");
