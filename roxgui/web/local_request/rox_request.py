@@ -19,7 +19,7 @@ from web.local_request.rox_response import RoxResponse
 # ==========
 
 # Relative path to ROXcomposer build folder.
-RELATIVE_ROX_COMPOSER_BUILD_PATH = "build/roxcomposer-demo-0.4.0"
+RELATIVE_ROX_COMPOSER_BUILD_PATH = "build/roxcomposer-demo-0.4.1"
 
 # Relative path to ROXcomposer log file.
 RELATIVE_ROX_COMPOSER_LOG_FILE_PATH = os.path.join(RELATIVE_ROX_COMPOSER_BUILD_PATH, "logs/trace.log")
