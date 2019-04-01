@@ -100,12 +100,7 @@ function create_detail_view(service) {
 	btn_row.appendChild(minus_btn);
 	detail_container.appendChild(btn_row)
 
-	var hidden_old_name = document.createElement("p"); // This is important for overwriting the service when the name changes
-    hidden_old_name.dataset.name = "";
-    hidden_old_name.id = "hidden_old_name";
-    var search_bar_container = document.getElementById("search-bar-container");
-    search_bar_container.html = "";
-    search_bar_container.appendChild(hidden_old_name);
+    var detail_headline = $("#headline_detail")[0]
 
 	set_status(service); // Set the 'status' span to running or not running
 
@@ -199,8 +194,7 @@ function get_params(container, service) {
 
 		jQuery.each(service_params, function(i, val) {
 			if (i == "name") {
-				var hidden_old_name = document.getElementById("hidden_old_name");
-				hidden_old_name.dataset.name = val;
+				$("#headline_detail")[0].dataset.old_name = val
 				return true;
 			}
 			if (typeof val === 'string' || val instanceof String) {
@@ -272,11 +266,12 @@ function save_detail(elem) {
 		"csrfmiddlewaretoken": CSRFtoken
 	}).done(function(data) {
 	    // If the service name was edited and a new service was created delete the old service
-	    var hidden_old_name = document.getElementById("hidden_old_name");
-		var old_name = hidden_old_name.dataset.name;
-		if(old_name != name_value){
-		    delete_service(old_name);
-		}
+	    var old_name = $("#headline_detail")[0].dataset.old_name;
+	    if(old_name){
+            if(old_name != name_value){
+                delete_service(old_name);
+            }
+	    }
 		btn = $("#btn-save");
 		show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 		add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_services');

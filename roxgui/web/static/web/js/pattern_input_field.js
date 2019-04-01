@@ -34,6 +34,13 @@ function create_editable_element(input_field, text_node, placeholder, change_tex
 	input_field.setAttribute("class", "form-control");
 	input_field.setAttribute("id", text_node.id);
 	input_field.value = placeholder;
+	var old_name = ""
+
+    if(text_node.dataset.old_name){
+        old_name = text_node.dataset.old_name;
+        input_field.dataset.old_name = old_name
+    }
+
 
 	input_field.addEventListener("keyup", function(e) {
 		e.preventDefault();
@@ -60,5 +67,7 @@ function input_save(input_field, placeholder, change_text_node) {
 		new_info = placeholder;
 	}
 	var new_text_node = change_text_node(new_info);
+	if(input_field.dataset.old_name)
+	    new_text_node.dataset.old_name = input_field.dataset.old_name
 	input_field.replaceWith(new_text_node);
 }
