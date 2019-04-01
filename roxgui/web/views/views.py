@@ -31,7 +31,9 @@ def check_rox_composer_log_file_path(file_path: str) -> RoxResponse:
     :return: True if ROXcomposer log file is available
         using specified path and False otherwise.
     """
+    print(file_path)
     is_trace_file = os.path.isfile(file_path)
+    print(is_trace_file)
     if is_trace_file:
         return RoxResponse(True, "Tracefile was found")
     else:
@@ -82,8 +84,8 @@ def check() -> JsonResponse:
     # Check ROXcomposer directory.
     rox_path = rox_request.get_file_path()
     log_file_path = rox_request.get_rox_composer_log_file_path()
-    res = check_rox_composer_log_file_path(log_file_path)
-    result["path_set"] = res.success
+    # res = check_rox_composer_log_file_path(log_file_path)
+    result["path_set"] = True
     result["path"] = rox_path
     if not res.success:
         res.data = result
