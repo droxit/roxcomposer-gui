@@ -10,11 +10,13 @@
 
 class RoxResponse:
     """
-    Class encapsulating ROXconnector response.
-    Each response has to have a status indicating whether the communication and
-    requested operation has been successful and a message that is sent by the ROXconnector.
-    Optional parameters are data in case information has been requested from the server
-    and error data that can be provided if an error has occured.
+    Class encapsulating a ROXconnector response.
+    Each response contains a flag to indicate whether
+    or not the requested operation has been successful
+    and a string with corresponding response message.
+    Optional attributes are data in case information
+    has been requested from the server and error data
+    that might be provided to mark erroneous data.
     """
 
     def __init__(self, success: bool, message: str = ""):
@@ -22,7 +24,7 @@ class RoxResponse:
         self.message = message
         # (Optional) data concerning successful request.
         self._data = []
-        # (Optional) data concerning failed request.
+        # (Optional) data concerning failing request.
         self._error_data = []
 
     # Getter and setter.

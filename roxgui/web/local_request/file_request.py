@@ -16,20 +16,39 @@ from web.local_request.rox_response import RoxResponse
 
 def get_local_services() -> RoxResponse:
     """
-    Get JSON data of all locally stored services.
-    :return: RoxResponse instance containing a list of tuples
-        mapping each service name to its corresponding JSON data.
+    Get locally stored services and provide
+    them as dictionary mapping service name to
+    its JSON instance. Provide list of invalid
+    services as RoxResponse's error data parameter.
+    :return: RoxResponse instance containing a
+        dictionary mapping each service name
+        to its corresponding JSON instance Provide
+        list of invalid services as error data parameter.
     """
-    local_services = {}
+    valid_services = {}
+    invalid_services = []
+    success = True
+
     for f in os.scandir(LOCAL_SETTINGS[SERVICE_DIR]):
         if f.is_file() and f.name.endswith(".json"):
-            fd = open(os.path.join(LOCAL_SETTINGS[SERVICE_DIR], f.name), 'r')
-            service_name = f.name[:-5]
-            service_json = json.load(fd)
-            local_services[service_name] = service_json
-            fd.close()
-    res = RoxResponse(True)
-    res.data = local_services
+            fd = None
+            service_name = None
+            try:
+                fd = open(os.path.join(LOCAL_SETTINGS[SERVICE_DIR], f.name), 'r')
+                service_name = f.name[:-5]
+                service_json = json.load(fd)
+                valid_services[service_name] = service_json
+            except (OSError, json.decoder.JSONDecodeError):
+                success = False
+                if service_name:
+                    invalid_services.append(service_name)
+            finally:
+                if fd:
+                    fd.close()
+
+    res = RoxResponse(success)
+    res.data = valid_services
+    res.error_data = invalid_services
     return res
 
 
