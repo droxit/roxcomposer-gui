@@ -345,7 +345,6 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_del.setAttribute("data-title", "delete from pipe");
 	btn_del.setAttribute("onclick", "remove_service_from_pipe(" + i + ")")
 
-
 	var btn_watch_img = document.createElement("span");
 	var btn_del_img = document.createElement("span");
 	var btn_run_img = document.createElement("span");
@@ -356,12 +355,36 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_del.appendChild(btn_del_img);
 	btn_run.appendChild(btn_run_img);
 
-
 	var card_text = document.createElement("p");
 	card_text.setAttribute("class", "card-text");
 	card_body.appendChild(card_text);
 
 	card_text.appendChild(document.createTextNode(service));
+
+	var card_footer = document.createElement("div");
+	card_footer.setAttribute("class", "card-footer");
+	card.appendChild(card_footer);
+
+	var pipeline_param_container = document.createElement("div");
+	pipeline_param_container.setAttribute("id", "pipeline_param_container");
+
+	var plus_btn = document.createElement("button");
+	plus_btn.setAttribute("class", "btn btn-primary");
+	plus_btn.onclick = () => append_pipeline_param(pipeline_param_container, "value");
+	var plus_span = document.createElement("span");
+	plus_span.setAttribute("class", "fas fa-plus")
+	plus_btn.appendChild(plus_span);
+
+	var minus_btn = document.createElement("button");
+	minus_btn.setAttribute("class", "btn btn-primary");
+	minus_btn.onclick = () => delete_last_pipeline_param(pipeline_param_container);
+	var minus_span = document.createElement("span");
+	minus_span.setAttribute("class", "fas fa-minus")
+	minus_btn.appendChild(minus_span);
+
+	card_footer.appendChild(plus_btn);
+	card_footer.appendChild(minus_btn);
+	card_footer.appendChild(pipeline_param_container);
 
 	//create the connection line to the preceding service
 	if (prev) {
@@ -369,6 +392,20 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	}
 
 
+}
+
+/* Add editable value to pipeline service container. */
+function append_pipeline_param(container, val) {
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
+	input.setAttribute("value", val);
+	container.appendChild(input);
+}
+
+/* Delete last value from pipeline service container. */
+function delete_last_pipeline_param(container) {
+	var last_child = container.lastChild;
+	container.removeChild(last_child);
 }
 
 /* This is supposed to return the card of the preceding service in the pipeline */
