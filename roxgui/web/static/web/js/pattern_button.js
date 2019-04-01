@@ -44,11 +44,12 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 
     // delete popover and put tooltip back in place if the user is not hovering over it
     setTimeout(function check_hovering() {
-        if(!$("#"+popover.tip.id+":hover"){
+        if(!$("#"+popover.tip.id+":hover").length){
             remove_popover(btn, oldTooltip);
+            return;
         }
         setTimeout(check_hovering, 500);
-    }, 500);
+    }, 2000);
 
 
 }
@@ -58,6 +59,8 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 function remove_popover(btn, oldTooltip){
     btn.popover('dispose');
     btn.tooltip({title: oldTooltip, placement:'bottom'});
+    btn.tooltip('show');
+    btn.tooltip('hide');
 }
 
 
