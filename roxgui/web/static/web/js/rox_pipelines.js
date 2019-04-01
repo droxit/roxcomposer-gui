@@ -277,7 +277,8 @@ function create_detail_view(pipeline) {
 /* Adds a single service card to the services_container and sets the tooltip info to serviceinfo
    connecting lines between cards have not yet been implemented */
 function add_service_card(service_obj, serviceinfo, services_container) {
-    var service = service_obj["service"]
+    var service = service_obj["service"];
+    var service_params = service_obj["params"];
 	var prev = get_preceding_service(services_container);
 	var i = services_container.childNodes.length + 1;
 
@@ -383,6 +384,13 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	minus_span.setAttribute("class", "fas fa-xs fa-minus")
 	minus_btn.appendChild(minus_span);
 
+    // append all existing pipeline params to service card
+	if(service_params){
+	    service_params.forEach(function(param){
+	        append_pipeline_param(pipeline_param_container, param);
+	    });
+	}
+
 	card_footer.appendChild(plus_btn);
 	card_footer.appendChild(minus_btn);
 	card_footer.appendChild(pipeline_param_container);
@@ -457,11 +465,22 @@ function get_pipe_name(){
 /* Retrieve service list from detail view */
 function get_services(){
 
-    var service_cards = $("#services_in_pipeline")[0].getElementsByTagName("p");
+    var service_cards = $("#services_in_pipeline")[0].querySelectorAll('.carddiv');
     //var service_cards = document.getElementById("services_in_pipe")
 	var services = [];
-	jQuery.each(service_cards, function(i, val) {
-		services.push(val.innerHTML);
+
+	service_cards.forEach(function(card){
+	    let service_json = {};
+	    let service_name = card.getElementsByTagName("p")[0].innerHTML;
+	    service_json["service"] = service_name;
+	    let param_inputs = card.querySelectorAll('.form-control');
+	    if(param_inputs.length){
+	        service_json["params"] = [];
+	        param_inputs.forEach(function(param_input){
+	            service_json["params"].push(param_input.value);
+	        });
+	    }
+		services.push(service_json);
 	});
 	return services
 }

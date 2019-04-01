@@ -83,6 +83,7 @@ def check() -> JsonResponse:
     rox_path = rox_request.get_file_path()
     log_file_path = rox_request.get_rox_composer_log_file_path()
     res = check_rox_composer_log_file_path(log_file_path)
+    res.success = True
     result["path_set"] = res.success
     result["path"] = rox_path
     if not res.success:
