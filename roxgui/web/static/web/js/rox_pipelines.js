@@ -369,27 +369,23 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	pipeline_param_container.setAttribute("id", "pipeline_param_container");
 
 	var plus_btn = document.createElement("button");
-	plus_btn.setAttribute("class", "btn btn-primary");
-	plus_btn.onclick = () => append_pipeline_param(pipeline_param_container, "value");
+	plus_btn.setAttribute("style", "margin-right:5px");
+	plus_btn.setAttribute("class", "btn btn-primary btn-circle");
+	plus_btn.onclick = () => append_pipeline_param(pipeline_param_container, "custom parameter");
 	var plus_span = document.createElement("span");
-	plus_span.setAttribute("class", "fas fa-plus")
+	plus_span.setAttribute("class", "fas fa-xs fa-plus")
 	plus_btn.appendChild(plus_span);
 
 	var minus_btn = document.createElement("button");
-	minus_btn.setAttribute("class", "btn btn-primary");
+	minus_btn.setAttribute("class", "btn btn-primary btn-circle");
 	minus_btn.onclick = () => delete_last_pipeline_param(pipeline_param_container);
 	var minus_span = document.createElement("span");
-	minus_span.setAttribute("class", "fas fa-minus")
+	minus_span.setAttribute("class", "fas fa-xs fa-minus")
 	minus_btn.appendChild(minus_span);
 
 	card_footer.appendChild(plus_btn);
 	card_footer.appendChild(minus_btn);
 	card_footer.appendChild(pipeline_param_container);
-
-	//create the connection line to the preceding service
-	if (prev) {
-		//create connection
-	}
 
 
 }
@@ -398,7 +394,9 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 function append_pipeline_param(container, val) {
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
-	input.setAttribute("value", val);
+	input.setAttribute("class", "form-control")
+	input.setAttribute("placeholder", val);
+	input.setAttribute("style", "margin-top:10px; min-width:160px")
 	container.appendChild(input);
 }
 
