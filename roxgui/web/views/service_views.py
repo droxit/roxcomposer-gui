@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
 from web.views.json_views import _create_json_context
+import json
 
 
 @require_http_methods(["POST"])
@@ -37,7 +38,7 @@ def get_service_info(request):
     :return: a JsonResponse context with key value pairs,
             where the key is the service name and value the corresponding service info
     """
-    services = request.POST.getlist("services[]", default=[])
+    services = json.loads(request.POST.get("services", default=""))
     result = file_request.get_local_services()
 
     service_dict = {}
@@ -46,8 +47,8 @@ def get_service_info(request):
         service_dict[entry] = result.data[entry]
     info = {}
     for service in services:
-        if service in service_dict:
-            info[service] = service_dict[service]
+        if service["service"] in service_dict:
+            info[service["service"]] = service_dict[service["service"]]
 
     return JsonResponse(info)
 

@@ -143,7 +143,7 @@ function enable_search_bar() {
 function add_service_to_pipe() {
 	var searchbar = $('#search_services')[0]
 	var pipe = $("#headline_detail")[0].dataset.name; // currently selected pipeline that is being edited
-	var pipe_container = $("#services_in_pipe")[0]; // the container where service cards will be added
+	var pipe_container = $("#services_in_pipeline")[0]; // the container where service cards will be added
 
 	//Retrieve the selected service that is to be added to pipe (and its information)
 	var selected_service = searchbar.value;
@@ -164,7 +164,7 @@ function add_service_to_pipe() {
 			var current_services = pipe_data.data.services;
 		}
 		//add the new service
-		current_services.push(selected_service);
+		current_services.push({'service': selected_service});
 
 
 		//Update and save the new pipeline
@@ -173,9 +173,9 @@ function add_service_to_pipe() {
 }
 
 /* Remove the service that was clicked from current pipe. */
-function remove_service_from_pipe(service) {
+function remove_service_from_pipe(index) {
 	var pipe = $("#headline_detail")[0].dataset.name; // currently selected pipeline that is being edited
-	var pipe_container = $("#services_in_pipe")[0]; // the container where service cards are
+	var pipe_container = $("#services_in_pipeline")[0]; // the container where service cards are
 
 
 	//Get the pipeline info
@@ -191,8 +191,9 @@ function remove_service_from_pipe(service) {
 			//Get the current service list of the pipeline
 			var current_services = pipe_data.data.services;
 		}
+
+
 		//remove the selected service
-		var index = current_services.indexOf(service);
 		if (index > -1) {
 			current_services.splice(index, 1);
 		}
@@ -210,7 +211,7 @@ function update_pipe(pipe, services) {
 	var new_detail = create_detail_view(pipe);
 	add_detail_view(new_detail);
 	add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_pipelines');
-	save_pipe_status()
+	//save_pipe_status()
 }
 
 
@@ -246,7 +247,7 @@ function create_detail_view(pipeline) {
 			return;
 		}
 		$.post("get_service_info", {
-			services: services_in_pipe,
+			services: JSON.stringify(services_in_pipe),
 			csrfmiddlewaretoken: CSRFtoken
 		}).done(function(data) {
 
@@ -255,16 +256,15 @@ function create_detail_view(pipeline) {
 			//remove this to view services next to each other
 			var inner_container = document.createElement("div");
 			inner_container.setAttribute("class", "container");
-			inner_container.setAttribute("id", "services_in_pipe");
+			inner_container.setAttribute("id", "services_in_pipeline");
 			services_col.appendChild(inner_container);
 
 			set_status_enabled();
 			services_in_pipe.forEach(function(service) {
 				var service_info_single = "";
-				if (service_info[service]) {
-					service_info_single = service_info[service];
+				if (service_info[service["service"]]) {
+					service_info_single = service_info[service["service"]];
 				}
-
 				add_service_card(service, service_info_single, inner_container);
 			});
 		});
@@ -339,10 +339,11 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 
 	btn_del.setAttribute("class", "btn btn-secondary btn-circle");
 	btn_del.setAttribute("style", "margin-right:5px");
+    btn_watch.setAttribute("id", "btn-del-" + i);
 	btn_del.setAttribute("data-toggle", "tooltip");
 	btn_del.setAttribute("data-placement", "top");
 	btn_del.setAttribute("data-title", "delete from pipe");
-	btn_del.setAttribute("onclick", "remove_service_from_pipe('" + service + "')")
+	btn_del.setAttribute("onclick", "remove_service_from_pipe(" + i + ")")
 
 
 	var btn_watch_img = document.createElement("span");
@@ -402,12 +403,15 @@ function save_pipe_add_service(pipe, services) {
 	save_pipe(pipe, services, [$("#btn-add-service"), "", "Adding service failed. \n "])
 }
 
+
 /* Save the pipeline as it currently is in the detail view. */
+/*
 function save_pipe_status(){
 	var pipe_name = get_pipe_name();
 	var services = get_services();
 	save_pipe(pipe_name, services, [$("#btn-save"), "", ""])
 }
+*/
 
 
 /* Retrieve the pipeline name  */
@@ -417,7 +421,9 @@ function get_pipe_name(){
 
 /* Retrieve service list from detail view */
 function get_services(){
-    var service_cards = document.getElementById("services_in_pipe").getElementsByTagName("p");
+
+    var service_cards = $("#services_in_pipeline")[0].getElementsByTagName("p");
+    //var service_cards = document.getElementById("services_in_pipe")
 	var services = [];
 	jQuery.each(service_cards, function(i, val) {
 		services.push(val.innerHTML);
@@ -429,7 +435,7 @@ function get_services(){
 function save_pipe(pipe, services, tooltip_info) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
 	$.post("create_pipeline", {
-		services: services,
+		services: JSON.stringify(services),
 		pipe_name: pipe,
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
@@ -442,7 +448,7 @@ function save_pipe(pipe, services, tooltip_info) {
 
 /* Create a modal popup to ask the user if they really want to delete a service. */
 function delete_this(elem) {
-    save_pipe_status()
+    // save_pipe_status()
 	var pipe_name = document.getElementById("headline_detail").lastElementChild.innerHTML;
 
 	var popup_warning = $("<div class='modal' tabindex='-1' role='dialog'> \
@@ -637,7 +643,7 @@ function set_run_button(btn) {
     pipeline detail view. Careful though, the window needs to be loaded already or else the container
     won't be found. Using $(window).on('load',..) did not work. */
 function get_service_buttons(identifier) {
-	return $("#services_in_pipe")[0].querySelectorAll(identifier);
+	return $("#services_in_pipeline")[0].querySelectorAll(identifier);
 }
 
 /* Currently not used because  */

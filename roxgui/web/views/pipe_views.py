@@ -14,6 +14,7 @@ from web.local_request import rox_request
 from web.models import Message
 from web.views import log_views
 from web.views.json_views import create_rox_response
+import json
 
 
 @require_http_methods(["POST"])
@@ -37,9 +38,21 @@ def create_pipeline(request):
     :return: The RoxResponse
     """
     # Get the service list that the pipe is supposed to contain
-    services = request.POST.getlist("services[]", default=[])
+    services = json.loads(request.POST.get("services", default=""))
     pipe_name = request.POST.get("pipe_name", default="")
     result = rox_request.create_pipeline(pipe_name, services)
+    return create_rox_response(result)
+
+
+@require_http_methods(["POST"])
+def delete_pipeline(request):
+    """
+    Delete a pipe on the ROXcomposer.
+    :param request: shall contain a 'pipe_name' which is the name of the pipe that should be deleted
+    :return: The RoxResponse
+    """
+    pipe_name = request.POST.get("pipe_name", default="")
+    result = rox_request.remove_pipeline(pipe_name)
     return create_rox_response(result)
 
 

@@ -23,6 +23,7 @@ urlpatterns = [
     # Pipeline views.
     path('get_pipelines', pipe_views.get_pipelines, name="web_get_pipelines"),
     path('create_pipeline', pipe_views.create_pipeline, name="web_create_pipeline"),
+    path('delete_pipeline', pipe_views.delete_pipeline, name="web_delete_pipeline"),
     path('get_pipeline_info', pipe_views.get_pipeline_info, name="web_get_pipeline_info"),
     path('send_msg', pipe_views.send_msg, name="web_send_msg"),
 
