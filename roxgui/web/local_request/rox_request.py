@@ -12,17 +12,11 @@ import os
 
 import requests
 from roxgui.local_settings import LOCAL_SETTINGS
-from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
+from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
 
 # Constants.
 # ==========
-
-# Relative path to ROXcomposer build folder.
-RELATIVE_ROX_COMPOSER_BUILD_PATH = "build/roxcomposer-demo-0.4.1"
-
-# Relative path to ROXcomposer log file.
-RELATIVE_ROX_COMPOSER_LOG_FILE_PATH = os.path.join(RELATIVE_ROX_COMPOSER_BUILD_PATH, "logs/trace.log")
 
 # Header for JSON data.
 JSON_HEADER = {"Content-Type": "application/json"}
