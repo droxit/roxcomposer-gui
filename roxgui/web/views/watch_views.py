@@ -48,6 +48,11 @@ def check_watched(request):
 def check_session(request):
     """Check if a ROXcomposer session is active, if not create a new one"""
     active = request.session.get('watch_button_active', {})
+    current_session = request.session.get('current_session', {})
+    if 'id' not in current_session:
+        logsess = rox_request.create_new_sess([]).data
+        update_watch_buttons(request, logsess)
+        request.session.modified = True
     if active == {}:
         logsess = rox_request.create_new_sess([]).data
         update_watch_buttons(request, logsess)

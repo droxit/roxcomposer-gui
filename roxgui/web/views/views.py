@@ -122,7 +122,10 @@ def update_rox_settings(request):
     if path:
         new_settings[ROX_COMPOSER_DIR] = path
 
-    result_flag = update_local_settings(new_settings)
+    update_local_settings(new_settings)
+
     return check()
     # response = RoxResponse(result_flag)
     # return JsonResponse(response.convert_to_json())
+
+
