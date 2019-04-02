@@ -239,6 +239,9 @@ function create_detail_view(pipeline) {
 		pipe_name: pipeline,
 		csrfmiddlewaretoken: CSRFtoken,
 	}).done(function(pipe_data) {
+	    // set the hiddel old pipeline name (in case of overwrite)
+        $("#headline_detail")[0].dataset.old_name = pipeline
+
 		//enable the searchbar and send message field so the user can edit the pipe and send messages
 		enable_search_bar();
 		enable_send_msg();
@@ -441,6 +444,14 @@ function save_pipe(pipe, services, tooltip_info) {
 	}).done(function(data) {
 		if (data.success) {
 			update_pipe(pipe, services);
+
+			//check if the pipe name has been change, if yes delete the old pipeline (overwrite)
+			var old_name = $("#headline_detail")[0].dataset.old_name;
+            if(old_name){
+                if(old_name != pipe){
+                    delete_pipeline(old_name);
+                }
+            }
 	    }
 	    show_tooltip(tooltip_info[0], data.success, tooltip_info[1], tooltip_info[2] + data.message)
 	});
