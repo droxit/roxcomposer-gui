@@ -599,7 +599,7 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
 
     url = get_rox_connector_url("log_observer")
 
-    if rox_session is None:
+    if rox_session == {}:  # session is empty
         return create_new_sess(service_names, timeout)
     else:
         # Session already exists, so update it.
@@ -652,7 +652,7 @@ def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
     if len(service_names) < 1:
         return RoxResponse(False, "No services specified.")
 
-    if rox_session is None:
+    if rox_session == {}:
         return RoxResponse(False, "No session specified.")
 
     s = list(filter(lambda service: service in rox_session['services'], service_names))
@@ -716,6 +716,32 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
 
     res = RoxResponse(True, r.text)
     res.data = rox_session
+    return res
+
+
+def get_logsession(rox_session: dict):
+    """
+    Retrieve the information to a specific logsession
+    :param rox_session: contains id of logsession
+    :return: RoxResponse with session information. Contains success = False if no logsession
+    """
+    url = get_rox_connector_url("get_logsession")
+    content = {'id': rox_session['id']}
+
+    try:
+        r = requests.post(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    if r.json() == {}:
+        return RoxResponse(False, "No session with that ID")
+
+    res = RoxResponse(True, r.text)
+    res.data = r.json()
     return res
 
 
