@@ -775,31 +775,6 @@ def get_service_logs(rox_session: dict):
     return res
 
 
-def get_message_status(last_time: int = None) -> RoxResponse:
-    """
-    Get the last message status logs from trace log. These logs indicate where a message that was sent to a pipeline
-    currently is (which service is processing it).
-    :param last_time: the time (in seconds) that the trace was polled last time
-    :return: RoxResponse where the data contains a list of log lines, each element being one log line
-    """
-    logs = []
-    logfile = get_rox_composer_log_file_path()
-    try:
-        for line in open(logfile, "r"):
-            if last_time is None:
-                logs.append(line)
-            else:
-                line_time = json.loads(line)['time']
-                # add new log lines only if they are newer than the last time logs were updated
-                if line_time > last_time:
-                    logs.append(line)
-    except FileNotFoundError:
-        return RoxResponse(False, "Could not open trace file.")
-
-    res = RoxResponse(True, "Message trace read.")
-    res.data = logs
-    return res
-
 
 def watch_pipelines():  # TODO
     pass
