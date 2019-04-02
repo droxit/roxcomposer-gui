@@ -46,8 +46,8 @@ def update_logs(request, msg_id=None):
     :param request: Current request.
     :param msg_id: Specific message ID (default: None).
     """
-    sess = request.session.get('current_session', None)
-    if sess is not None:  # if there is a current session write new logs to database
+    sess = request.session.get('current_session', {})
+    if sess != {}:  # if there is a current session write new logs to database
         rox_result = rox_request.get_service_logs(sess)  # get the recent logs
         if rox_result.success:
             for log in rox_result.data:  # write each log line separately
