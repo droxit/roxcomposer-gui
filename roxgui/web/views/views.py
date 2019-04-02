@@ -83,7 +83,13 @@ def check() -> JsonResponse:
     rox_path = rox_request.get_file_path()
     log_file_path = rox_request.get_rox_composer_log_file_path()
     res = check_rox_composer_log_file_path(log_file_path)
+
+    # TODO: Actually, the user should not be concerned
+    #  with any internal log file. In future releases,
+    #  0this will be handled in backend. In this case,
+    #  the current config file needs to be adjusted.
     res.success = True
+
     result["path_set"] = res.success
     result["path"] = rox_path
     if not res.success:
