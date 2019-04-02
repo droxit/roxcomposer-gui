@@ -48,7 +48,7 @@ urlpatterns = [
     path("get_watch_logs", log_views.get_watch_logs, name="web_get_watch_logs"),
 
     # Message Views
-    path("get_msg_status", message_views.get_msg_status, name="web_get_msg_status"),
+    path("update_messages", message_views.update_messages, name="web_update_messages"),
 
     # Manage config.ini file.
     path("check_rox_settings", views.check_rox_settings, name="web_check_rox_settings"),
