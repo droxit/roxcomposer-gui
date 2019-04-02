@@ -66,12 +66,22 @@ def check_session(request):
 
 
 def reset_current_session(request):
+    """
+    If something went wrong with the watching session reset the local copy
+    :param request:
+    :return:
+    """
     request.session["current_session"] = {}
     request.session.modified = True
     return
 
 
 def reset_watch_buttons(request):
+    """
+    If something went wrong with the watching session reset the watch button status of all services to 'unwatched'
+    :param request:
+    :return:
+    """
     watch_buttons = request.session.get('watch_button_active', {})
     for service in watch_buttons:
         request.session['watch_button_active'][service] = False  # set everything to 'unwatched'
