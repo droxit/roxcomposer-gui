@@ -40,12 +40,29 @@ function show_tooltip(btn, success, successmsg, failmsg) {
         btn.data('bs.popover').tip.classList.add('popover-danger');
 	}
 
-    // delete popover and put tooltip back in place
-	setTimeout(function() {
-		btn.popover('dispose');
-		btn.tooltip({title: oldTooltip, placement:'bottom'})
-	}, 5000)
+
+
+    // delete popover and put tooltip back in place if the user is not hovering over it
+    setTimeout(function check_hovering() {
+        if(!$("#"+popover.tip.id+":hover").length){
+            remove_popover(btn, oldTooltip);
+            return;
+        }
+        setTimeout(check_hovering, 500);
+    }, 2000);
+
+
 }
+
+
+
+function remove_popover(btn, oldTooltip){
+    btn.popover('dispose');
+    btn.tooltip({title: oldTooltip, placement:'bottom'});
+    btn.tooltip('show');
+    btn.tooltip('hide');
+}
+
 
 /* Remove the popover from this element */
 function remove_tooltip(elem){

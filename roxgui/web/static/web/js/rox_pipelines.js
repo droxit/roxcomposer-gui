@@ -280,7 +280,8 @@ function create_detail_view(pipeline) {
 /* Adds a single service card to the services_container and sets the tooltip info to serviceinfo
    connecting lines between cards have not yet been implemented */
 function add_service_card(service_obj, serviceinfo, services_container) {
-    var service = service_obj["service"]
+    var service = service_obj["service"];
+    var service_params = service_obj["params"];
 	var prev = get_preceding_service(services_container);
 	var i = services_container.childNodes.length + 1;
 
@@ -348,7 +349,6 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_del.setAttribute("data-title", "delete from pipe");
 	btn_del.setAttribute("onclick", "remove_service_from_pipe(" + i + ")")
 
-
 	var btn_watch_img = document.createElement("span");
 	var btn_del_img = document.createElement("span");
 	var btn_run_img = document.createElement("span");
@@ -359,19 +359,62 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_del.appendChild(btn_del_img);
 	btn_run.appendChild(btn_run_img);
 
-
 	var card_text = document.createElement("p");
 	card_text.setAttribute("class", "card-text");
 	card_body.appendChild(card_text);
 
 	card_text.appendChild(document.createTextNode(service));
 
-	//create the connection line to the preceding service
-	if (prev) {
-		//create connection
+	var card_footer = document.createElement("div");
+	card_footer.setAttribute("class", "card-footer");
+	card.appendChild(card_footer);
+
+	var pipeline_param_container = document.createElement("div");
+	pipeline_param_container.setAttribute("id", "pipeline_param_container");
+
+	var plus_btn = document.createElement("button");
+	plus_btn.setAttribute("style", "margin-right:5px");
+	plus_btn.setAttribute("class", "btn btn-primary btn-circle");
+	plus_btn.onclick = () => append_pipeline_param(pipeline_param_container, "custom parameter");
+	var plus_span = document.createElement("span");
+	plus_span.setAttribute("class", "fas fa-xs fa-plus")
+	plus_btn.appendChild(plus_span);
+
+	var minus_btn = document.createElement("button");
+	minus_btn.setAttribute("class", "btn btn-primary btn-circle");
+	minus_btn.onclick = () => delete_last_pipeline_param(pipeline_param_container);
+	var minus_span = document.createElement("span");
+	minus_span.setAttribute("class", "fas fa-xs fa-minus")
+	minus_btn.appendChild(minus_span);
+
+    // append all existing pipeline params to service card
+	if(service_params){
+	    service_params.forEach(function(param){
+	        append_pipeline_param(pipeline_param_container, param);
+	    });
 	}
 
+	card_footer.appendChild(plus_btn);
+	card_footer.appendChild(minus_btn);
+	card_footer.appendChild(pipeline_param_container);
 
+
+}
+
+/* Add editable value to pipeline service container. */
+function append_pipeline_param(container, val) {
+	var input = document.createElement("input");
+	input.setAttribute("type", "text");
+	input.setAttribute("class", "form-control")
+	input.setAttribute("placeholder", val);
+	input.setAttribute("style", "margin-top:10px; min-width:160px")
+	container.appendChild(input);
+}
+
+/* Delete last value from pipeline service container. */
+function delete_last_pipeline_param(container) {
+	var last_child = container.lastChild;
+	container.removeChild(last_child);
 }
 
 /* This is supposed to return the card of the preceding service in the pipeline */
@@ -425,11 +468,22 @@ function get_pipe_name(){
 /* Retrieve service list from detail view */
 function get_services(){
 
-    var service_cards = $("#services_in_pipeline")[0].getElementsByTagName("p");
+    var service_cards = $("#services_in_pipeline")[0].querySelectorAll('.carddiv');
     //var service_cards = document.getElementById("services_in_pipe")
 	var services = [];
-	jQuery.each(service_cards, function(i, val) {
-		services.push(val.innerHTML);
+
+	service_cards.forEach(function(card){
+	    let service_json = {};
+	    let service_name = card.getElementsByTagName("p")[0].innerHTML;
+	    service_json["service"] = service_name;
+	    let param_inputs = card.querySelectorAll('.form-control');
+	    if(param_inputs.length){
+	        service_json["params"] = [];
+	        param_inputs.forEach(function(param_input){
+	            service_json["params"].push(param_input.value);
+	        });
+	    }
+		services.push(service_json);
 	});
 	return services
 }
