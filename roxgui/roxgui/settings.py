@@ -90,6 +90,8 @@ TEMPLATES = [
     },
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 WSGI_APPLICATION = 'roxgui.wsgi.application'
 
 # Database
