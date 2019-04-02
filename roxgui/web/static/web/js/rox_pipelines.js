@@ -283,7 +283,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
     var service = service_obj["service"];
     var service_params = service_obj["params"];
 	var prev = get_preceding_service(services_container);
-	var i = services_container.childNodes.length + 1;
+	var i = services_container.childNodes.length;
 
 	var newrow = document.createElement("div");
 	newrow.setAttribute("class", "row");
