@@ -70,7 +70,7 @@ function set_pipe_info(elem) {
 function add_search_bar() {
 	var search_container = $("#search-bar-container");
 	var search_btn_container = $("#search-btn-container");
-	var searchbar = $("<input id='search_services' class='form-control' type='text' onchange='$(\"#btn-add-service\")[0].click()' list='data-service-list' placeholder='Add service ...' disabled='disabled'></input>");
+	var searchbar = $("<input id='search_services' class='form-control' type='text'  list='data-service-list' placeholder='Add service ...' disabled='disabled'></input>");
 	var service_datalist = $("<datalist id='data-service-list'></datalist>");
 	var add_btn = $("<button type='button' id='btn-add-service' class='btn btn-primary btn-circle-big disabled' style='margin-left:-20px' onclick='add_service_to_pipe()'><span class='fas fa-plus'></span></button>")
 
@@ -350,7 +350,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
     var service = service_obj["service"];
     var service_params = service_obj["params"];
 	var prev = get_preceding_service(services_container);
-	var i = services_container.childNodes.length + 1;
+	var i = services_container.childNodes.length;
 
 	var newrow = document.createElement("div");
 	newrow.setAttribute("class", "row");
