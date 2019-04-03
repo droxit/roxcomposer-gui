@@ -33,6 +33,9 @@ MSG_MISSING_SERVICES_ERROR = "No services specified."
 # Session timeout.
 SESSION_TIMEOUT = 3600
 
+# Session timeout of internal roxcomposer session
+ROXCOMPOSER_TIMEOUT = 50000
+
 # Default services.
 FORBIDDEN_SERVICES = {'basic_reporting'}
 
@@ -723,6 +726,71 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
 
     res = RoxResponse(True, r.text)
     res.data = rox_session
+    return res
+
+
+def create_new_roxcomposer_session(timeout : int = ROXCOMPOSER_TIMEOUT):
+    """
+    Attempt to start a new log session on the ROXcomposer
+    :param services: list of services that should be watched
+    :param timeout: time after which session expires
+    :return: response with data = session dictionary ('id', 'timeout', 'services')
+    """
+    # There is no session yet, so start a new one.
+    internal_rox_session = dict()
+    internal_rox_session['timeout'] = timeout
+
+    content = {'lines': 100, 'timeout': timeout}
+    url = get_rox_connector_url("roxcomposer_log_observer")
+
+    try:
+        r = requests.put(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    # request successful, create a session dictionary
+    internal_rox_session['id'] = r.json()['sessionid']
+    res = RoxResponse(True, r.text)
+    res.data = internal_rox_session
+    return res
+
+
+def get_system_logs(internal_rox_session: dict):
+    """
+    Retrieve the newest log data from the ROXcomposer.
+    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+            for instance the session ID, or which services are being watched.
+    :return: RoxResponse with a list of the newest log lines as data, where each line is an element of the list
+    """
+    if internal_rox_session is None:
+        error_msg = "Trying to get logs, but no session instantiated."
+        return RoxResponse(False, error_msg)
+
+    url = get_rox_connector_url("log_observer")
+    content = {'sessionid': internal_rox_session['id']}
+
+    try:
+        r = requests.get(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+
+    logs = [json.loads(logline) for logline in r.json()['loglines']]
+    res = RoxResponse(True, r.text)
+    res.data = logs
     return res
 
 
