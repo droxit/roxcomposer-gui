@@ -7,7 +7,7 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from web.local_request import rox_request
@@ -15,6 +15,10 @@ from web.models import Message
 from web.views import log_views
 from web.views.json_views import create_rox_response
 import json
+import uuid
+from django.utils.encoding import smart_str
+from roxgui import settings
+import os
 
 
 @require_http_methods(["POST"])
@@ -94,3 +98,31 @@ def send_msg(request):
         log_views.update_logs(request, msg_id=result.data)
 
     return create_rox_response(result)
+
+
+@require_http_methods(["GET"])
+def save_session(request):
+    """
+    Download the session json file.
+    :param request:
+    :return: a json file containing the current session on the roxcomposer
+    """
+    file_name = "session-" + str(uuid.uuid4()) +".json"
+    res = rox_request.save_session(file_name)
+    file_path = res.data["filepath"]
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type='application/blah')
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+            response['X-Sendfile'] = smart_str(res.data["filepath"])
+    else:
+        response = create_rox_response(res)
+    return response
+
+
+@require_http_methods(["POST"])
+def load_session(request):
+    session = request.POST.get("session")
+    print(session)
+    res = rox_request.load_session(session)
+    return create_rox_response(res)

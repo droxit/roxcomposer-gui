@@ -521,7 +521,18 @@ def save_session(file_name: str) -> RoxResponse:
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be saved.
     """
-    file_path = os.path.join(SESSION_DIR, file_name)
+    roxsession_path = LOCAL_SETTINGS[SESSION_DIR]
+
+    # clear all old roxsessions
+    for the_file in os.listdir(roxsession_path):
+        file_path = os.path.join(roxsession_path, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
+    file_path = os.path.join(roxsession_path, file_name)
     try:
         fd = open(file_path, 'w')
     except OSError as err:
@@ -545,41 +556,43 @@ def save_session(file_name: str) -> RoxResponse:
             return RoxResponse(False, error_msg)
         finally:
             fd.close()
-        return RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res = RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res.data = {"filepath": file_path, "filename": file_name}
+        return res
     else:
         fd.close()
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
 
-def load_session(file_name: str) -> RoxResponse:
+def delete_session_after_download(filepath):
+    pass
+
+
+def load_session(session_file) -> RoxResponse:
     """
     Load session from specified JSON file.
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be loaded.
     """
-    session_file = os.path.join(SESSION_DIR, file_name)
-    if os.path.isfile(session_file):
-        fd = open(session_file, 'r')
-        restore_json = json.loads(fd.read())
-        fd.close()
-    else:
-        error_msg = _create_file_error(session_file, "Not a valid file.")
-        return RoxResponse(False, error_msg)
 
-    url = get_rox_connector_url("load_services_and_pipelines")
+    try:  # load session as json file
+        session_json = json.loads(session_file)
+        url = get_rox_connector_url("load_services_and_pipelines")
 
-    try:
-        r = requests.post(url, data=json.dumps(restore_json), headers=JSON_HEADER)
-    except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(str(err))
-        return RoxResponse(False, error_msg)
+        try:  # try to load session on composer
+            r = requests.post(url, data=json.dumps(session_json), headers=JSON_HEADER)
+        except requests.exceptions.ConnectionError as err:
+            error_msg = _create_connection_error(str(err))
+            return RoxResponse(False, error_msg)
 
-    if r.status_code != 200:
-        error_msg = _create_http_status_error(r.status_code, r.text)
-        return RoxResponse(False, error_msg)
-    else:
-        return RoxResponse(True, r.text)
+        if r.status_code != 200:
+            error_msg = _create_http_status_error(r.status_code, r.text)
+            return RoxResponse(False, error_msg)
+        else:
+            return RoxResponse(True, r.text)
+    except json.JSONDecodeError as e:
+        return RoxResponse(False, "Could not decode session json - {}".format(e))
 
 
 def watch_services(service_names: list, rox_session: dict = None, timeout: int = SESSION_TIMEOUT) -> RoxResponse:

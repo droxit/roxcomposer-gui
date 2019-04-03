@@ -26,6 +26,8 @@ urlpatterns = [
     path('delete_pipeline', pipe_views.delete_pipeline, name="web_delete_pipeline"),
     path('get_pipeline_info', pipe_views.get_pipeline_info, name="web_get_pipeline_info"),
     path('send_msg', pipe_views.send_msg, name="web_send_msg"),
+    path('pipelines/save_session', pipe_views.save_session, name="web_save_session"),
+    path('load_session', pipe_views.load_session, name="web_load_session"),
 
     # Service views
     path('get_services', service_views.get_services, name="web_get_services"),

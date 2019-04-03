@@ -26,6 +26,8 @@ function set_pipe_tooltips() {
 	set_pipe_tooltip($("#btn-add-service")[0].dataset, "add new service to pipeline");
 	set_pipe_tooltip($("#btn-send-msg")[0].dataset, "send");
 	set_pipe_tooltip($("#btn-attach")[0].dataset, "attach a file");
+	set_pipe_tooltip($("#btn-load-session")[0].dataset, "load a session");
+	set_pipe_tooltip($("#btn-save-session")[0].dataset, "save a session");
 
 }
 
@@ -88,24 +90,51 @@ function add_search_bar() {
 }
 
 /* adds a disabled */
-function add_send_message() {
+function add_send_message_and_session_restore() {
 	var search_container = $("#content-container");
 	var msg_row = $("<div class='row' style='margin-top:20px;margin-bottom:20px'></div>");
 	var msg_col = $("<div class='col-md-5'></div>");
-	var btn_col = $("<div class='col-md-7'></div>");
+	var btn_col = $("<div class='col-md-2'></div>");
+	var ssn_col = $("<div class='col-md-5 float-right'></div>");
+	var ssn_float_right = $("<div class='float-right'></div>");
 
 	msg_row.append(msg_col);
 	msg_row.append(btn_col);
+	msg_row.append(ssn_col);
 	search_container.append(msg_row);
 
 	var msg_input = $("<input id='send_msg' class='form-control' type='text' placeholder='Send a message to pipeline' disabled = 'disabled'></input>");
 	msg_col.append(msg_input);
 
 
-	var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-circle-big disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>")
-	var attach_btn = $("<button type='button' id='btn-attach' class='btn btn-primary btn-circle-big disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>")
+	var msg_send_btn = $("<button type='button' id='btn-send-msg' class='btn btn-primary btn-circle-big disabled' style='margin-left:-20px' onclick='send_msg_to_pipe()'><span class='fas fa-paper-plane'></span></button>");
+	var attach_btn = $("<button type='button' id='btn-attach' class='btn btn-primary btn-circle-big disabled ' style='margin-left:10px' ><span class='fas fa-paperclip'></span></button>");
 	btn_col.append(msg_send_btn);
 	btn_col.append(attach_btn);
+
+	var ssn_save_btn = $("<button type='button' id='btn-save-session' class='btn btn-secondary btn-circle-big ' \
+	                        style='margin-left:-20px' onclick='save_session()'> \
+	                        <span class='fas fa-download' aria-hidden='true'> \
+	                        </span> \
+	                        </button>");
+
+    var ssn_load_btn = $("<button type='button' id='btn-load-session' class='btn btn-secondary btn-circle-big ' \
+	                        style='margin-left: 10px' onclick='$(\"#load_session\").click()'> \
+	                        <label for='load_session'> \
+	                        <span class='fas fa-upload' aria-hidden='true'></span> \
+	                        </label> \
+	                        </button>");
+    var ssn_load_input = $("<input type='file' id='load_session' style='display:none'>");
+    ssn_load_btn.append(ssn_load_input);
+
+
+    ssn_col.append(ssn_float_right);
+    ssn_float_right.append(ssn_save_btn);
+    ssn_float_right.append(ssn_load_btn);
+
+    ssn_load_input[0].addEventListener("change", load_session, false);
+
+
 
 	bind_message_enter(); //bind the enter key on the input field to send a message
 
@@ -137,6 +166,44 @@ function enable_send_msg() {
 function enable_search_bar() {
 	var searchbar = $("#search_services")[0];
 	searchbar.disabled = '';
+}
+
+
+/* Downloads the current session */
+function save_session(){
+    var link = document.createElement("a");
+    link.href = window.location + "/save_session";
+    link.click();
+}
+
+/* Opens a dialog that asks from where the user wants to load the session */
+function load_session(){
+    var file = this.files[0];
+
+    var reader = new FileReader();
+    // Closure to capture the file information.
+    reader.onload = (function (file) {
+        return function (e) {
+            try {
+                session = JSON.parse(e.target.result);
+
+                var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+                $.post("load_session", {
+                    session: JSON.stringify(session),
+                    csrfmiddlewaretoken: CSRFtoken,
+                }).done(function(data) {
+                    if(data.success){
+                        location.reload();
+                    }else{
+                        show_tooltip($("#btn-load-session"), data.success, "Restored session", "Could not restore session: " + data.message);
+                    }
+                });
+            } catch (ex) {
+                show_tooltip($("#btn-load-session"), false, "", "Could not load session: " + ex);
+            }
+        }
+    })(file);
+    reader.readAsText(file);
 }
 
 /* Add a selected service to the currently viewed pipeline */
@@ -308,7 +375,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 
 	var card_header = document.createElement("div");
 	card_header.setAttribute("class", "row ml-auto");
-	card_header.setAttribute("style", "margin-top: -30px;")
+	card_header.setAttribute("style", "margin-top: -18px; margin-bottom:10px");
 	card_header_container.appendChild(card_header);
 
 	var btn_watch = document.createElement("button");
@@ -318,7 +385,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_watch.setAttribute("data-placement", "top");
 	btn_watch.setAttribute("data-name", service);
 	btn_watch.setAttribute("data-status", "0");
-	btn_watch.setAttribute("class", "btn btn-secondary btn-watch btn-circle");
+	btn_watch.setAttribute("class", "btn btn-secondary btn-watch btn-circle btn-mini");
 	btn_watch.setAttribute("onclick", "toggle_services(['" + service + "','" + btn_watch.id + "'],this, watch_services, unwatch_services)");
 
 	set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
