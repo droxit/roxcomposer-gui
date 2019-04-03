@@ -12,17 +12,11 @@ import os
 
 import requests
 from roxgui.local_settings import LOCAL_SETTINGS
-from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
+from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
 
 # Constants.
 # ==========
-
-# Relative path to ROXcomposer build folder.
-RELATIVE_ROX_COMPOSER_BUILD_PATH = "build/roxcomposer-demo-0.4.1"
-
-# Relative path to ROXcomposer log file.
-RELATIVE_ROX_COMPOSER_LOG_FILE_PATH = os.path.join(RELATIVE_ROX_COMPOSER_BUILD_PATH, "logs/trace.log")
 
 # Header for JSON data.
 JSON_HEADER = {"Content-Type": "application/json"}
@@ -527,7 +521,18 @@ def save_session(file_name: str) -> RoxResponse:
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be saved.
     """
-    file_path = os.path.join(SESSION_DIR, file_name)
+    roxsession_path = LOCAL_SETTINGS[SESSION_DIR]
+
+    # clear all old roxsessions
+    for the_file in os.listdir(roxsession_path):
+        file_path = os.path.join(roxsession_path, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
+    file_path = os.path.join(roxsession_path, file_name)
     try:
         fd = open(file_path, 'w')
     except OSError as err:
@@ -551,41 +556,43 @@ def save_session(file_name: str) -> RoxResponse:
             return RoxResponse(False, error_msg)
         finally:
             fd.close()
-        return RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res = RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res.data = {"filepath": file_path, "filename": file_name}
+        return res
     else:
         fd.close()
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
 
-def load_session(file_name: str) -> RoxResponse:
+def delete_session_after_download(filepath):
+    pass
+
+
+def load_session(session_file) -> RoxResponse:
     """
     Load session from specified JSON file.
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be loaded.
     """
-    session_file = os.path.join(SESSION_DIR, file_name)
-    if os.path.isfile(session_file):
-        fd = open(session_file, 'r')
-        restore_json = json.loads(fd.read())
-        fd.close()
-    else:
-        error_msg = _create_file_error(session_file, "Not a valid file.")
-        return RoxResponse(False, error_msg)
 
-    url = get_rox_connector_url("load_services_and_pipelines")
+    try:  # load session as json file
+        session_json = json.loads(session_file)
+        url = get_rox_connector_url("load_services_and_pipelines")
 
-    try:
-        r = requests.post(url, data=json.dumps(restore_json), headers=JSON_HEADER)
-    except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(str(err))
-        return RoxResponse(False, error_msg)
+        try:  # try to load session on composer
+            r = requests.post(url, data=json.dumps(session_json), headers=JSON_HEADER)
+        except requests.exceptions.ConnectionError as err:
+            error_msg = _create_connection_error(str(err))
+            return RoxResponse(False, error_msg)
 
-    if r.status_code != 200:
-        error_msg = _create_http_status_error(r.status_code, r.text)
-        return RoxResponse(False, error_msg)
-    else:
-        return RoxResponse(True, r.text)
+        if r.status_code != 200:
+            error_msg = _create_http_status_error(r.status_code, r.text)
+            return RoxResponse(False, error_msg)
+        else:
+            return RoxResponse(True, r.text)
+    except json.JSONDecodeError as e:
+        return RoxResponse(False, "Could not decode session json - {}".format(e))
 
 
 def watch_services(service_names: list, rox_session: dict = None, timeout: int = SESSION_TIMEOUT) -> RoxResponse:
@@ -774,31 +781,6 @@ def get_service_logs(rox_session: dict):
     res.data = logs
     return res
 
-
-def get_message_status(last_time: int = None) -> RoxResponse:
-    """
-    Get the last message status logs from trace log. These logs indicate where a message that was sent to a pipeline
-    currently is (which service is processing it).
-    :param last_time: the time (in seconds) that the trace was polled last time
-    :return: RoxResponse where the data contains a list of log lines, each element being one log line
-    """
-    logs = []
-    logfile = get_rox_composer_log_file_path()
-    try:
-        for line in open(logfile, "r"):
-            if last_time is None:
-                logs.append(line)
-            else:
-                line_time = json.loads(line)['time']
-                # add new log lines only if they are newer than the last time logs were updated
-                if line_time > last_time:
-                    logs.append(line)
-    except FileNotFoundError:
-        return RoxResponse(False, "Could not open trace file.")
-
-    res = RoxResponse(True, "Message trace read.")
-    res.data = logs
-    return res
 
 
 def watch_pipelines():  # TODO

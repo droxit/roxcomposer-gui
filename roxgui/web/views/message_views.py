@@ -37,23 +37,26 @@ def get_messages():
     return msgs
 
 
-def get_message_statuses(request, messages) -> dict:
+def get_message_status(request, message):
     """
-    For the current messages retrieve the corresponding log lines from ROXcomposer trace log.
+    For the current message retrieve the corresponding log lines from ROXcomposer trace log.
     These contain information on the current status of the message (e.g. the last service in the
     pipeline that was reached).
+    Returns the MessageStatus Object that belongs to the Message Object.
 
     :param request: Contains the django session which is used to retrieve information on when the last
                     message poll (from the log file) happened
-    :param messages: a Django QueryObject containing all currently relevant messages
-    :return: a dictionary that for each message in 'messages' contains all status information as 'MessageStatus' objects
+    :param message: a Message Object containing id and information regarding the message
+    :return: a 'MessageStatus' object containing information on the current status of the message (or None if no
+            message information is available)
     """
-    last_time = request.session.get('last_message_poll', None)
-    res = rox_request.get_message_status(last_time=last_time)
-    if res.success:
+    res = rox_request.get_message_history(message.id)  # Retrieve trace log from ROXcomposer
+
+    last_time = request.session.get('last_message_poll', None)  # Retrieve info on when logs were last pulled
+    if res.success:  # Save the retrieved info as Loglines to DB
         tracelines = res.data
-        for line in tracelines:
-            new_logline = json.loads(line)
+        for new_logline in tracelines:
+            # new_logline = json.loads(line)
             msg_status = MessageStatus(event=new_logline['event'], status=new_logline['status'],
                                        time=epoch2dt(new_logline['time']), msg_id=new_logline['args']['message_id'],
                                        service_name=new_logline['args']['service_name'])
@@ -72,38 +75,34 @@ def get_message_statuses(request, messages) -> dict:
 
             msg_status.save()
 
-    request.session['last_message_poll'] = time.time()
-    request.session.modified = True
+        request.session['last_message_poll'] = time.time()
+        request.session.modified = True
 
     dt_end = timezone.make_aware(datetime.datetime.now())
     dt_del_start = dt_end - MSG_DELETE
     MessageStatus.objects.exclude(time__range=(dt_del_start, dt_end)).delete()  # delete old entries
 
-    # retrieve only latest entries of each message:
-    msg_dict = {}
-
-    for message in messages:
-        if MessageStatus.objects.filter(msg_id=message.id).count() > 0:
-            msg_dict[message] = MessageStatus.objects.filter(msg_id=message.id).latest('time')
-        else:
-            msg_dict[message] = None
-    return msg_dict
+    # retrieve only latest entry:
+    if MessageStatus.objects.filter(msg_id=message.id).count() > 0:
+        return MessageStatus.objects.filter(msg_id=message.id).latest('time')
+    else:
+        return None
 
 
 @require_http_methods(["POST"])
-def get_msg_status(request):
+def update_messages(request):
     """
     Retrieve the current messages and their status
     :param request: contains the django session variable
     :return: a JsonResponse containing all messages and their status as strings
     """
     msgs = get_messages()
-    msg_dict = get_message_statuses(request, msgs)
-    msg_dict_str = {}
-    for msg in msg_dict:
-        msg_dict_str[msg.id] = {"message": msg.to_dict(), "status": msg_dict[msg].to_dict()}
+    msg_dict = {}
+    for msg in msgs:
+        msg_status = get_message_status(request, msg)
+        msg_dict[msg.id] = {"message": msg.to_dict(), "status": msg_status.to_dict()}
 
-    return JsonResponse(msg_dict_str)
+    return JsonResponse(msg_dict)
 
 
 def epoch2dt(ts_epoch):

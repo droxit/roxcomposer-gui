@@ -11,7 +11,7 @@
 /* Retrieve the Message Status information from server. */
 function get_msg_status(elem) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("get_msg_status", {
+	$.post("update_messages", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 		for (var msg in data) { //for every message append a card to accordion
