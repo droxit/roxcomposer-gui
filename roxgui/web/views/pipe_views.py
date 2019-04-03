@@ -122,6 +122,11 @@ def save_session(request):
 
 @require_http_methods(["POST"])
 def load_session(request):
+    """
+    Load a session on the roxcomposer from uploaded file.
+    :param request:
+    :return: response whether loading was successful
+    """
     session = request.POST.get("session")
     print(session)
     res = rox_request.load_session(session)
