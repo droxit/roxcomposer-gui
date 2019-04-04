@@ -18,6 +18,8 @@ class Logline(models.Model):
     msg_id = models.CharField(max_length=200, default="")
     level = models.CharField(max_length=200, default="debug")
     time = models.DateTimeField()
+    error = models.TextField(default="")
+    full_log = models.TextField(default="")
 
     def __str__(self):
         logline = ""
@@ -31,13 +33,17 @@ class Logline(models.Model):
             logline += "Message: {}, ".format(self.msg)
         if self.level:
             logline += "Loglevel: {}, ".format(self.level)
+        if self.error:
+            logline += "Error: {}".format(self.error)
+        if self.full_log:
+            logline += "\n ROXcomposer system log: \n {}".format(self.full_log)
         return logline
 
     def to_dict(self):
         return {"id": self.id, "service": self.service,
                 "msg": self.msg, "level": self.level,
                 "time": self.time.strftime("%B %d, %Y %H:%M"),
-                "text": str(self)}
+                "text": str(self), "error": self.error, "full_log": self.full_log}
 
 
 class Message(models.Model):
