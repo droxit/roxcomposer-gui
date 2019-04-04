@@ -98,7 +98,7 @@ def update_system_logs(request, session):
             try:
                 full_log = json.dumps(log)
                 new_logline.full_log = full_log
-            except json.JSONDecodeError:
+            except TypeError:
                 if "msg" in log:
                     new_logline.msg = log["msg"]
                 elif "message" in log:
