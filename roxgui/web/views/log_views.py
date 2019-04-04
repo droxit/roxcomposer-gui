@@ -58,10 +58,11 @@ def update_logs(request, msg_id=None):
         if rox_result.success:
             for log in rox_result.data:  # write each log line separately
                 if msg_id:
-                    new_logline = Logline(msg_id=msg_id, service=log['service'],
-                                          level=log['level'], msg=log['msg'], time=log['time'])
+                    new_logline = Logline(msg_id=msg_id, service=str(log['service']),
+                                          level=log['level'], msg=str(log['msg']), time=log['time'])
                 else:
-                    new_logline = Logline(service=log['service'], level=log['level'], msg=log['msg'], time=log['time'])
+                    new_logline = Logline(service=str(log['service']), level=log['level'], msg=str(log['msg']),
+                                          time=log['time'])
                 new_logline.save()  # save to DB
         else:
             logging.error("Error occurred while retrieving logs from ROXconnector: " + rox_result.message)
@@ -100,9 +101,9 @@ def update_system_logs(request, session):
                 new_logline.full_log = full_log
             except TypeError:
                 if "msg" in log:
-                    new_logline.msg = log["msg"]
+                    new_logline.msg = str(log["msg"])
                 elif "message" in log:
-                    new_logline.msg = log["message"]
+                    new_logline.msg = str(log["message"])
             new_logline.save()
     else:
         logging.error("Error occurred while retrieving logs from ROXconnector: " + res.message)
