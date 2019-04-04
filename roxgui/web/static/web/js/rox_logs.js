@@ -32,9 +32,13 @@ function create_logline(log_win, log) {
 
 	var span = document.createElement("span");
 	span.setAttribute("id", "log-" + id);
-	if(log.text.includes("ERROR") || log.text.includes("error") || log.text.includes("CRITICAL") || log.text.includes("fatal")){
-	    span.setAttribute("class", "bold-red");
-	}
+	let error_keywords = ["error", "fatal", "critical"]
+
+	error_keywords.forEach((keyword)=>{
+	    if(log.text.toLowerCase().includes(keyword))
+	        span.setAttribute("class", "bold-red");
+	});
+
 	//span.setAttribute("style", "font-size:0.7em");
 	make_logline_text(span, log);
 	log_win.appendChild(span);
