@@ -788,7 +788,11 @@ def get_system_logs(internal_rox_session: dict):
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
-    logs = [json.loads(logline) for logline in r.json()['loglines']]
+    logs = []
+    try:
+        logs = [json.loads(logline) for logline in r.json()['loglines']]
+    except json.JSONDecodeError:
+        pass
     res = RoxResponse(True, r.text)
     res.data = logs
     return res
@@ -843,7 +847,12 @@ def get_service_logs(rox_session: dict):
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
-    logs = [json.loads(logline) for logline in r.json()['loglines']]
+    logs = []
+    try:
+        logs = [json.loads(logline) for logline in r.json()['loglines']]
+    except json.JSONDecodeError:
+        pass
+
     res = RoxResponse(True, r.text)
     res.data = logs
     return res

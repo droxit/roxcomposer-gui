@@ -94,17 +94,15 @@ def update_system_logs(request, session):
     res = rox_request.get_system_logs(session)
     if res.success:
         for log in res.data:
-            new_logline = Logline(full_log=json.dumps(log), level=log['level'], time=log['time'])
-            """
-            if "error" in log:
-                new_logline.error = log["error"]
-            if "msg" in log:
-                new_logline.msg = log["msg"]
-            if "message" in log:
-                new_logline.msg = log["msg"]
-            if "service" in log:
-                new_logline.service = log["service"]
-            """
+            new_logline = Logline(level=log['level'], time=log['time'])
+            try:
+                full_log = json.dumps(log)
+                new_logline.full_log = full_log
+            except json.JSONDecodeError:
+                if "msg" in log:
+                    new_logline.msg = log["msg"]
+                elif "message" in log:
+                    new_logline.msg = log["message"]
             new_logline.save()
     else:
         logging.error("Error occurred while retrieving logs from ROXconnector: " + res.message)
