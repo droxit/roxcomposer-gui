@@ -9,6 +9,7 @@
 
 import datetime
 import logging
+import json
 
 from django.http import JsonResponse
 from django.utils import timezone
@@ -22,12 +23,16 @@ LOG_RELOAD = 100
 LOG_TIMEOUT = datetime.timedelta(minutes=1)
 # Delete all logs from DB which are older than this interval.
 LOG_DELETE = datetime.timedelta(days=1)
+# The minimum loglevel of logs that should be shown
+LOG_LEVEL = 40
 
 
 @require_http_methods(["POST"])
 def get_watch_logs(request):
-    """ Retrieve the currently relevant logs from DB. New Loglines are added when a service is watched and a
-        Message is sent to a pipeline containing that service (the service must first receive the message, then
+    """ Retrieve the currently relevant logs from DB.
+        New Loglines can be added from system logs, or
+        when a service is watched and a Message is sent to a
+        pipeline containing that service (the service must first receive the message, then
         the ROXcomposer sends a new log line). """
     # Get current logs.
     update_logs(request)
@@ -46,6 +51,7 @@ def update_logs(request, msg_id=None):
     :param request: Current request.
     :param msg_id: Specific message ID (default: None).
     """
+    # update Service logs
     sess = request.session.get('current_session', {})
     if sess != {}:  # if there is a current session write new logs to database
         rox_result = rox_request.get_service_logs(sess)  # get the recent logs
@@ -63,6 +69,45 @@ def update_logs(request, msg_id=None):
     else:  # no current session, can't get logs
         logging.error("Logs could not be retrieved as there is no session running.")
 
+    # update system logs
+    sys_sess = request.session.get('current_system_session', {})
+    if sys_sess == {}:  # if no system logging session is currently running make a new one
+        res = rox_request.create_new_roxcomposer_session()
+        if res.success:  # if making new session was successful update logs with this session
+            request.session["current_system_session"] = res.data
+            request.session.modified = True
+            update_system_logs(request, res.data)
+        else:
+            logging.error("System Logs could not be retrieved - {}".format(res.message))
+    else:
+        update_system_logs(request, sys_sess)  # update system logs with current session
+
+
+def start_new_system_session(request):
+    res = rox_request.create_new_roxcomposer_session()
+    if res.success:  # if making new session was successful update logs with this session
+        request.session["current_system_session"] = res.data
+        request.session.modified = True
+
+
+def update_system_logs(request, session):
+    res = rox_request.get_system_logs(session)
+    if res.success:
+        for log in res.data:
+            new_logline = Logline(level=log['level'], time=log['time'])
+            try:
+                full_log = json.dumps(log)
+                new_logline.full_log = full_log
+            except TypeError:
+                if "msg" in log:
+                    new_logline.msg = log["msg"]
+                elif "message" in log:
+                    new_logline.msg = log["message"]
+            new_logline.save()
+    else:
+        logging.error("Error occurred while retrieving logs from ROXconnector: " + res.message)
+        start_new_system_session(request)
+
 
 def get_current_watch_logs():
     """
@@ -74,7 +119,7 @@ def get_current_watch_logs():
     dt_del_start = dt_end - LOG_DELETE  # logs older than this should be deleted from DB
     Logline.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
     # load logs in a specific time range and then sort by time stamp, load only a certain amount of log lines
-    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).order_by('-time')[:LOG_RELOAD]
+    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).filter(level__gte=LOG_LEVEL).order_by('-time')[:LOG_RELOAD]
     return logs
 
 
