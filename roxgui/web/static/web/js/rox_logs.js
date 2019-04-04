@@ -32,7 +32,7 @@ function create_logline(log_win, log) {
 
 	var span = document.createElement("span");
 	span.setAttribute("id", "log-" + id);
-	if(log.text.includes("ERROR")){
+	if(log.text.includes("ERROR") || log.text.includes("error") || log.text.includes("CRITICAL") || log.text.includes("fatal")){
 	    span.setAttribute("class", "bold-red");
 	}
 	//span.setAttribute("style", "font-size:0.7em");

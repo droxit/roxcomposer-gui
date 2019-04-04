@@ -808,7 +808,6 @@ def get_logsession(rox_session: dict):
     except requests.exceptions.ConnectionError as err:
         error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
-
     if r.status_code != 200:
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
