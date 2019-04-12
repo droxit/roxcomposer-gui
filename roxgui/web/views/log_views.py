@@ -127,10 +127,11 @@ def get_current_watch_logs():
 def start_new_session(request):
     """ Begin a new session if the old one expired. """
     status = request.session.get('watch_button_active', None)
+    request.session['current_session'] = {}
     if status is not None:
         services = list(status.keys())
         res = rox_request.create_new_sess(services)
         if res.success:
             new_session = res.data
             request.session['current_session'] = new_session
-            request.session.modified = True
+    request.session.modified = True
