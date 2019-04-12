@@ -208,7 +208,7 @@ function load_session(){
 
 /* Add a selected service to the currently viewed pipeline */
 function add_service_to_pipe() {
-	var searchbar = $('#search_services')[0]
+	var searchbar = $('#search_services')[0];
 	var pipe = $("#headline_detail")[0].dataset.name; // currently selected pipeline that is being edited
 	var pipe_container = $("#services_in_pipeline")[0]; // the container where service cards will be added
 
@@ -232,7 +232,7 @@ function add_service_to_pipe() {
 		}
 		//add the new service
 		current_services.push({'service': selected_service});
-
+        searchbar.value = '';
 
 		//Update and save the new pipeline
 		save_pipe_add_service(pipe, current_services, update_pipe)
