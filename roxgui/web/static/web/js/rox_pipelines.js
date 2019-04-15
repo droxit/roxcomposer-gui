@@ -468,6 +468,17 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 
 }
 
+function get_pipeline_params(param_container){
+    var inputs = param_container.getElementsByTagName("input");
+    var params = [];
+    inputs.forEach(function(input){
+        if(input.value)
+            params.push(input.value);
+    });
+    return params;
+}
+
+
 /* Add editable value to pipeline service container. */
 function append_pipeline_param(container, val) {
 	var input = document.createElement("input");
@@ -547,7 +558,11 @@ function get_services(){
 	    if(param_inputs.length){
 	        service_json["params"] = [];
 	        param_inputs.forEach(function(param_input){
-	            service_json["params"].push(param_input.value);
+	            if(param_input.value){
+	                service_json["params"].push(param_input.value);
+	            } else if(param_input.placeholder){
+	                service_json["params"].push(param_input.placeholder);
+	            }
 	        });
 	    }
 		services.push(service_json);
