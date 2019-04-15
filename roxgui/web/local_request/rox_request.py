@@ -446,7 +446,6 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
     are applied in the same order as they appear in this list.
     :returns: RoxResponse instance documenting if pipeline could be created.
     """
-
     url = get_rox_connector_url("set_pipeline")
     content = {'name': pipe_name, 'services': service_names}
 
