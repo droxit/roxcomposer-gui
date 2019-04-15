@@ -348,7 +348,7 @@ function create_detail_view(pipeline) {
    connecting lines between cards have not yet been implemented */
 function add_service_card(service_obj, serviceinfo, services_container) {
     var service = service_obj["service"];
-    var service_params = service_obj["params"];
+    var service_params = service_obj["parameters"];
 	var prev = get_preceding_service(services_container);
 	var i = services_container.childNodes.length;
 
@@ -556,12 +556,12 @@ function get_services(){
 	    service_json["service"] = service_name;
 	    let param_inputs = card.querySelectorAll('.form-control');
 	    if(param_inputs.length){
-	        service_json["params"] = [];
+	        service_json["parameters"] = [];
 	        param_inputs.forEach(function(param_input){
 	            if(param_input.value){
-	                service_json["params"].push(param_input.value);
+	                service_json["parameters"].push(param_input.value);
 	            } else if(param_input.placeholder){
-	                service_json["params"].push(param_input.placeholder);
+	                service_json["parameters"].push(param_input.placeholder);
 	            }
 	        });
 	    }
