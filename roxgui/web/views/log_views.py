@@ -8,8 +8,8 @@
 #
 
 import datetime
-import logging
 import json
+import logging
 
 from django.http import JsonResponse
 from django.utils import timezone
@@ -120,7 +120,8 @@ def get_current_watch_logs():
     dt_del_start = dt_end - LOG_DELETE  # logs older than this should be deleted from DB
     Logline.objects.exclude(time__range=(dt_del_start, dt_end)).delete()
     # load logs in a specific time range and then sort by time stamp, load only a certain amount of log lines
-    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).filter(level__gte=LOG_LEVEL).order_by('-time')[:LOG_RELOAD]
+    logs = Logline.objects.filter(time__range=(dt_start, dt_end)).filter(level__gte=LOG_LEVEL).order_by('-time')[
+           :LOG_RELOAD]
     return logs
 
 

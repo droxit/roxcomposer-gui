@@ -7,9 +7,6 @@
 # Testing database.
 *.sqlite3
 
-# Local config file.
-/roxgui/config.ini
-
 # Local static root folder.
 /roxgui/static_root/**
 
@@ -21,6 +18,3 @@
 
 # IDE
 **/.idea/*
-
-# Old files.
-/archive/**
