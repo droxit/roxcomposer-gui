@@ -29,11 +29,13 @@ LOG_LEVEL = 40
 
 @require_http_methods(["POST"])
 def get_watch_logs(request):
-    """ Retrieve the currently relevant logs from DB.
-        New Loglines can be added from system logs, or
-        when a service is watched and a Message is sent to a
-        pipeline containing that service (the service must first receive the message, then
-        the ROXcomposer sends a new log line). """
+    """
+    Retrieve the currently relevant logs from DB.
+    New Loglines can be added from system logs, or
+    when a service is watched and a Message is sent to a
+    pipeline containing that service (the service must first receive the message, then
+    the ROXcomposer sends a new log line).
+    """
     # Get current logs.
     update_logs(request)
     logs = get_current_watch_logs()
