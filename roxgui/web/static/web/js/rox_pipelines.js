@@ -484,7 +484,7 @@ function append_pipeline_param(container, val) {
 	var input = document.createElement("input");
 	input.setAttribute("type", "text");
 	input.setAttribute("class", "form-control")
-	input.setAttribute("placeholder", val);
+	input.setAttribute("value", val);
 	input.setAttribute("style", "margin-top:10px; min-width:160px")
 	container.appendChild(input);
 }
