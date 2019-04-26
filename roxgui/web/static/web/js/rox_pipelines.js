@@ -360,7 +360,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	var card = document.createElement("div");
 	card.setAttribute("class", "card");
 	card.classList.add("carddiv");
-	card.setAttribute("style", "width: min-content; margin-bottom:30px; min-width:150px");
+	card.setAttribute("style", "margin-bottom:30px; min-width:80%");
 	newrow.appendChild(card);
 
 	set_tooltip(card, convert_to_json_string(serviceinfo));
