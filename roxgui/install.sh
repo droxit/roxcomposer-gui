@@ -9,8 +9,6 @@
 # Copyright (c) 2019 droxIT GmbH
 #
 
-# TODO: Install ROXcomposer-Backend.
-
 # Install Python dependencies.
 sudo apt-get install python3 python3-pip
 pip3 install -r requirements.txt
