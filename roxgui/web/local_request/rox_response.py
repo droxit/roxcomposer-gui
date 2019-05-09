@@ -2,19 +2,39 @@
 #
 # Class encapsulating ROXconnector response.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 
 class RoxResponse:
     """
-    Class encapsulating ROXconnector response.
-    Each response has to have a status indicating whether the communication and
-    requested operation has been successful and a message that is sent by the ROXconnector.
-    Optional parameters are data in case information has been requested from the server
-    and error data that can be provided if an error has occured.
+    Class encapsulating a ROXconnector response.
+    Each response contains a flag to indicate whether
+    or not the requested operation has been successful
+    and a string with corresponding response message.
+    Optional attributes are data in case information
+    has been requested from the server and error data
+    that might be provided to mark erroneous data.
     """
 
     def __init__(self, success: bool, message: str = ""):
@@ -22,7 +42,7 @@ class RoxResponse:
         self.message = message
         # (Optional) data concerning successful request.
         self._data = []
-        # (Optional) data concerning failed request.
+        # (Optional) data concerning failing request.
         self._error_data = []
 
     # Getter and setter.

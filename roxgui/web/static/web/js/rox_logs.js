@@ -2,9 +2,27 @@
 #
 # Define web views.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2018 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 */
 
@@ -32,6 +50,13 @@ function create_logline(log_win, log) {
 
 	var span = document.createElement("span");
 	span.setAttribute("id", "log-" + id);
+	let error_keywords = ["error", "fatal", "critical"]
+
+	error_keywords.forEach((keyword)=>{
+	    if(log.text.toLowerCase().includes(keyword))
+	        span.setAttribute("class", "bold-red");
+	});
+
 	//span.setAttribute("style", "font-size:0.7em");
 	make_logline_text(span, log);
 	log_win.appendChild(span);
@@ -65,11 +90,16 @@ function check_old_logs(log_win, log_data) {
 
 
 /* Reloads the log information every few seconds and updates the log window. */
-function reload_logs(){
-    // Update constantly reloaded elements.
-    log_win = document.getElementById("log");
-    update_log(log_win);
-    setInterval(function() {
-        update_log(log_win);
-    }, 1000);
+function reload_logs() {
+	// Update constantly reloaded elements.
+	log_win = document.getElementById("log");
+	update_log(log_win);
+	setInterval(function() {
+		update_log(log_win);
+	}, 1000);
+}
+
+
+function clear_all(){
+    
 }

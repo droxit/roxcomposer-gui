@@ -2,20 +2,41 @@
 #
 # Define HTTP responses with JSON data concerning pipelines.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
-import datetime
-
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 from web.local_request import rox_request
 from web.models import Message
 from web.views import log_views
 from web.views.json_views import create_rox_response
+import json
+import uuid
+from django.utils.encoding import smart_str
+from roxgui import settings
+import os
 
 
 @require_http_methods(["POST"])
@@ -27,7 +48,7 @@ def get_pipelines(request):
     """
     # Get JSON data of local pipelines.
     result = rox_request.get_pipelines()
-    return JsonResponse(result.data)
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])
@@ -39,9 +60,21 @@ def create_pipeline(request):
     :return: The RoxResponse
     """
     # Get the service list that the pipe is supposed to contain
-    services = request.POST.getlist("services[]", default=[])
+    services = json.loads(request.POST.get("services", default=""))
     pipe_name = request.POST.get("pipe_name", default="")
     result = rox_request.create_pipeline(pipe_name, services)
+    return create_rox_response(result)
+
+
+@require_http_methods(["POST"])
+def delete_pipeline(request):
+    """
+    Delete a pipe on the ROXcomposer.
+    :param request: shall contain a 'pipe_name' which is the name of the pipe that should be deleted
+    :return: The RoxResponse
+    """
+    pipe_name = request.POST.get("pipe_name", default="")
+    result = rox_request.remove_pipeline(pipe_name)
     return create_rox_response(result)
 
 
@@ -83,3 +116,36 @@ def send_msg(request):
         log_views.update_logs(request, msg_id=result.data)
 
     return create_rox_response(result)
+
+
+@require_http_methods(["GET"])
+def save_session(request):
+    """
+    Download the session json file.
+    :param request:
+    :return: a json file containing the current session on the roxcomposer
+    """
+    file_name = "session-" + str(uuid.uuid4()) +".json"
+    res = rox_request.save_session(file_name)
+    file_path = res.data["filepath"]
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type='application/blah')
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+            response['X-Sendfile'] = smart_str(res.data["filepath"])
+    else:
+        response = create_rox_response(res)
+    return response
+
+
+@require_http_methods(["POST"])
+def load_session(request):
+    """
+    Load a session on the roxcomposer from uploaded file.
+    :param request:
+    :return: response whether loading was successful
+    """
+    session = request.POST.get("session")
+    print(session)
+    res = rox_request.load_session(session)
+    return create_rox_response(res)

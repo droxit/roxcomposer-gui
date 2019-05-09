@@ -2,9 +2,27 @@
 #
 # Define HTTP responses concerning service watching with JSON data.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 from django.http import JsonResponse
@@ -47,11 +65,46 @@ def check_watched(request):
 
 def check_session(request):
     """Check if a ROXcomposer session is active, if not create a new one"""
-    active = request.session.get('watch_button_active', {})
-    if active == {}:
-        logsess = rox_request.create_new_sess([]).data
-        update_watch_buttons(request, logsess)
-        request.session.modified = True
+    current_session = request.session.get('current_session', {})
+    # if there is no current session or no button status, reset both
+    if 'id' not in current_session:
+        reset_current_session(request)
+        reset_watch_buttons(request)
+    else:  # if there is a session, check if it is still valid and update watch buttons
+        current_session = request.session.get('current_session', {})
+        res = rox_request.get_logsession(current_session)
+        if res.success:  # session is still valid
+            current_session['services'] = list(res.data['services'])
+            request.session["current_session"] = current_session
+            request.session.modified = True
+            update_watch_buttons(request, current_session) # update the watch buttons with new information
+        else:  # session was not valid, reset current session and watch buttons
+            reset_current_session(request)
+            reset_watch_buttons(request)
+
+
+def reset_current_session(request):
+    """
+    If something went wrong with the watching session reset the local copy
+    :param request:
+    :return:
+    """
+    request.session["current_session"] = {}
+    request.session.modified = True
+    return
+
+
+def reset_watch_buttons(request):
+    """
+    If something went wrong with the watching session reset the watch button status of all services to 'unwatched'
+    :param request:
+    :return:
+    """
+    watch_buttons = request.session.get('watch_button_active', {})
+    for service in watch_buttons:
+        request.session['watch_button_active'][service] = False  # set everything to 'unwatched'
+    request.session.modified = True
+    return
 
 
 @require_http_methods(["POST"])
@@ -62,7 +115,7 @@ def watch(request):
     :return: the response from the server
     """
     service_names = request.POST.getlist("services[]", default=[])
-    cur_sess = request.session.get('current_session', None)
+    cur_sess = request.session.get('current_session', {})
 
     res = rox_request.watch_services(service_names, rox_session=cur_sess)
 
@@ -80,7 +133,7 @@ def watch(request):
 def unwatch(request):
     """unwatch specified services """
     service_names = request.POST.getlist("services[]", default=[])
-    cur_sess = request.session.get('current_session', None)
+    cur_sess = request.session.get('current_session', {})
     res = rox_request.unwatch_services(service_names, cur_sess)
     if res.success:
         cur_sess = res.data

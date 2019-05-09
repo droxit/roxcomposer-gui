@@ -2,9 +2,27 @@
 #
 # Layout pattern for a detail view.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 -->
 
@@ -19,21 +37,20 @@
     <div class="card-header">
         <div class="row">
             <div class="col-md-6">
-                <div id="headline_detail" onclick="edit_detail_headline()"> <h4>{{ headline_detail }} </h4> </div>
+                <div id="headline_detail" onclick="edit_detail_headline()">
+                    <h4>{{ headline_detail }} </h4>
+                </div>
             </div>
             <div class="col-md-2" style="padding:5px">
                 <small id="headline_status" class="form-text text-muted"></small>
             </div>
-            <div class="col-md-4"  id="button_headline">
-
-                <button type="button" id="btn-delete" class="btn btn-primary btn-round float-right disabled" onclick="delete_this(this)">
+            <div class="col-md-4" id="button_headline">
+                <button type="button" id="btn-delete" class="btn btn-primary float-right disabled btn-circle-big" onclick="delete_this(this)">
                     <span class="fas fa-trash"></span>
                 </button>
-
-                <button type="button" id="btn-edit" class="btn btn-primary btn-round float-right space-right disabled" onclick="edit_detail_headline(this)">
+                <button type="button" id="btn-edit" class="btn btn-primary btn-circle-big float-right space-right disabled" onclick="edit_detail_headline(this)">
                     <span class="fas fa-pen"></span>
                 </button>
-
             </div>
         </div>
     </div>
@@ -44,7 +61,7 @@
                 <div class="col-md-5" id="search-bar-container"></div>
                 <div class="col-md-5" id="search-btn-container"></div>
                 <div class="col-md-2 align-right">
-                    <button type="button" id="btn-save" class="btn btn-primary btn-round float-right space-right disabled" onclick="save_detail()">
+                    <button type="button" id="btn-save" class="btn btn-primary btn-circle-big float-right space-right disabled" onclick="save_detail(this)">
                         <span class="fas fa-check"></span>
                     </button>
                 </div>

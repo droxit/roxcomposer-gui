@@ -2,22 +2,36 @@
 #
 # Communication with ROXconnector.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 import json
-import logging
 import os
 
 import requests
-from roxgui.settings import SERVICE_DIR, SESSION_DIR, ROX_COMPOSER_LOG_FILE, ROX_CONNECTOR_IP
+from roxgui.local_settings import LOCAL_SETTINGS
+from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
-
-# Logging.
-# ========
-logging.basicConfig(filename="test.log", filemode='w', level=logging.DEBUG)
 
 # Constants.
 # ==========
@@ -36,6 +50,9 @@ MSG_MISSING_SERVICES_ERROR = "No services specified."
 
 # Session timeout.
 SESSION_TIMEOUT = 3600
+
+# Session timeout of internal roxcomposer session
+ROXCOMPOSER_TIMEOUT = 50000
 
 # Default services.
 FORBIDDEN_SERVICES = {'basic_reporting'}
@@ -80,21 +97,46 @@ def _create_file_error(file_path: str, message: str):
 # ROXconnector URL.
 # =================
 
-def create_rox_connector_url(relative_path: str = "") -> str:
+def get_rox_connector_url(relative_path: str = "") -> str:
     """
-    Create valid ROXconnector URL to specified path.
-    :param relative_path: Relative URL path, i.e. everything without scheme, host and port (default: "")
-    :return: Corresponding ROXconnector URL.
+    Create ROXconnector URL to specified path.
+    :param relative_path: str - Relative URL path, i.e.
+        everything without scheme, host and port (default: "")
+    :return: str - Corresponding ROXconnector URL.
     """
     if not relative_path:
         # Relative path is empty.
-        return "http://{}".format(ROX_CONNECTOR_IP)
+        return "http://{}:{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                     LOCAL_SETTINGS[ROX_CONNECTOR_PORT])
     elif relative_path.endswith('/'):
         # Relative path ends with slash.
         relative_path = relative_path[:-1]
-        return "http://{}/{}".format(ROX_CONNECTOR_IP, relative_path)
+        return "http://{}:{}/{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                        LOCAL_SETTINGS[ROX_CONNECTOR_PORT],
+                                        relative_path)
     else:
-        return "http://{}/{}".format(ROX_CONNECTOR_IP, relative_path)
+        return "http://{}:{}/{}".format(LOCAL_SETTINGS[ROX_CONNECTOR_IP],
+                                        LOCAL_SETTINGS[ROX_CONNECTOR_PORT],
+                                        relative_path)
+
+
+# ROXcomposer log file.
+# ==========================
+
+def get_rox_composer_log_file_path() -> str:
+    """
+    Create path to ROXcomposer log file.
+    :return: str - Path to ROXcomposer log file.
+    """
+    return os.path.join(LOCAL_SETTINGS[ROX_COMPOSER_DIR], RELATIVE_ROX_COMPOSER_LOG_FILE_PATH)
+
+
+def get_file_path() -> str:
+    """
+    Get the path to the ROXcomposer directory
+    :return: str - Path to ROXcomposer main directory
+    """
+    return LOCAL_SETTINGS[ROX_COMPOSER_DIR]
 
 
 # Requests to ROXconnector.
@@ -107,7 +149,7 @@ def get_pipelines() -> RoxResponse:
         mapping each pipeline name to its corresponding JSON data.
     """
 
-    url = create_rox_connector_url("pipelines")
+    url = get_rox_connector_url("pipelines")
 
     try:
         r = requests.get(url)
@@ -141,7 +183,7 @@ def get_message_history(message_id: str) -> RoxResponse:
         return RoxResponse(False, "No message ID provided.")
 
     content = {'message_id': message_id}
-    url = create_rox_connector_url("get_msg_history")
+    url = get_rox_connector_url("get_msg_history")
 
     try:
         r = requests.post(url, data=json.dumps(content), headers=JSON_HEADER)
@@ -165,7 +207,7 @@ def get_running_service_jsons() -> RoxResponse:
     :return: RoxResponse instance containing a list of all currently running services.
     """
 
-    url = create_rox_connector_url("services")
+    url = get_rox_connector_url("services")
 
     try:
         r = requests.get(url)
@@ -182,15 +224,15 @@ def get_running_service_jsons() -> RoxResponse:
         return res
 
 
-def get_running_services() ->RoxResponse:
+def get_running_services() -> RoxResponse:
     """
     Get Names of all currently running services
     :return: List of service names
     """
     res = get_running_service_jsons()
-    service_names = []
+    service_names = {}
     for service in res.data:
-        service_names.append(service)
+        service_names[service] = service
     r = RoxResponse(res.success, res.message)
     r.data = service_names
     return r
@@ -200,6 +242,7 @@ def create_service(ip: str,
                    port: int,
                    name: str,
                    class_path: str,
+                   path: str,
                    optional_param_keys: list,
                    optional_param_values: list) -> RoxResponse:
     """
@@ -208,6 +251,8 @@ def create_service(ip: str,
     :param port: Port number.
     :param name: Service name.
     :param class_path: Classpath of service implementation.
+    :param path: If no classpath is given this path (absolute path to python file) can be provided and the service is
+                 loaded from there.
     :param optional_param_keys: List of optional parameter keys (default: []).
     :param optional_param_values: List of optional parameter values (default: []).
     :return: RoxResponse instance documenting if service could be created.
@@ -218,24 +263,47 @@ def create_service(ip: str,
     # Use service name as JSON file name.
     file_name = name + ".json"
     # Store JSON file in service folder.
-    file_path = os.path.join(SERVICE_DIR, file_name)
+    file_path = os.path.join(LOCAL_SETTINGS[SERVICE_DIR], file_name)
+
+    # Create empty result message.
+    result_msg = ""
 
     # Check if given service already exists.
     if os.path.exists(file_path):
-        error_msg = "Service {} already exists.".format(name)
-        return RoxResponse(False, error_msg)
+        result_msg = "Service {} already exists, overwriting.".format(name)
 
     # Check if given IP is valid.
+    error_msg = "Invalid IP address: {}.".format(ip)
     ip_parts = ip.split('.')
-    for part in ip_parts:
-        part = int(part)
-        if not (0 <= part <= 255):
-            error_msg = "Invalid IP address: {}.".format(ip)
-            return RoxResponse(False, error_msg)
+    if len(ip_parts) == 4:
+        for part in ip_parts:
+            try:
+                part = int(part)
+            except ValueError:
+                return RoxResponse(False, error_msg)
+            if not (0 <= part <= 255):
+                return RoxResponse(False, error_msg)
+    else:
+        return RoxResponse(False, error_msg)
+
+    # Check if given port is valid.
+    error_msg = "Invalid port: {}.".format(port)
+    try:
+        port = int(port)
+    except ValueError:
+        return RoxResponse(False, error_msg)
+    if not (0 <= port <= 65535):
+        return RoxResponse(False, error_msg)
+
+    path_key = "classpath"
+    path_val = class_path
+    if path:
+        path_key = "path"
+        path_val = path
 
     # Create JSON with mandatory parameters.
     json_dict = {
-        "classpath": class_path,
+        path_key: path_val,
         "params": {
             "ip": ip,
             "port": port,
@@ -246,17 +314,36 @@ def create_service(ip: str,
     # Optional parameters.
     # ====================
 
-    # Add optional parameters ignoring missing or invalid ones.
-    optional_params_warning = False
+    # Add optional parameters ignoring empty ones.
     for i in range(len(optional_param_keys)):
         key = optional_param_keys[i]
-        value = optional_param_values[i]
-        if key and value:
-            # Key and value of current parameter is not empty.
+        val = optional_param_values[i]
+        # Check if provided key already exists.
+        if key in json_dict["params"]:
+            # Error: provided key already exists.
+            return RoxResponse(False, "Duplicate key: {}".format(key))
+        # Check if key and value are not empty.
+        if key and val:
+            try:
+                # Try to convert current value to float.
+                float_value = float(val)
+                # Check if value is actually an integer.
+                if (float_value % 1.0) == 0.0:
+                    # Value is a single integer.
+                    value = int(float_value)
+                else:
+                    # Value is a single float.
+                    value = float_value
+            except ValueError:
+                # Value is a single string.
+                value = val
+                try:
+                    # Try to convert it to JSON.
+                    json_value = json.loads(val)
+                    value = json_value
+                except json.JSONDecodeError:
+                    pass
             json_dict["params"][key] = value
-        else:
-            # Key or value of current parameter is empty.
-            optional_params_warning = True
 
     # Write specified dictionary to JSON file.
     try:
@@ -266,12 +353,7 @@ def create_service(ip: str,
         error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
 
-    # Return RoxResponse instance with corresponding warnings.
-    if optional_params_warning:
-        warning_msg = "Skipped invalid optional parameters."
-        return RoxResponse(True, warning_msg)
-    else:
-        return RoxResponse(True)
+    return RoxResponse(True, result_msg)
 
 
 def start_service(service_json: dict) -> RoxResponse:
@@ -284,7 +366,7 @@ def start_service(service_json: dict) -> RoxResponse:
         # JSON data is empty and therefore invalid.
         return RoxResponse(False, MSG_INVALID_SERVICE_ERROR)
 
-    url = create_rox_connector_url("start_service")
+    url = get_rox_connector_url("start_service")
 
     try:
         r = requests.post(url, json=service_json, headers=JSON_HEADER)
@@ -312,13 +394,15 @@ def start_services(service_json_list: list) -> RoxResponse:
     # Collect names of all services which could not be started.
     not_started_json_list = []
     all_services_started = True
+    err_message = ""
     for service_json in service_json_list:
         res = start_service(service_json)
         if not res.success:
             not_started_json_list.append(service_json["params"]["name"])
             all_services_started = False
+            err_message = res.message
 
-    res = RoxResponse(all_services_started)
+    res = RoxResponse(all_services_started, err_message)
     res.error_data = not_started_json_list
     return res
 
@@ -333,7 +417,7 @@ def shutdown_service(service_name: dict) -> RoxResponse:
         # Service name is empty and therefore invalid.
         return RoxResponse(False, MSG_INVALID_SERVICE_ERROR)
 
-    url = create_rox_connector_url("shutdown_service")
+    url = get_rox_connector_url("shutdown_service")
     content = {'name': service_name}
 
     try:
@@ -380,8 +464,7 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
     are applied in the same order as they appear in this list.
     :returns: RoxResponse instance documenting if pipeline could be created.
     """
-
-    url = create_rox_connector_url("set_pipeline")
+    url = get_rox_connector_url("set_pipeline")
     content = {'name': pipe_name, 'services': service_names}
 
     try:
@@ -401,8 +484,28 @@ def create_pipeline(pipe_name: str, service_names: list) -> RoxResponse:
         return res
 
 
-def remove_pipeline() -> RoxResponse:  # TODO after functionality has been implemented in ROXcomposer
-    raise NotImplementedError
+def remove_pipeline(pipe_name: str) -> RoxResponse:
+    """
+    Remove the specified pipeline from ROXcomposer
+    :param pipe_name: Name of pipeline.
+    :returns: RoxResponse instance documenting if pipeline could be deleted.
+    """
+
+    url = get_rox_connector_url("delete_pipeline")
+    content = {'name': pipe_name}
+
+    try:
+        r = requests.delete(url, data=json.dumps(content), headers=JSON_HEADER)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    else:
+        res = RoxResponse(True)
+        return res
 
 
 def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
@@ -413,7 +516,7 @@ def post_to_pipeline(pipeline_name: str, message: str) -> RoxResponse:
     :return: RoxResponse instance documenting if data could be posted to pipeline.
     """
 
-    url = create_rox_connector_url("post_to_pipeline")
+    url = get_rox_connector_url("post_to_pipeline")
     content = {'name': pipeline_name, 'data': message}
 
     try:
@@ -438,14 +541,25 @@ def save_session(file_name: str) -> RoxResponse:
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be saved.
     """
-    file_path = os.path.join(SESSION_DIR, file_name)
+    roxsession_path = LOCAL_SETTINGS[SESSION_DIR]
+
+    # clear all old roxsessions
+    for the_file in os.listdir(roxsession_path):
+        file_path = os.path.join(roxsession_path, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
+    file_path = os.path.join(roxsession_path, file_name)
     try:
         fd = open(file_path, 'w')
     except OSError as err:
         error_msg = _create_file_error(file_path, str(err))
         return RoxResponse(False, error_msg)
 
-    url = create_rox_connector_url("dump_services_and_pipelines")
+    url = get_rox_connector_url("dump_services_and_pipelines")
 
     try:
         r = requests.get(url)
@@ -462,41 +576,43 @@ def save_session(file_name: str) -> RoxResponse:
             return RoxResponse(False, error_msg)
         finally:
             fd.close()
-        return RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res = RoxResponse(True, "Wrote session to file {}.\n{}.".format(file_path, r.text))
+        res.data = {"filepath": file_path, "filename": file_name}
+        return res
     else:
         fd.close()
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
 
-def load_session(file_name: str) -> RoxResponse:
+def delete_session_after_download(filepath):
+    pass
+
+
+def load_session(session_file) -> RoxResponse:
     """
     Load session from specified JSON file.
     :param file_name: File name.
     :return: RoxResponse instance documenting if session could be loaded.
     """
-    session_file = os.path.join(SESSION_DIR, file_name)
-    if os.path.isfile(session_file):
-        fd = open(session_file, 'r')
-        restore_json = json.loads(fd.read())
-        fd.close()
-    else:
-        error_msg = _create_file_error(session_file, "Not a valid file.")
-        return RoxResponse(False, error_msg)
 
-    url = create_rox_connector_url("load_services_and_pipelines")
+    try:  # load session as json file
+        session_json = json.loads(session_file)
+        url = get_rox_connector_url("load_services_and_pipelines")
 
-    try:
-        r = requests.post(url, data=json.dumps(restore_json), headers=JSON_HEADER)
-    except requests.exceptions.ConnectionError as err:
-        error_msg = _create_connection_error(str(err))
-        return RoxResponse(False, error_msg)
+        try:  # try to load session on composer
+            r = requests.post(url, data=json.dumps(session_json), headers=JSON_HEADER)
+        except requests.exceptions.ConnectionError as err:
+            error_msg = _create_connection_error(str(err))
+            return RoxResponse(False, error_msg)
 
-    if r.status_code != 200:
-        error_msg = _create_http_status_error(r.status_code, r.text)
-        return RoxResponse(False, error_msg)
-    else:
-        return RoxResponse(True, r.text)
+        if r.status_code != 200:
+            error_msg = _create_http_status_error(r.status_code, r.text)
+            return RoxResponse(False, error_msg)
+        else:
+            return RoxResponse(True, r.text)
+    except json.JSONDecodeError as e:
+        return RoxResponse(False, "Could not decode session json - {}".format(e))
 
 
 def watch_services(service_names: list, rox_session: dict = None, timeout: int = SESSION_TIMEOUT) -> RoxResponse:
@@ -508,9 +624,9 @@ def watch_services(service_names: list, rox_session: dict = None, timeout: int =
     :return: RoxResponse instance documenting if services could be added to watchlist.
     """
 
-    url = create_rox_connector_url("log_observer")
+    url = get_rox_connector_url("log_observer")
 
-    if rox_session is None:
+    if rox_session == {}:  # session is empty
         return create_new_sess(service_names, timeout)
     else:
         # Session already exists, so update it.
@@ -563,7 +679,7 @@ def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
     if len(service_names) < 1:
         return RoxResponse(False, "No services specified.")
 
-    if rox_session is None:
+    if rox_session == {}:
         return RoxResponse(False, "No session specified.")
 
     s = list(filter(lambda service: service in rox_session['services'], service_names))
@@ -573,7 +689,7 @@ def unwatch_services(service_names: list, rox_session: dict) -> RoxResponse:
 
     data = {'sessionid': rox_session['id'], 'services': s}
     try:
-        r = requests.delete(create_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
+        r = requests.delete(get_rox_connector_url('log_observer'), headers=JSON_HEADER, json=data)
     except requests.exceptions.ConnectionError as err:
         error_msg = _create_connection_error(str(err))
         return RoxResponse(False, error_msg)
@@ -601,7 +717,7 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
     rox_session['timeout'] = timeout
 
     content = {'lines': 100, 'timeout': timeout, 'services': services}
-    url = create_rox_connector_url("log_observer")
+    url = get_rox_connector_url("log_observer")
 
     try:
         r = requests.put(url, headers=JSON_HEADER, json=content)
@@ -630,6 +746,100 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
     return res
 
 
+def create_new_roxcomposer_session(timeout : int = ROXCOMPOSER_TIMEOUT):
+    """
+    Attempt to start a new log session on the ROXcomposer
+    :param services: list of services that should be watched
+    :param timeout: time after which session expires
+    :return: response with data = session dictionary ('id', 'timeout', 'services')
+    """
+    # There is no session yet, so start a new one.
+    internal_rox_session = dict()
+    internal_rox_session['timeout'] = timeout
+
+    content = {'lines': 100, 'timeout': timeout}
+    url = get_rox_connector_url("roxcomposer_log_observer")
+
+    try:
+        r = requests.put(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        res = RoxResponse(False, error_msg)
+        res.data = None
+        return res
+
+    # request successful, create a session dictionary
+    internal_rox_session['id'] = r.json()['sessionid']
+    res = RoxResponse(True, r.text)
+    res.data = internal_rox_session
+    return res
+
+
+def get_system_logs(internal_rox_session: dict):
+    """
+    Retrieve the newest log data from the ROXcomposer.
+    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+            for instance the session ID, or which services are being watched.
+    :return: RoxResponse with a list of the newest log lines as data, where each line is an element of the list
+    """
+    if internal_rox_session is None:
+        error_msg = "Trying to get logs, but no session instantiated."
+        return RoxResponse(False, error_msg)
+
+    url = get_rox_connector_url("log_observer")
+    content = {'sessionid': internal_rox_session['id']}
+
+    try:
+        r = requests.get(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+
+    logs = []
+    try:
+        logs = [json.loads(logline) for logline in r.json()['loglines']]
+    except json.JSONDecodeError:
+        pass
+    res = RoxResponse(True, r.text)
+    res.data = logs
+    return res
+
+
+def get_logsession(rox_session: dict):
+    """
+    Retrieve the information to a specific logsession
+    :param rox_session: contains id of logsession
+    :return: RoxResponse with session information. Contains success = False if no logsession
+    """
+    url = get_rox_connector_url("get_logsession")
+    content = {'id': rox_session['id']}
+
+    try:
+        r = requests.post(url, headers=JSON_HEADER, json=content)
+    except requests.exceptions.ConnectionError as err:
+        error_msg = _create_connection_error(str(err))
+        return RoxResponse(False, error_msg)
+    if r.status_code != 200:
+        error_msg = _create_http_status_error(r.status_code, r.text)
+        return RoxResponse(False, error_msg)
+    if r.json() == {}:
+        return RoxResponse(False, "No session with that ID")
+
+    res = RoxResponse(True, r.text)
+    res.data = r.json()
+    return res
+
+
 def get_service_logs(rox_session: dict):
     """
     Retrieve the newest log data from the ROXcomposer.
@@ -641,7 +851,7 @@ def get_service_logs(rox_session: dict):
         error_msg = "Trying to get logs, but no session instantiated."
         return RoxResponse(False, error_msg)
 
-    url = create_rox_connector_url("log_observer")
+    url = get_rox_connector_url("log_observer")
     content = {'sessionid': rox_session['id']}
 
     try:
@@ -654,36 +864,16 @@ def get_service_logs(rox_session: dict):
         error_msg = _create_http_status_error(r.status_code, r.text)
         return RoxResponse(False, error_msg)
 
-    logs = [json.loads(logline) for logline in r.json()['loglines']]
+    logs = []
+    try:
+        logs = [json.loads(logline) for logline in r.json()['loglines']]
+    except json.JSONDecodeError:
+        pass
+
     res = RoxResponse(True, r.text)
     res.data = logs
     return res
 
-
-def get_message_status(last_time: int = None) -> RoxResponse:
-    """
-    Get the last message status logs from trace log. These logs indicate where a message that was sent to a pipeline
-    currently is (which service is processing it).
-    :param last_time: the time (in seconds) that the trace was polled last time
-    :return: RoxResponse where the data contains a list of log lines, each element being one log line
-    """
-    logs = []
-    logfile = ROX_COMPOSER_LOG_FILE
-    try:
-        for line in open(logfile, "r"):
-            if last_time is None:
-                logs.append(line)
-            else:
-                line_time = json.loads(line)['time']
-                # add new log lines only if they are newer than the last time logs were updated
-                if line_time > last_time:
-                    logs.append(line)
-    except FileNotFoundError:
-        return RoxResponse(False, "Could not open trace file.")
-
-    res = RoxResponse(True, "Message trace read.")
-    res.data = logs
-    return res
 
 
 def watch_pipelines():  # TODO

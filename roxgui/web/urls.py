@@ -2,13 +2,31 @@
 #
 # Define URL patterns for web app.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 from django.urls import path
-from web.views import html_views, watch_views, service_views, pipe_views, message_views, log_views
+from web.views import views, html_views, watch_views, service_views, pipe_views, message_views, log_views
 
 urlpatterns = [
     # HTML views.
@@ -23,16 +41,23 @@ urlpatterns = [
     # Pipeline views.
     path('get_pipelines', pipe_views.get_pipelines, name="web_get_pipelines"),
     path('create_pipeline', pipe_views.create_pipeline, name="web_create_pipeline"),
+    path('delete_pipeline', pipe_views.delete_pipeline, name="web_delete_pipeline"),
     path('get_pipeline_info', pipe_views.get_pipeline_info, name="web_get_pipeline_info"),
-    path('send_msg', pipe_views.send_msg, name="send_msg"),
+    path('send_msg', pipe_views.send_msg, name="web_send_msg"),
+    path('pipelines/save_session', pipe_views.save_session, name="web_save_session"),
+    path('load_session', pipe_views.load_session, name="web_load_session"),
 
     # Service views
     path('get_services', service_views.get_services, name="web_get_services"),
+    path('get_running_services', service_views.get_running_services, name="web_get_running_services"),
     path('check_running', service_views.check_running, name="web_check_running"),
     path('start_services', service_views.start_services, name="web_start_services"),
     path('stop_services', service_views.stop_services, name="web_stop_services"),
     path('get_service_info', service_views.get_service_info, name="web_get_service_info"),
+    path('get_service_info_specific_service', service_views.get_service_info_specific_service,
+         name="web_get_service_info_specific_service"),
     path('delete_service', service_views.delete_service, name="web_delete_service"),
+    path('create_service', service_views.create_service, name="web_create_service"),
 
     # Watch views
     path('check_watched', watch_views.check_watched, name="web_check_watched"),
@@ -43,5 +68,9 @@ urlpatterns = [
     path("get_watch_logs", log_views.get_watch_logs, name="web_get_watch_logs"),
 
     # Message Views
-    path("get_msg_status", message_views.get_msg_status, name="web_get_msg_status"),
+    path("update_messages", message_views.update_messages, name="web_update_messages"),
+
+    # Manage config.ini file.
+    path("check_rox_settings", views.check_rox_settings, name="web_check_rox_settings"),
+    path("update_rox_settings", views.update_rox_settings, name="web_update_rox_settings"),
 ]

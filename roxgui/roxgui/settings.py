@@ -1,10 +1,28 @@
 # encoding: utf-8
 #
-# Global Django settings.
+# Global settings.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 """
@@ -19,76 +37,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import configparser
-import logging
 import os
 
-import requests
+from roxgui import local_settings
 
-logger = logging.getLogger(__name__)
+# Read local settings.
+res = local_settings.read_local_settings()
+if not res.success:
+    exit(1)
 
 # Base directory.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Read user specific settings from config.ini file.
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-# Initialize default service directory.
-SERVICE_DIR = os.path.join(BASE_DIR, "services")
-# Update service directory as specified in config file.
-tmp_service_dir = config.get("Default", "ServiceDir", fallback=None)
-if tmp_service_dir is not None:
-    # Custom service directory is specified.
-    if os.path.isdir(tmp_service_dir):
-        # Custom service directory is valid and can be used.
-        SERVICE_DIR = tmp_service_dir
-    else:
-        # Exit with error: Custom service directory is invalid.
-        logger.error("Service directory specified in config file is invalid.")
-        exit(1)
-
-# Initialize default session directory.
-SESSION_DIR = os.path.join(BASE_DIR, "sessions")
-# Update session directory as specified in config file.
-tmp_session_dir = config.get("Default", "SessionDir", fallback=None)
-if tmp_session_dir is not None:
-    # Custom session directory is specified.
-    if os.path.isdir(tmp_session_dir):
-        # Custom session directory is valid and can be used.
-        SESSION_DIR = tmp_session_dir
-    else:
-        # Exit with error: Custom service directory is invalid.
-        logger.error("Session directory specified in config file is invalid.")
-        exit(1)
-
-# Initialize path to ROXcomposer log file.
-tmp_log_file = config.get("Default", "RoxComposerLogFile", fallback=None)
-if tmp_log_file is not None:
-    # ROXComposer log file is specified.
-    if os.path.isfile(tmp_log_file):
-        # Log file is valid and can be used.
-        ROX_COMPOSER_LOG_FILE = tmp_log_file
-else:
-    ROX_COMPOSER_LOG_FILE = os.path.join(BASE_DIR, "roxcomposer/logs/trace.log")
-
-# Initialize ROXconnector connection data as specified in config file.
-tmp_ip = config.get("Default", "RoxConnectorIp", fallback=None)
-if tmp_ip is not None:
-    # ROXconnector connection data is specified.format(service_name))
-    ROX_CONNECTOR_IP = tmp_ip
-    # Check if ROXconnector is actually running.
-    try:
-        requests.get("http://{}".format(tmp_ip))
-    except requests.exceptions.ConnectionError:
-        # Exit with error: ROXconnector is not running.
-        logger.error("ROXconnector is not running.")
-        # TODO: Uncomment for production.
-        # exit(1)
-else:
-    # Exit with error: ROXconnector connection data is not specified.
-    logger.error("ROXconnector connection data specified in config file is invalid.")
-    exit(1)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -148,6 +107,8 @@ TEMPLATES = [
         },
     },
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 WSGI_APPLICATION = 'roxgui.wsgi.application'
 

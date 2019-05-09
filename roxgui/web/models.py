@@ -2,23 +2,42 @@
 #
 # Define database structure.
 #
-# devs@droxit.de
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
-# Copyright (c) 2019 droxIT GmbH
-#
-
-import datetime
 
 from django.db import models
 from django.utils import timezone
 
+
 class Logline(models.Model):
     """ This model defines a single log line that is sent by the ROXconnector when watching a service. """
     service = models.CharField(max_length=200)
-    msg = models.TextField()
+    msg = models.TextField(default="")
     msg_id = models.CharField(max_length=200, default="")
     level = models.CharField(max_length=200, default="debug")
-    time = models.DateTimeField()
+    time = models.DateTimeField(default=timezone.now)
+    error = models.TextField(default="")
+    full_log = models.TextField(default="")
 
     def __str__(self):
         logline = ""
@@ -32,13 +51,17 @@ class Logline(models.Model):
             logline += "Message: {}, ".format(self.msg)
         if self.level:
             logline += "Loglevel: {}, ".format(self.level)
+        if self.error:
+            logline += "Error: {}".format(self.error)
+        if self.full_log:
+            logline += "\n ROXcomposer system log: \n {}".format(self.full_log)
         return logline
 
     def to_dict(self):
         return {"id": self.id, "service": self.service,
                 "msg": self.msg, "level": self.level,
                 "time": self.time.strftime("%B %d, %Y %H:%M"),
-                "text": str(self)}
+                "text": str(self), "error": self.error, "full_log": self.full_log}
 
 
 class Message(models.Model):

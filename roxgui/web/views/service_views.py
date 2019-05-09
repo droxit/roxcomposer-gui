@@ -2,15 +2,34 @@
 #
 # Define HTTP responses with JSON data concerning services.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2019 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from web.local_request import file_request, rox_request
 from web.views.json_views import _create_json_context
+import json
 
 
 @require_http_methods(["POST"])
@@ -18,7 +37,15 @@ def get_services(request):
     """get a list of all available services and their information"""
     # Get JSON data of local services.
     result = file_request.get_local_services()
-    return JsonResponse(result.data)
+    return JsonResponse(result.convert_to_json())
+
+
+@require_http_methods(["POST"])
+def get_running_services(request):
+    """get a list of all running services and their information"""
+    # Get JSON data of local services.
+    result = rox_request.get_running_services()
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])
@@ -29,7 +56,7 @@ def get_service_info(request):
     :return: a JsonResponse context with key value pairs,
             where the key is the service name and value the corresponding service info
     """
-    services = request.POST.getlist("services[]", default=[])
+    services = json.loads(request.POST.get("services", default=""))
     result = file_request.get_local_services()
 
     service_dict = {}
@@ -38,8 +65,28 @@ def get_service_info(request):
         service_dict[entry] = result.data[entry]
     info = {}
     for service in services:
-        if service in service_dict:
-            info[service] = service_dict[service]
+        if service["service"] in service_dict:
+            info[service["service"]] = service_dict[service["service"]]
+
+    return JsonResponse(info)
+
+
+@require_http_methods(["POST"])
+def get_service_info_specific_service(request):
+    """
+    Returns the info of services in a dictionary (their parameters etc.)
+    :param request: contains a list "services" with the names of all services that the info should be retrieved of
+    :return: a JsonResponse context with key value pairs,
+            where the key is the a service parameter name and value the corresponding parameter value
+    """
+    service = request.POST.get("service", default="")
+    result = file_request.get_local_services()
+
+    info = {}
+
+    for entry in result.data:
+        if service == entry:
+            info = result.data[entry]
 
     return JsonResponse(info)
 
@@ -77,18 +124,7 @@ def start_services(request):
     # Start specified services and get list of JSON dictionaries
     # corresponding to all services which could not be started.
     result = rox_request.start_services(service_json_list)
-    if result.success:
-        # All services could be started.
-        return JsonResponse(res.convert_to_json())
-    else:
-        # Some services could not be started.
-        if not result.error_data:
-            # No services were specified.
-            return JsonResponse(res.convert_to_json())
-        else:
-            # Some services were specified but could not be started.
-            # services_not_started = ", ".join(result.error_data)
-            return JsonResponse(res.convert_to_json())
+    return JsonResponse(result.convert_to_json())
 
 
 @require_http_methods(["POST"])
@@ -119,4 +155,19 @@ def delete_service(request):
     # Get the service name of the service that should be deleted.
     service = request.POST.get("service", default="")
     res = file_request.delete_service(service)
+    return JsonResponse(res.convert_to_json())
+
+
+@require_http_methods(["POST"])
+def create_service(request):
+    """Create service with specified parameters."""
+    res = rox_request.create_service(
+        ip=request.POST.get("ip"),
+        port=request.POST.get("port"),
+        name=request.POST.get("name"),
+        class_path=request.POST.get("classpath"),
+        path=request.POST.get("path"),
+        optional_param_keys=request.POST.getlist("optional_param_keys[]", default=[]),
+        optional_param_values=request.POST.getlist("optional_param_values[]", default=[])
+    )
     return JsonResponse(res.convert_to_json())

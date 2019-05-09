@@ -2,16 +2,34 @@
 #
 # Rox messages helper functions.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2018 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer GUI.                                |
+# |                                                                      |
+# | ROXcomposer GUI is free software:                                    |
+# | you can redistribute it and/or modify                                |
+# | it under the terms of the GNU General Public License as published by |
+# | the Free Software Foundation, either version 3 of the License, or    |
+# | (at your option) any later version.                                  |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU General Public License           |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 */
 
 /* Retrieve the Message Status information from server. */
 function get_msg_status(elem) {
 	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
-	$.post("get_msg_status", {
+	$.post("update_messages", {
 		csrfmiddlewaretoken: CSRFtoken
 	}).done(function(data) {
 		for (var msg in data) { //for every message append a card to accordion
@@ -251,11 +269,11 @@ function refresh() {
 }
 
 /* Reloads the message information every few seconds and updates the message status. */
-function reload_msgs(){
-    // Update constantly reloaded elements.
-    acc = document.getElementById("accordion");
-    get_msg_status(acc);
-    setInterval(function() {
-        get_msg_status(acc);
-    }, 1000);
+function reload_msgs() {
+	// Update constantly reloaded elements.
+	acc = document.getElementById("accordion");
+	get_msg_status(acc);
+	setInterval(function() {
+		get_msg_status(acc);
+	}, 1000);
 }
