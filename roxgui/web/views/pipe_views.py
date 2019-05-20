@@ -25,18 +25,18 @@
 # |----------------------------------------------------------------------|
 #
 
+import json
+import os
+import uuid
+
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
+from django.utils.encoding import smart_str
 from django.views.decorators.http import require_http_methods
 from web.local_request import rox_request
 from web.models import Message
 from web.views import log_views
 from web.views.json_views import create_rox_response
-import json
-import uuid
-from django.utils.encoding import smart_str
-from roxgui import settings
-import os
 
 
 @require_http_methods(["POST"])
@@ -125,12 +125,13 @@ def save_session(request):
     :param request:
     :return: a json file containing the current session on the roxcomposer
     """
-    file_name = "session-" + str(uuid.uuid4()) +".json"
+    file_name = "session-" + str(uuid.uuid4()) + ".json"
     res = rox_request.save_session(file_name)
     file_path = res.data["filepath"]
+    print(file_path)
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type='application/blah')
+            response = HttpResponse(fh.read())
             response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
             response['X-Sendfile'] = smart_str(res.data["filepath"])
     else:
