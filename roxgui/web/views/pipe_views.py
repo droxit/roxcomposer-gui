@@ -146,6 +146,5 @@ def load_session(request):
     :return: response whether loading was successful
     """
     session = request.POST.get("session")
-    print(session)
     res = rox_request.load_session(session)
     return create_rox_response(res)
