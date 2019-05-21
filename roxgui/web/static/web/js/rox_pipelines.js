@@ -189,9 +189,8 @@ function enable_search_bar() {
 
 /* Downloads the current session */
 function save_session(){
-    var link = document.createElement("a");
-    link.href = window.location + "/save_session";
-    link.click();
+    var href = window.location + "/save_session";
+    window.location = href;
 }
 
 /* Opens a dialog that asks from where the user wants to load the session */

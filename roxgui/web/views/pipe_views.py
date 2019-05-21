@@ -130,8 +130,8 @@ def save_session(request):
     file_path = res.data["filepath"]
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type='application/blah')
-            response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+            response = HttpResponse(fh.read(), content_type='application/json')
+            response['Content-Disposition'] = 'attachment; name="save_session"; filename="{}"'.format(file_name)
             response['X-Sendfile'] = smart_str(res.data["filepath"])
     else:
         response = create_rox_response(res)
