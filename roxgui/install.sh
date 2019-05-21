@@ -31,7 +31,7 @@
 sudo apt-get install python3 python3-pip
 pip3 install -r requirements.txt
 
-# Install service and session folders.
+# Create services and sessions folder.
 mkdir -p services
 mkdir -p sessions
 

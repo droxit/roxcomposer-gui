@@ -746,7 +746,7 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
     return res
 
 
-def create_new_roxcomposer_session(timeout : int = ROXCOMPOSER_TIMEOUT):
+def create_new_roxcomposer_session(timeout: int = ROXCOMPOSER_TIMEOUT):
     """
     Attempt to start a new log session on the ROXcomposer
     :param services: list of services that should be watched
@@ -873,7 +873,6 @@ def get_service_logs(rox_session: dict):
     res = RoxResponse(True, r.text)
     res.data = logs
     return res
-
 
 
 def watch_pipelines():  # TODO
