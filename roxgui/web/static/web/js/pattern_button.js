@@ -41,6 +41,9 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 	btn.tooltip('dispose');
     btn.popover('dispose');
 
+    successmsg = escape_text(successmsg);
+    failmsg = escape_text(failmsg);
+
     // create popover
     var jbtn = $(btn);
     btn.popover({placement:'bottom', title:''});
