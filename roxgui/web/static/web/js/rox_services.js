@@ -261,25 +261,25 @@ function save_detail(elem) {
 			value = child[2].firstChild.innerText;
 			if (key == "classpath") {
 				if (classpath_value != null) {
-		            show_tooltip(btn, false, "", duplicate_entry = "\"classpath\"");
+		            show_tooltip(btn, false, "", duplicate_entry + "\"classpath\"");
 		            return;
 				}
 				classpath_value = value;
 			} else if (key == "path") {
 				if (path_value != null) {
-		            show_tooltip(btn, false, "", duplicate_entry = "\"path\"");
+		            show_tooltip(btn, false, "", duplicate_entry + "\"path\"");
 		            return;
 				}
 				path_value = value;
 			} else if (key == "port") {
 				if (port_value != null) {
-		            show_tooltip(btn, false, "", duplicate_entry = "\"port\"");
+		            show_tooltip(btn, false, "", duplicate_entry + "\"port\"");
 		            return;
 				}
 				port_value = value;
 			} else if (key == "ip") {
 				if (ip_value != null) {
-		            show_tooltip(btn, false, "", duplicate_entry = "\"ip\"");
+		            show_tooltip(btn, false, "", duplicate_entry + "\"ip\"");
 		            return;
 				}
 				ip_value = value;
