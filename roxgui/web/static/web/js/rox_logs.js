@@ -66,7 +66,6 @@ function create_logline(log_win, log) {
 /* Create the text node for one log line. */
 function make_logline_text(node, logline) {
 	var br = document.createElement("br");
-	// var log = logline.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
 	var log = escape_text(logline.text); // in roxgui/static/base/js/base_functions.js
 	node.innerHTML = log;
 	node.appendChild(br);
