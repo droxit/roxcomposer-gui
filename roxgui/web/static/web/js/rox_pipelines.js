@@ -380,8 +380,6 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	card.setAttribute("style", "margin-bottom:30px; min-width:80%");
 	newrow.appendChild(card);
 
-	set_tooltip(card, convert_to_json_string(serviceinfo));
-
 	var card_body = document.createElement("div");
 	card_body.setAttribute("class", "card-body");
 	card.appendChild(card_body);
@@ -400,10 +398,13 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_watch.setAttribute("id", "btn-watch-" + i);
 	btn_watch.setAttribute("data-toggle", "tooltip");
 	btn_watch.setAttribute("data-placement", "top");
-	btn_watch.setAttribute("data-name", service);
+	btn_watch.setAttribute("data-title", "watch service");
+	btn_watch.setAttribute("data-original-title", "");
 	btn_watch.setAttribute("data-status", "0");
+	btn_watch.setAttribute("data-name", service);
 	btn_watch.setAttribute("class", "btn btn-secondary btn-watch btn-circle btn-mini");
 	btn_watch.setAttribute("onclick", "toggle_services(['" + service + "','" + btn_watch.id + "'],this, watch_services, unwatch_services)");
+	set_tooltip(btn_watch, "watch service");
 
 	set_watch_button(btn_watch); // update this buttons status (is the service being watched?)
 
@@ -412,11 +413,13 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	btn_run.setAttribute("id", "btn-run-" + i);
 	btn_run.setAttribute("data-toggle", "tooltip");
 	btn_run.setAttribute("data-placement", "top");
-	btn_run.setAttribute("data-name", service);
+	btn_run.setAttribute("data-title", "start service");
+	btn_run.setAttribute("data-original-title", "");
 	btn_run.setAttribute("data-status", "0");
-	//btn_run.setAttribute("data-original-title", "run/start");
+	btn_run.setAttribute("data-name", service);
 	btn_run.setAttribute("class", "btn btn-secondary btn-run btn-circle");
 	btn_run.setAttribute("onclick", "toggle_services(['" + service + "','" + btn_run.id + "'],this, run_services, stop_services)");
+	set_tooltip(btn_run, "start service");
 
 	set_run_button(btn_run); // update this buttons status (is the service running?)
 
@@ -425,13 +428,16 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	var btn_del = document.createElement("button");
 	card_header.appendChild(btn_del);
 
-	btn_del.setAttribute("class", "btn btn-secondary btn-circle");
+	btn_del.setAttribute("class", "btn btn-secondary btn-del btn-circle btn-mini");
 	btn_del.setAttribute("style", "margin-right:5px");
     btn_del.setAttribute("id", "btn-del-" + i);
 	btn_del.setAttribute("data-toggle", "tooltip");
 	btn_del.setAttribute("data-placement", "top");
 	btn_del.setAttribute("data-title", "delete from pipe");
-	btn_del.setAttribute("onclick", "remove_service_from_pipe(" + i + ")")
+	btn_del.setAttribute("data-original-title", "");
+	btn_del.setAttribute("data-status", "0");
+	btn_del.setAttribute("onclick", "remove_service_from_pipe(" + i + ")");
+	set_tooltip(btn_del, "delete service from pipe");
 
 	var btn_watch_img = document.createElement("span");
 	var btn_del_img = document.createElement("span");
@@ -445,6 +451,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 
 	var card_text = document.createElement("p");
 	card_text.setAttribute("class", "card-text");
+	card_text.setAttribute("title", convert_to_json_string(serviceinfo));
 	card_body.appendChild(card_text);
 
 	card_text.appendChild(document.createTextNode(service));
@@ -459,13 +466,15 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	var plus_btn = document.createElement("button");
 	plus_btn.setAttribute("style", "margin-right:5px");
 	plus_btn.setAttribute("class", "btn btn-primary btn-circle");
+	set_tooltip(plus_btn, "add pipeline parameter");
 	plus_btn.onclick = () => append_pipeline_param(pipeline_param_container, "custom parameter");
 	var plus_span = document.createElement("span");
-	plus_span.setAttribute("class", "fas fa-xs fa-plus")
+	plus_span.setAttribute("class", "fas fa-xs fa-plus");
 	plus_btn.appendChild(plus_span);
 
 	var minus_btn = document.createElement("button");
 	minus_btn.setAttribute("class", "btn btn-primary btn-circle");
+	set_tooltip(minus_btn, "remove pipeline parameter");
 	minus_btn.onclick = () => delete_last_pipeline_param(pipeline_param_container);
 	var minus_span = document.createElement("span");
 	minus_span.setAttribute("class", "fas fa-xs fa-minus")
