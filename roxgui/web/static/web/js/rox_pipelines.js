@@ -428,7 +428,7 @@ function add_service_card(service_obj, serviceinfo, services_container) {
 	var btn_del = document.createElement("button");
 	card_header.appendChild(btn_del);
 
-	btn_del.setAttribute("class", "btn btn-secondary btn-circle");
+	btn_del.setAttribute("class", "btn btn-secondary btn-del btn-circle btn-mini");
 	btn_del.setAttribute("style", "margin-right:5px");
     btn_del.setAttribute("id", "btn-del-" + i);
 	btn_del.setAttribute("data-toggle", "tooltip");
