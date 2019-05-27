@@ -257,12 +257,32 @@ function save_detail(elem) {
 			key = child[0].firstChild.innerText;
 			value = child[2].firstChild.innerText;
 			if (key == "classpath") {
+				if (classpath_value != null) {
+				    var btn = $("#btn-save");
+		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"classpath\".");
+		            return;
+				}
 				classpath_value = value;
 			} else if (key == "path") {
+				if (path_value != null) {
+				    var btn = $("#btn-save");
+		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"path\".");
+		            return;
+				}
 				path_value = value;
 			} else if (key == "port") {
+				if (port_value != null) {
+				    var btn = $("#btn-save");
+		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"port\".");
+		            return;
+				}
 				port_value = value;
 			} else if (key == "ip") {
+				if (ip_value != null) {
+				    var btn = $("#btn-save");
+		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"ip\".");
+		            return;
+				}
 				ip_value = value;
 			} else {
 				key_array.push(key);
@@ -290,7 +310,7 @@ function save_detail(elem) {
                 delete_service(old_name);
             }
 	    }
-		btn = $("#btn-save");
+		var btn = $("#btn-save");
 		show_tooltip(btn, data.success, "Saved service", "Saving error. \n " + data.message);
 		add_data_entries_from_remote($('#search_field')[0], 'go_to_detail_view(this)', $('#data_info_list')[0], 'get_services');
 	});
