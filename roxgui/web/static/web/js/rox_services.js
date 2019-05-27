@@ -251,6 +251,9 @@ function save_detail(elem) {
 	key_array = []
 	value_array = []
 
+	var btn = $("#btn-save");
+	var duplicate_entry = "Failed to save service.\nFound multiple fields for parameter: "
+
 	for (var i = 0; i < detail_container.childNodes.length; i++) {
 		var child = detail_container.childNodes[i].children;
 		if (child.length == 3) {
@@ -258,29 +261,25 @@ function save_detail(elem) {
 			value = child[2].firstChild.innerText;
 			if (key == "classpath") {
 				if (classpath_value != null) {
-				    var btn = $("#btn-save");
-		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"classpath\".");
+		            show_tooltip(btn, false, "", duplicate_entry = "\"classpath\"");
 		            return;
 				}
 				classpath_value = value;
 			} else if (key == "path") {
 				if (path_value != null) {
-				    var btn = $("#btn-save");
-		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"path\".");
+		            show_tooltip(btn, false, "", duplicate_entry = "\"path\"");
 		            return;
 				}
 				path_value = value;
 			} else if (key == "port") {
 				if (port_value != null) {
-				    var btn = $("#btn-save");
-		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"port\".");
+		            show_tooltip(btn, false, "", duplicate_entry = "\"port\"");
 		            return;
 				}
 				port_value = value;
 			} else if (key == "ip") {
 				if (ip_value != null) {
-				    var btn = $("#btn-save");
-		            show_tooltip(btn, false, "", "Failed to save service.\nFound multiple fields for \"ip\".");
+		            show_tooltip(btn, false, "", duplicate_entry = "\"ip\"");
 		            return;
 				}
 				ip_value = value;
