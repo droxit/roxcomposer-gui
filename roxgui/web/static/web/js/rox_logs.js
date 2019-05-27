@@ -44,11 +44,23 @@ function update_log(log_win) {
 	});
 }
 
+// just 'replace' will only replace first occurence of the string, hence we need this
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+// escape the logline so that newlines are shown correctly
+function escape_log(logline) {
+    return logline.replaceAll("\\n", "\n");
+};
+
 /* Append the text node in the log window for one log line. */
 function create_logline(log_win, log) {
 	id = log.id;
 
 	var span = document.createElement("span");
+	span.style = "white-space: pre-wrap;" // this is essential to correctly show the /n newlines
 	span.setAttribute("id", "log-" + id);
 	let error_keywords = ["error", "fatal", "critical"]
 
@@ -65,7 +77,9 @@ function create_logline(log_win, log) {
 /* Create the text node for one log line. */
 function make_logline_text(node, logline) {
 	var br = document.createElement("br");
-	node.appendChild(document.createTextNode(logline.text));
+	// var log = logline.text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+	var log = escape_log(logline.text);
+	node.innerHTML = log;
 	node.appendChild(br);
 }
 
