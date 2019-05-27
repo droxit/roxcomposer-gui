@@ -1,2 +1,0 @@
-Django>=2.1.6
-requests==2.21.*
