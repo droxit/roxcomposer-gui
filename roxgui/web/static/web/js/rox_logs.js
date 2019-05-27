@@ -49,6 +49,7 @@ function create_logline(log_win, log) {
 	id = log.id;
 
 	var span = document.createElement("span");
+	span.style = "white-space: pre-wrap;" // this is essential to correctly show the /n newlines
 	span.setAttribute("id", "log-" + id);
 	let error_keywords = ["error", "fatal", "critical"]
 
@@ -65,7 +66,8 @@ function create_logline(log_win, log) {
 /* Create the text node for one log line. */
 function make_logline_text(node, logline) {
 	var br = document.createElement("br");
-	node.appendChild(document.createTextNode(logline.text));
+	var log = escape_text(logline.text); // in roxgui/static/base/js/base_functions.js
+	node.innerHTML = log;
 	node.appendChild(br);
 }
 

@@ -108,3 +108,14 @@ function stringify(obj_from_json) {
 		.join(",");
 	return `{${props}}`;
 }
+
+// just 'replace' will only replace first occurence of the string, hence we need this
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+// escape text so that newlines are shown correctly
+function escape_text(str) {
+    return str.replaceAll("\\n", "\n");
+};
