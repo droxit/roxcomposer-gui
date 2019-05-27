@@ -58,7 +58,7 @@ class Logline(models.Model):
         return logline
 
     def to_dict(self):
-        return {"id": self.id, "service": self.service,
+        return {"id": self.msg_id, "service": self.service,
                 "msg": self.msg, "level": self.level,
                 "time": self.time.strftime("%B %d, %Y %H:%M"),
                 "text": str(self), "error": self.error, "full_log": self.full_log}

@@ -77,7 +77,7 @@ def check_session(request):
             current_session['services'] = list(res.data['services'])
             request.session["current_session"] = current_session
             request.session.modified = True
-            update_watch_buttons(request, current_session) # update the watch buttons with new information
+            update_watch_buttons(request, current_session)  # update the watch buttons with new information
         else:  # session was not valid, reset current session and watch buttons
             reset_current_session(request)
             reset_watch_buttons(request)
