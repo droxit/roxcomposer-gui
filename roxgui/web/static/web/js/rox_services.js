@@ -101,7 +101,7 @@ function create_detail_view(service) {
 	plus_btn.setAttribute("class", "btn btn-primary btn-circle-big float-center");
 	plus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px; margin-right:10px");
 	plus_btn.setAttribute("id", "add-parameter")
-	$(plus_btn).tooltip({title:"add custom parameter"})
+	$(plus_btn).tooltip({title:"add service parameter"})
 	plus_btn.onclick = () => append_param(detail_container, "key", "value");
 	var plus_span = document.createElement("span");
 	plus_span.setAttribute("class", "fas fa-plus")
@@ -110,7 +110,7 @@ function create_detail_view(service) {
 	var minus_btn = document.createElement("button");
 	minus_btn.setAttribute("style", "margin-top:10px; margin-bottom:10px");
 	minus_btn.setAttribute("class", "btn btn-primary btn-circle-big float-center");
-	$(minus_btn).tooltip({title:"remove parameter"})
+	$(minus_btn).tooltip({title:"remove service parameter"})
 	minus_btn.onclick = () => delete_last_param(detail_container);
 	var minus_span = document.createElement("span");
 	minus_span.setAttribute("class", "fas fa-minus")
@@ -354,8 +354,8 @@ function delete_service(service) {
 /* Add watch and run buttons to the service detail headline. */
 function add_watch_and_run_buttons() {
 	var button_container = $("#button_headline");
-	var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-circle-big float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
-	var btn_run = $("<button type='button' id='btn-run' class='btn btn-primary btn-circle-big float-right space-right disabled' onclick='toggle_services($(\"#detail_info\")[0],this, run_services, stop_services)'><span class='fas fa-play'></span></button>");
+	var btn_watch = $("<button type='button' id='btn-watch' class='btn btn-primary btn-circle-big float-right space-right disabled' data-toggle='tooltip' data-placement='bottom' data-title='watch service' onclick='toggle_services($(\"#detail_info\")[0],this, watch_services, unwatch_services)'><span class='fas fa-eye'></span></button>");
+	var btn_run = $("<button type='button' id='btn-run' class='btn btn-primary btn-circle-big float-right space-right disabled' data-toggle='tooltip' data-placement='bottom' data-title='start service' onclick='toggle_services($(\"#detail_info\")[0],this, run_services, stop_services)'><span class='fas fa-play'></span></button>");
 
 	button_container.append(btn_watch);
 	button_container.append(btn_run);
