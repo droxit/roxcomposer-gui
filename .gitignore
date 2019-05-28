@@ -8,7 +8,7 @@
 *.sqlite3
 
 # Local static root folder.
-/roxgui/static_root/**
+/static_root/**
 
 # PyCache folder.
 **/__pycache__/*
