@@ -38,6 +38,7 @@ function show_tooltip(btn, success, successmsg, failmsg) {
 		oldTooltip = btn[0].dataset.title;
 		btn[0].dataset.title = "";
 	}
+
 	btn.tooltip('dispose');
     btn.popover('dispose');
 
@@ -57,6 +58,7 @@ function show_tooltip(btn, success, successmsg, failmsg) {
         btn.data('bs.popover').tip.classList.add('popover-success');
 	} else {
         popover.config.content = failmsg;
+        popover.config.title = "";
         btn.popover('show');
         btn.data('bs.popover').tip.classList.add('popover-danger');
 	}
