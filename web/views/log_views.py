@@ -61,6 +61,7 @@ def get_watch_logs(request):
     # Convert to dictionary of logs ({id: logline})
     log_dict_str = {}
     for log_line in logs:
+        log_line.time = timezone.localtime(log_line.time)
         log_dict_str[log_line.id] = log_line.to_dict()
     return JsonResponse(log_dict_str)  # send as JsonResponse Object
 

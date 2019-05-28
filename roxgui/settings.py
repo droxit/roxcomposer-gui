@@ -40,6 +40,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 from roxgui import local_settings
+from django.utils.timezone import activate
+import time
 
 # Read local settings.
 res = local_settings.read_local_settings()
@@ -145,7 +147,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'de-de'
 
-TIME_ZONE = 'Europe/Berlin'
+
+TIME_ZONE = time.tzname[0]
+activate(TIME_ZONE)
 
 USE_I18N = True
 
