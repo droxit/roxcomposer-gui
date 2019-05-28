@@ -39,7 +39,6 @@ function update_log(log_win) {
 				create_logline(log_win, obj);
 			}
 		}
-
 		check_old_logs(data, log_win); //delete all the old loglines
 	});
 }
