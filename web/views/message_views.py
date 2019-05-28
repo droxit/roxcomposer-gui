@@ -27,7 +27,6 @@
 
 
 import datetime
-import json
 import time
 
 from django.http import JsonResponse

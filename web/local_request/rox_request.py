@@ -573,7 +573,7 @@ def delete_session_after_download(filepath):
 def load_session(session_file) -> RoxResponse:
     """
     Load session from specified JSON file.
-    :param file_name: File name.
+    :param session_file: File name.
     :return: RoxResponse instance documenting if session could be loaded.
     """
 
@@ -730,7 +730,6 @@ def create_new_sess(services: list, timeout: int = SESSION_TIMEOUT) -> RoxRespon
 def create_new_roxcomposer_session(timeout: int = ROXCOMPOSER_TIMEOUT):
     """
     Attempt to start a new log session on the ROXcomposer
-    :param services: list of services that should be watched
     :param timeout: time after which session expires
     :return: response with data = session dictionary ('id', 'timeout', 'services')
     """
@@ -765,7 +764,7 @@ def create_new_roxcomposer_session(timeout: int = ROXCOMPOSER_TIMEOUT):
 def get_system_logs(internal_rox_session: dict):
     """
     Retrieve the newest log data from the ROXcomposer.
-    :param rox_session: a dictionary containing the information on the current session with the ROXcomposer
+    :param internal_rox_session: a dictionary containing the information on the current session with the ROXcomposer
             for instance the session ID, or which services are being watched.
     :return: RoxResponse with a list of the newest log lines as data, where each line is an element of the list
     """
