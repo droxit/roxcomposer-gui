@@ -254,6 +254,7 @@ def create_service(ip: str,
         result_msg = "Service {} already exists, overwriting.".format(name)
 
     # Check if given IP is valid.
+    # TODO: check with socket.inet_aton(ip)
     error_msg = "Invalid IP address: {}.".format(ip)
     ip_parts = ip.split('.')
     if len(ip_parts) == 4:
@@ -580,6 +581,24 @@ def load_session(session_file) -> RoxResponse:
     try:  # load session as json file
         session_json = json.loads(session_file)
         url = get_rox_connector_url("load_services_and_pipelines")
+
+        services = session_json["services"]
+
+        for service in services:
+            classpath = service.get("classpath")
+            path = service.get("path")
+            params = service.get("params")
+            ip = params.pop("ip")
+            port = params.pop("port")
+            name = params.pop("name")
+
+            params_keys = []
+            params_values = []
+            for key, value in params.items():
+                params_keys.append(key)
+                params_values.append(value)
+
+            create_service(ip, port, name, classpath, path, params_keys, params_values)
 
         try:  # try to load session on composer
             r = requests.post(url, data=json.dumps(session_json), headers=JSON_HEADER)
