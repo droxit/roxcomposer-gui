@@ -29,6 +29,7 @@ import json
 import os
 
 import requests
+
 from roxgui.local_settings import LOCAL_SETTINGS
 from roxgui.local_settings import SERVICE_DIR, SESSION_DIR, ROX_CONNECTOR_IP, ROX_CONNECTOR_PORT
 from web.local_request.rox_response import RoxResponse
@@ -316,15 +317,17 @@ def create_service(ip: str,
                 else:
                     # Value is a single float.
                     value = float_value
-            except ValueError:
-                # Value is a single string.
+            except (ValueError, TypeError):
                 value = val
-                try:
-                    # Try to convert it to JSON.
-                    json_value = json.loads(val)
-                    value = json_value
-                except json.JSONDecodeError:
-                    pass
+                # Check if value is a dict.
+                if not isinstance(value, dict):
+                    # Value is a single string.
+                    try:
+                        # Try to convert it to JSON.
+                        json_value = json.loads(val)
+                        value = json_value
+                    except json.JSONDecodeError:
+                        pass
             json_dict["params"][key] = value
 
     # Write specified dictionary to JSON file.
@@ -584,7 +587,9 @@ def load_session(session_file) -> RoxResponse:
 
         services = session_json["services"]
 
-        for service in services:
+        for service_name in services:
+            service = services[service_name]
+
             classpath = service.get("classpath")
             path = service.get("path")
             params = service.get("params")
